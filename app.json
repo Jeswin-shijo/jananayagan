@@ -1,4 +1,44 @@
 {
-  "name": "JANANAYAGAN",
-  "displayName": "JANANAYAGAN"
+  "expo": {
+    "name": "JANANAYAGAN",
+    "slug": "jananayagan",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "jananayagan",
+    "icon": "./src/assets/icon.png",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jananayagan",
+      "infoPlist": {
+        "NSCameraUsageDescription": "JANANAYAGAN needs camera access to attach photos to citizen reports.",
+        "NSLocationWhenInUseUsageDescription": "JANANAYAGAN needs location access to tag reports with the issue location.",
+        "NSPhotoLibraryUsageDescription": "JANANAYAGAN needs photo library access to attach photos to citizen reports."
+      }
+    },
+    "android": {
+      "package": "com.jananayagan",
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "backgroundColor": "#1A4ED8"
+      },
+      "permissions": ["ACCESS_FINE_LOCATION", "CAMERA", "READ_MEDIA_IMAGES"]
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "JANANAYAGAN needs photo library access to attach photos to citizen reports.",
+          "cameraPermission": "JANANAYAGAN needs camera access to attach photos to citizen reports."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "JANANAYAGAN needs location access to tag reports with the issue location."
+        }
+      ]
+    ]
+  }
 }

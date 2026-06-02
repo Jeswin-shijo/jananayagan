@@ -1,0 +1,136 @@
+import {Complaint, Poll, Petition, Volunteer, SentimentData, Notification} from '@appTypes/api';
+
+export const MOCK_COMPLAINTS: Complaint[] = [
+  {
+    id: '1',
+    ticketId: 'JAN-001234-001',
+    category: 'road',
+    subCategory: 'Pothole',
+    description: 'Large pothole on main road causing accidents near bus stop. Needs immediate repair.',
+    status: 'in_progress',
+    priority: 'high',
+    images: [],
+    location: {latitude: 11.0168, longitude: 76.9558, address: 'Anna Nagar, Chennai'},
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: '2',
+    ticketId: 'JAN-001234-002',
+    category: 'water',
+    subCategory: 'Water leakage',
+    description: 'Pipe leakage on street corner causing water wastage for 3 days.',
+    status: 'submitted',
+    priority: 'medium',
+    images: [],
+    location: {latitude: 11.0168, longitude: 76.9558, address: 'T. Nagar, Chennai'},
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+  },
+  {
+    id: '3',
+    ticketId: 'JAN-001234-003',
+    category: 'electricity',
+    subCategory: 'Street light',
+    description: 'Street lights not working in residential area for past 2 weeks.',
+    status: 'resolved',
+    priority: 'low',
+    images: [],
+    location: {latitude: 11.0168, longitude: 76.9558, address: 'Adyar, Chennai'},
+    createdAt: new Date(Date.now() - 86400000 * 14).toISOString(),
+    updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+  },
+];
+
+export const MOCK_POLLS: Poll[] = [
+  {
+    id: '1',
+    question: 'Which area needs road repair most urgently?',
+    options: [
+      {id: 'a', text: 'Anna Nagar Main Road', votes: 245, percentage: 42},
+      {id: 'b', text: 'T. Nagar Ring Road', votes: 180, percentage: 31},
+      {id: 'c', text: 'Adyar Bridge Road', votes: 98, percentage: 17},
+      {id: 'd', text: 'Velachery Highway', votes: 58, percentage: 10},
+    ],
+    endDate: new Date(Date.now() + 86400000 * 7).toISOString(),
+    totalVotes: 581,
+    hasVoted: false,
+    status: 'active',
+  },
+  {
+    id: '2',
+    question: 'Should new parks be built in this constituency?',
+    options: [
+      {id: 'a', text: 'Yes, strongly agree', votes: 892, percentage: 68},
+      {id: 'b', text: 'Yes, but later', votes: 210, percentage: 16},
+      {id: 'c', text: 'No, not needed', votes: 130, percentage: 10},
+      {id: 'd', text: 'Neutral', votes: 78, percentage: 6},
+    ],
+    endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+    totalVotes: 1310,
+    hasVoted: true,
+    votedOptionId: 'a',
+    status: 'active',
+  },
+];
+
+export const MOCK_PETITIONS: Petition[] = [
+  {
+    id: '1',
+    title: 'Install speed breakers near Government School',
+    description: 'Multiple accidents have occurred near the school. Requesting immediate installation of speed breakers.',
+    category: 'Road Safety',
+    targetSignatures: 500,
+    currentSignatures: 342,
+    constituency: 'Anna Nagar',
+    status: 'active',
+    createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
+    createdBy: 'Citizen User',
+  },
+  {
+    id: '2',
+    title: 'Demand 24-hour water supply in Ward 14',
+    description: 'Residents face severe water shortage. Requesting government action for regular water supply.',
+    category: 'Water',
+    targetSignatures: 1000,
+    currentSignatures: 876,
+    constituency: 'T. Nagar',
+    status: 'active',
+    createdAt: new Date(Date.now() - 86400000 * 20).toISOString(),
+    createdBy: 'Citizens Forum',
+  },
+];
+
+export const MOCK_VOLUNTEERS: Volunteer[] = [
+  {id: '1', name: 'Arjun Rajan', area: 'Anna Nagar', phone: '9876543210', email: 'arjun@example.com', activeComplaints: 3, totalResolved: 45, isAvailable: true, performanceScore: 4.5},
+  {id: '2', name: 'Priya Sundaram', area: 'T. Nagar', phone: '9876543211', email: 'priya@example.com', activeComplaints: 1, totalResolved: 32, isAvailable: true, performanceScore: 4.8},
+  {id: '3', name: 'Karthik Kumar', area: 'Adyar', phone: '9876543212', email: 'karthik@example.com', activeComplaints: 5, totalResolved: 67, isAvailable: false, performanceScore: 4.2},
+];
+
+export const MOCK_SENTIMENT_DATA: SentimentData = {
+  overallScore: 68,
+  trend: [
+    {date: '2024-01-01', score: 55},
+    {date: '2024-02-01', score: 58},
+    {date: '2024-03-01', score: 62},
+    {date: '2024-04-01', score: 65},
+    {date: '2024-05-01', score: 68},
+  ],
+  byCategory: [
+    {category: 'Road', score: 52, count: 234},
+    {category: 'Water', score: 71, count: 189},
+    {category: 'Electricity', score: 75, count: 145},
+    {category: 'Sanitation', score: 48, count: 312},
+  ],
+  topComments: [
+    {id: '1', text: 'The road repair work done last month is excellent!', sentiment: 'positive', score: 0.92},
+    {id: '2', text: 'Water shortage issue still not resolved despite multiple complaints.', sentiment: 'negative', score: 0.15},
+    {id: '3', text: 'Volunteer response time has improved significantly.', sentiment: 'positive', score: 0.88},
+  ],
+};
+
+export const MOCK_NOTIFICATIONS: Notification[] = [
+  {id: '1', title: 'Complaint Update', body: 'Your complaint JAN-001234-001 is now In Progress', type: 'complaint_update', isRead: false, createdAt: new Date(Date.now() - 3600000).toISOString()},
+  {id: '2', title: 'New Poll Available', body: 'Vote on the new road development poll in your area', type: 'poll_new', isRead: false, createdAt: new Date(Date.now() - 7200000).toISOString()},
+  {id: '3', title: 'Petition Milestone', body: 'Your petition reached 300 signatures!', type: 'petition_update', isRead: true, createdAt: new Date(Date.now() - 86400000).toISOString()},
+];

@@ -1,0 +1,62 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="pinShine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#E0EAFF" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background (full bleed — OS applies corner mask) -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Subtle depth rings -->
+  <circle cx="512" cy="440" r="360" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="60"/>
+  <circle cx="512" cy="440" r="250" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="35"/>
+
+  <!-- ── Location Pin (civic report symbol) ── -->
+  <!-- Main pin body: circle top + teardrop bottom -->
+  <path d="M512 790
+           C488 758 295 658 295 435
+           A217 217 0 1 0 729 435
+           C729 658 536 758 512 790Z"
+        fill="url(#pinShine)"/>
+
+  <!-- Pin inner shadow ring (gives depth) -->
+  <circle cx="512" cy="435" r="142" fill="rgba(30,58,138,0.12)"/>
+
+  <!-- Inner badge circle (primary blue) -->
+  <circle cx="512" cy="435" r="128" fill="#1A4ED8"/>
+
+  <!-- White checkmark inside badge -->
+  <path d="M448 430 L494 478 L586 372"
+        stroke="white"
+        stroke-width="42"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"/>
+
+  <!-- ── Gold civic star at top ── -->
+  <!-- outer r=50, inner r=21, center (512, 120) -->
+  <polygon
+    points="512,70
+            523.9,101.3
+            558.0,103.1
+            531.8,122.5
+            541.6,157.0
+            512,138.0
+            482.4,157.0
+            492.2,122.5
+            466.0,103.1
+            500.1,101.3"
+    fill="#FCD34D"/>
+
+  <!-- Small dots — citizens/community around the pin base -->
+  <circle cx="290" cy="780" r="22" fill="rgba(255,255,255,0.18)"/>
+  <circle cx="340" cy="825" r="16" fill="rgba(255,255,255,0.12)"/>
+  <circle cx="734" cy="780" r="22" fill="rgba(255,255,255,0.18)"/>
+  <circle cx="684" cy="825" r="16" fill="rgba(255,255,255,0.12)"/>
+</svg>
