@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -17,12 +19,14 @@ import {AppInput} from '@components/common/AppInput';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppProgressBar} from '@components/common/AppProgressBar';
 import {AppCard} from '@components/common/AppCard';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {petitionSchema, PetitionFormData} from '@utils/validators';
 import {MOCK_PETITIONS} from '@utils/mockData';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing} from '@constants/spacing';
+import {CitizenTabParamList} from '@appTypes/navigation';
 
 const CATEGORIES = ['Road Safety', 'Water', 'Electricity', 'Health', 'Education', 'Environment', 'Other'];
 const CONSTITUENCIES = ['Anna Nagar', 'T. Nagar', 'Adyar', 'Velachery', 'Tambaram', 'Guindy'];
@@ -30,6 +34,8 @@ const CONSTITUENCIES = ['Anna Nagar', 'T. Nagar', 'Adyar', 'Velachery', 'Tambara
 export const SubmitPetitionScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
+  const route = useRoute<RouteProp<CitizenTabParamList, 'SubmitPetition'>>();
   const [activeTab, setActiveTab] = useState<'create' | 'browse'>('browse');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -38,6 +44,12 @@ export const SubmitPetitionScreen: React.FC = () => {
     resolver: zodResolver(petitionSchema),
     defaultValues: {targetSignatures: 500},
   });
+
+  useEffect(() => {
+    if (route.params?.mode === 'create') {
+      setActiveTab('create');
+    }
+  }, [route.params?.mode]);
 
   const onSubmit = async (_data: PetitionFormData) => {
     setIsSubmitting(true);
@@ -52,12 +64,13 @@ export const SubmitPetitionScreen: React.FC = () => {
     return (
       <SafeAreaView style={styles.container}>
         <AppEmptyState
-          icon="🎉"
-          title="Petition Submitted!"
-          subtitle="Your petition has been submitted for review. Share it with your community to gather signatures."
-          ctaLabel="View Petitions"
+          icon="check-decagram-outline"
+          title={t('petitionSubmitted')}
+          subtitle={t('petitionSubmittedSubtitle')}
+          ctaLabel={t('viewPetitions')}
           onCTAPress={() => {setSubmitted(false); setActiveTab('browse');}}
         />
+        <CitizenCreateFab />
       </SafeAreaView>
     );
   }
@@ -69,7 +82,7 @@ export const SubmitPetitionScreen: React.FC = () => {
         {(['browse', 'create'] as const).map(tab => (
           <AppButton
             key={tab}
-            title={tab === 'browse' ? 'Browse Petitions' : 'Create Petition'}
+            title={tab === 'browse' ? t('browsePetitions') : t('createPetition')}
             onPress={() => setActiveTab(tab)}
             variant={activeTab === tab ? 'primary' : 'ghost'}
             size="sm"
@@ -80,7 +93,7 @@ export const SubmitPetitionScreen: React.FC = () => {
 
       {activeTab === 'browse' ? (
         <ScrollView contentContainerStyle={styles.scroll}>
-          <Text style={styles.sectionTitle}>Active Petitions</Text>
+          <Text style={styles.sectionTitle}>{t('activePetitions')}</Text>
           {MOCK_PETITIONS.map(petition => (
             <AppCard key={petition.id}>
               <Text style={styles.petitionTitle}>{petition.title}</Text>
@@ -92,10 +105,10 @@ export const SubmitPetitionScreen: React.FC = () => {
               <AppProgressBar
                 current={petition.currentSignatures}
                 total={petition.targetSignatures}
-                label="Signatures"
+                label={t('signatures')}
               />
               <AppButton
-                title="Sign Petition"
+                title={t('signPetition')}
                 onPress={() => {/* TODO */}}
                 size="sm"
                 style={styles.signBtn}
@@ -103,21 +116,21 @@ export const SubmitPetitionScreen: React.FC = () => {
             </AppCard>
           ))}
           {MOCK_PETITIONS.length === 0 && (
-            <AppEmptyState icon="📜" title="No active petitions" subtitle="Be the first to create a petition for your community." />
+            <AppEmptyState icon="file-document-outline" title={t('noActivePetitions')} subtitle={t('noActivePetitionsSubtitle')} />
           )}
         </ScrollView>
       ) : (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
           <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-            <Text style={styles.sectionTitle}>Create a Petition</Text>
+            <Text style={styles.sectionTitle}>{t('createPetitionTitle')}</Text>
 
             <Controller
               control={control}
               name="title"
               render={({field: {onChange, value, onBlur}}) => (
                 <AppInput
-                  label="Petition Title *"
-                  placeholder="E.g. Install speed breakers near school"
+                  label={t('petitionTitle')}
+                  placeholder={t('petitionTitlePlaceholder')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -131,8 +144,8 @@ export const SubmitPetitionScreen: React.FC = () => {
               name="description"
               render={({field: {onChange, value, onBlur}}) => (
                 <AppInput
-                  label="Description *"
-                  placeholder="Explain your petition in detail..."
+                  label={t('description')}
+                  placeholder={t('petitionDescriptionPlaceholder')}
                   multiline
                   numberOfLines={5}
                   value={value}
@@ -149,7 +162,7 @@ export const SubmitPetitionScreen: React.FC = () => {
               name="targetSignatures"
               render={({field: {onChange, value, onBlur}}) => (
                 <AppInput
-                  label="Target Signatures *"
+                  label={t('targetSignatures')}
                   placeholder="500"
                   keyboardType="number-pad"
                   value={value?.toString()}
@@ -161,7 +174,7 @@ export const SubmitPetitionScreen: React.FC = () => {
             />
 
             <AppButton
-              title={isSubmitting ? 'Submitting...' : 'Submit Petition'}
+              title={isSubmitting ? t('submitting') : t('submitPetition')}
               onPress={handleSubmit(onSubmit)}
               loading={isSubmitting}
               style={styles.submitBtn}
@@ -169,6 +182,7 @@ export const SubmitPetitionScreen: React.FC = () => {
           </ScrollView>
         </KeyboardAvoidingView>
       )}
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

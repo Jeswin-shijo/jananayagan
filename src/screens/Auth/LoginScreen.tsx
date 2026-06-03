@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -21,21 +22,21 @@ import {AppInput} from '@components/common/AppInput';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
-import {AppStrings} from '@constants/strings';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const ROLES: {id: UserRole; label: string; icon: MaterialCommunityIconName}[] = [
-  {id: 'citizen', label: 'Citizen', icon: 'account-outline'},
-  {id: 'politician', label: 'Politician', icon: 'bank-outline'},
-  {id: 'admin', label: 'Admin', icon: 'shield-outline'},
-  {id: 'volunteer', label: 'Volunteer', icon: 'hand-heart-outline'},
+const ROLES: {id: UserRole; icon: MaterialCommunityIconName}[] = [
+  {id: 'citizen', icon: 'account-outline'},
+  {id: 'politician', icon: 'bank-outline'},
+  {id: 'admin', icon: 'shield-outline'},
+  {id: 'volunteer', icon: 'hand-heart-outline'},
 ];
 
 export const LoginScreen: React.FC<Props> = ({navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [selectedRole, setSelectedRole] = useState<UserRole>('citizen');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,12 +66,12 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
             <View style={styles.logoBubble}>
               <MaterialCommunityIcons name="vote-outline" size={42} color={Colors.primary} />
             </View>
-            <Text style={styles.appName}>{AppStrings.appName}</Text>
-            <Text style={styles.tagline}>{AppStrings.tagline}</Text>
+            <Text style={styles.appName}>{t('appName')}</Text>
+            <Text style={styles.tagline}>{t('tagline')}</Text>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.sectionTitle}>{AppStrings.selectRole}</Text>
+            <Text style={styles.sectionTitle}>{t('selectRole')}</Text>
             <View style={styles.rolesGrid}>
               {ROLES.map(role => (
                 <TouchableOpacity
@@ -91,7 +92,7 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
                     styles.roleLabel,
                     selectedRole === role.id && styles.roleLabelActive,
                   ]}>
-                    {role.label}
+                    {t(role.id)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -102,8 +103,8 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
               name="phone"
               render={({field: {onChange, value, onBlur}}) => (
                 <AppInput
-                  label="Mobile Number"
-                  placeholder="Enter 10-digit number"
+                  label={t('mobileNumber')}
+                  placeholder={t('mobilePlaceholder')}
                   keyboardType="phone-pad"
                   maxLength={10}
                   value={value}
@@ -115,7 +116,7 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
             />
 
             <AppButton
-              title={isLoading ? 'Sending OTP...' : AppStrings.sendOTP}
+              title={isLoading ? t('sendingOTP') : t('sendOTP')}
               onPress={handleSubmit(onSubmit)}
               loading={isLoading}
               style={styles.submitBtn}

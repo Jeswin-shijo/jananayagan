@@ -7,11 +7,14 @@ import {CitizenHomeScreen} from '@screens/Citizen/CitizenHomeScreen';
 import {MyComplaintsScreen} from '@screens/Citizen/MyComplaintsScreen';
 import {SubmitPetitionScreen} from '@screens/Citizen/SubmitPetitionScreen';
 import {PublicPollScreen} from '@screens/Citizen/PublicPollScreen';
+import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
+import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
 import {ReportProblemScreen} from '@screens/Citizen/ReportProblemScreen';
 import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
 import {ProfileScreen} from '@screens/Shared/ProfileScreen';
 import {useNotificationStore} from '@store/notificationStore';
 import {useAppColors} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 
 const Tab = createBottomTabNavigator<CitizenTabParamList>();
 const Stack = createNativeStackNavigator<CitizenStackParamList>();
@@ -19,6 +22,7 @@ type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIc
 
 const CitizenTabs: React.FC = () => {
   const Colors = useAppColors();
+  const {t} = useTranslation();
   const unreadCount = useNotificationStore(s => s.unreadCount);
 
   return (
@@ -49,6 +53,7 @@ const CitizenTabs: React.FC = () => {
             MyComplaints: {active: 'clipboard-text', inactive: 'clipboard-text-outline'},
             SubmitPetition: {active: 'file-sign', inactive: 'file-sign'},
             PublicPoll: {active: 'poll', inactive: 'poll'},
+            CommunityFeed: {active: 'newspaper-variant', inactive: 'newspaper-variant-outline'},
             Profile: {active: 'account', inactive: 'account-outline'},
           };
           const icon = icons[route.name];
@@ -61,15 +66,16 @@ const CitizenTabs: React.FC = () => {
           );
         },
       })}>
-      <Tab.Screen name="CitizenHome" component={CitizenHomeScreen} options={{title: 'Home'}} />
-      <Tab.Screen name="MyComplaints" component={MyComplaintsScreen} options={{title: 'Complaints'}} />
-      <Tab.Screen name="SubmitPetition" component={SubmitPetitionScreen} options={{title: 'Petition'}} />
-      <Tab.Screen name="PublicPoll" component={PublicPollScreen} options={{title: 'Polls'}} />
+      <Tab.Screen name="CitizenHome" component={CitizenHomeScreen} options={{title: t('home')}} />
+      <Tab.Screen name="MyComplaints" component={MyComplaintsScreen} options={{title: t('complaints')}} />
+      <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('community')}} />
+      <Tab.Screen name="SubmitPetition" component={SubmitPetitionScreen} options={{title: t('petition')}} />
+      <Tab.Screen name="PublicPoll" component={PublicPollScreen} options={{title: t('polls')}} />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: 'Profile',
+          title: t('profile'),
           tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
         }}
       />
@@ -83,5 +89,6 @@ export const CitizenNavigator: React.FC = () => (
     <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
     <Stack.Screen name="ComplaintTicket" component={ComplaintTicketScreen} />
     <Stack.Screen name="ComplaintDetail" component={ComplaintTicketScreen as any} />
+    <Stack.Screen name="CreatePost" component={CreatePostScreen} />
   </Stack.Navigator>
 );

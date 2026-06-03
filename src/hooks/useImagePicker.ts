@@ -2,8 +2,8 @@ import {useState, useCallback} from 'react';
 import {Platform, Alert, ActionSheetIOS} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-const IMAGE_OPTIONS = {
-  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+const IMAGE_OPTIONS: ImagePicker.ImagePickerOptions = {
+  mediaTypes: 'images',
   quality: 0.8,
   allowsEditing: false,
 };

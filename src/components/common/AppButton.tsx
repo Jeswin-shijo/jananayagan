@@ -8,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import {LinearGradient} from 'react-native-linear-gradient';
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -44,6 +45,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const isDisabled = disabled || loading;
+  const isGradient = variant === 'primary' || variant === 'secondary';
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
@@ -63,22 +65,35 @@ export const AppButton: React.FC<AppButtonProps> = ({
         styles.base,
         styles[variant],
         styles[`size_${size}`],
+        isGradient && styles.gradientBase,
         fullWidth && styles.fullWidth,
         isDisabled && styles.disabled,
-        variant === 'primary' && styles.primaryShadow,
+        isGradient && styles.primaryShadow,
         style,
         animatedStyle,
       ]}>
-      {loading ? (
-        <ActivityIndicator
-          color={variant === 'outline' || variant === 'ghost' ? Colors.primary : Colors.white}
-          size="small"
+      {isGradient && (
+        <LinearGradient
+          colors={variant === 'primary'
+            ? [Colors.primaryDark, Colors.primary, Colors.secondary]
+            : [Colors.secondaryDark, Colors.secondary, Colors.primary]}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          style={StyleSheet.absoluteFill}
         />
-      ) : (
-        <Text style={[styles.text, styles[`text_${variant}`], styles[`textSize_${size}`], textStyle]}>
-          {title}
-        </Text>
       )}
+      {loading
+        ? (
+          <ActivityIndicator
+            color={variant === 'outline' || variant === 'ghost' ? Colors.primary : Colors.textOnPrimary}
+            size="small"
+          />
+        )
+        : (
+          <Text style={[styles.text, styles[`text_${variant}`], styles[`textSize_${size}`], textStyle]}>
+            {title}
+          </Text>
+        )}
     </AnimatedPressable>
   );
 };
@@ -89,20 +104,22 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
   },
   fullWidth: {width: '100%'},
   disabled: {opacity: 0.5},
+  gradientBase: {backgroundColor: Colors.primary},
 
   primary: {backgroundColor: Colors.primary},
   secondary: {backgroundColor: Colors.secondary},
-  outline: {backgroundColor: 'transparent', borderWidth: 1.5, borderColor: Colors.primary},
+  outline: {backgroundColor: Colors.surface, borderWidth: 1.5, borderColor: Colors.border},
   danger: {backgroundColor: Colors.danger},
-  ghost: {backgroundColor: 'transparent'},
+  ghost: {backgroundColor: Colors.primaryLight},
   primaryShadow: {
     shadowColor: Colors.primary,
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.24,
+    shadowRadius: 18,
     elevation: 5,
   },
 
@@ -111,8 +128,8 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   size_lg: {paddingVertical: Spacing[4], paddingHorizontal: Spacing[8], minHeight: 56},
 
   text: {fontWeight: FontWeight.semiBold, letterSpacing: 0},
-  text_primary: {color: Colors.white},
-  text_secondary: {color: Colors.white},
+  text_primary: {color: Colors.textOnPrimary},
+  text_secondary: {color: Colors.textOnPrimary},
   text_outline: {color: Colors.primary},
   text_danger: {color: Colors.white},
   text_ghost: {color: Colors.primary},

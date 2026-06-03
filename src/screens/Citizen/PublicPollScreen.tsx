@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -8,18 +9,21 @@ import {AppCard} from '@components/common/AppCard';
 import {AppButton} from '@components/common/AppButton';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppChip} from '@components/common/AppChip';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_POLLS} from '@utils/mockData';
 import {formatDate} from '@utils/formatters';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
 type PollFilter = 'active' | 'ended' | 'voted';
 
 export const PublicPollScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [polls, setPolls] = useState(MOCK_POLLS);
   const [filter, setFilter] = useState<PollFilter>('active');
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
@@ -34,7 +38,7 @@ export const PublicPollScreen: React.FC = () => {
   const handleVote = (pollId: string) => {
     const optionId = selectedOptions[pollId];
     if (!optionId) {
-      Alert.alert('Select Option', 'Please select an option to vote.');
+      Alert.alert(t('chooseOption'), t('chooseOptionMessage'));
       return;
     }
     // TODO: call submitVote API
@@ -48,6 +52,7 @@ export const PublicPollScreen: React.FC = () => {
           : p,
       ),
     );
+    Alert.alert(t('voteSubmitted'), t('voteSubmittedMessage'));
   };
 
   const renderPoll = ({item}: {item: Poll}) => {
@@ -60,7 +65,7 @@ export const PublicPollScreen: React.FC = () => {
           <View style={styles.pollMetaRow}>
             <MaterialCommunityIcons name="poll" size={14} color={Colors.textSecondary} />
             <Text style={styles.pollMeta}>
-              {totalVotes.toLocaleString()} votes · Ends {formatDate(item.endDate)}
+              {t('votesEnds', {votes: totalVotes.toLocaleString(), date: formatDate(item.endDate)})}
             </Text>
           </View>
         </View>
@@ -96,7 +101,7 @@ export const PublicPollScreen: React.FC = () => {
 
         {!item.hasVoted && item.status === 'active' && (
           <AppButton
-            title="Submit Vote"
+            title={t('submitVote')}
             onPress={() => handleVote(item.id)}
             size="sm"
             style={styles.voteBtn}
@@ -106,7 +111,7 @@ export const PublicPollScreen: React.FC = () => {
         {item.hasVoted && (
           <View style={styles.votedRow}>
             <MaterialCommunityIcons name="check-circle-outline" size={17} color={Colors.success} />
-            <Text style={styles.votedLabel}>You voted on this poll</Text>
+            <Text style={styles.votedLabel}>{t('youVotedOnPoll')}</Text>
           </View>
         )}
       </AppCard>
@@ -117,14 +122,14 @@ export const PublicPollScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <OfflineBanner />
       <View style={styles.header}>
-        <Text style={styles.title}>Public Polls</Text>
+        <Text style={styles.title}>{t('publicPolls')}</Text>
       </View>
 
       <View style={styles.filterRow}>
         {(['active', 'ended', 'voted'] as PollFilter[]).map(f => (
           <AppChip
             key={f}
-            label={f.charAt(0).toUpperCase() + f.slice(1)}
+            label={t(f as TranslationKey)}
             isActive={filter === f}
             onPress={() => setFilter(f)}
           />
@@ -140,11 +145,12 @@ export const PublicPollScreen: React.FC = () => {
         ListEmptyComponent={
           <AppEmptyState
             icon="poll"
-            title="No polls available"
-            subtitle="Check back later for new polls on local issues."
+            title={t('noPollsAvailable')}
+            subtitle={t('noPollsSubtitle')}
           />
         }
       />
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

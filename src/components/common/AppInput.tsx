@@ -12,6 +12,7 @@ import {
 import {AppColors} from '@constants/colors';
 import {FontSize} from '@constants/typography';
 import {BorderRadius, Spacing} from '@constants/spacing';
+import {useTranslation} from '@hooks/useTranslation';
 
 interface AppInputProps extends TextInputProps {
   label?: string;
@@ -33,6 +34,7 @@ export const AppInput: React.FC<AppInputProps> = ({
 }) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -58,7 +60,7 @@ export const AppInput: React.FC<AppInputProps> = ({
           <TouchableOpacity
             onPress={() => setShowPassword(v => !v)}
             style={styles.iconRight}>
-            <Text style={styles.toggleText}>{showPassword ? 'Hide' : 'Show'}</Text>
+            <Text style={styles.toggleText}>{showPassword ? t('hide') : t('show')}</Text>
           </TouchableOpacity>
         )}
         {rightIcon && !isPassword && <View style={styles.iconRight}>{rightIcon}</View>}
@@ -80,14 +82,14 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: Colors.border,
     borderRadius: BorderRadius.xl,
     backgroundColor: Colors.surface,
     shadowColor: Colors.black,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: {width: 0, height: 8},
     shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 1,
+    shadowRadius: 16,
+    elevation: 2,
   },
   focused: {
     borderColor: Colors.primary,

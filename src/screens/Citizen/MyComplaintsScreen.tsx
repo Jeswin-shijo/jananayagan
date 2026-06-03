@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -18,25 +19,28 @@ import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppChip} from '@components/common/AppChip';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
 import {formatRelativeTime, getCategoryIcon, getCategoryLabel} from '@utils/formatters';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
 type Nav = NativeStackNavigationProp<CitizenStackParamList>;
 
-const FILTERS: {id: ComplaintStatus | 'all'; label: string}[] = [
-  {id: 'all', label: 'All'},
-  {id: 'submitted', label: 'Open'},
-  {id: 'in_progress', label: 'In Progress'},
-  {id: 'resolved', label: 'Resolved'},
+const FILTERS: {id: ComplaintStatus | 'all'; labelKey: TranslationKey}[] = [
+  {id: 'all', labelKey: 'all'},
+  {id: 'submitted', labelKey: 'open'},
+  {id: 'in_progress', labelKey: 'inProgress'},
+  {id: 'resolved', labelKey: 'resolved'},
 ];
 
 export const MyComplaintsScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const navigation = useNavigation<Nav>();
   const [activeFilter, setActiveFilter] = useState<ComplaintStatus | 'all'>('all');
   const [search, setSearch] = useState('');
@@ -80,7 +84,7 @@ export const MyComplaintsScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <OfflineBanner />
       <View style={styles.header}>
-        <Text style={styles.title}>My Complaints</Text>
+        <Text style={styles.title}>{t('myComplaints')}</Text>
       </View>
 
       {/* Search */}
@@ -88,7 +92,7 @@ export const MyComplaintsScreen: React.FC = () => {
         <MaterialCommunityIcons name="magnify" size={20} color={Colors.textDisabled} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search by ticket ID or description"
+          placeholder={t('searchComplaints')}
           placeholderTextColor={Colors.textDisabled}
           value={search}
           onChangeText={setSearch}
@@ -100,7 +104,7 @@ export const MyComplaintsScreen: React.FC = () => {
         {FILTERS.map(f => (
           <AppChip
             key={f.id}
-            label={f.label}
+            label={t(f.labelKey)}
             isActive={activeFilter === f.id}
             onPress={() => setActiveFilter(f.id)}
           />
@@ -116,14 +120,15 @@ export const MyComplaintsScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <AppEmptyState
-            icon="📭"
-            title="No complaints found"
-            subtitle={activeFilter === 'all' ? "You haven't filed any complaints yet." : `No ${activeFilter.replace('_', ' ')} complaints.`}
-            ctaLabel="Report a Problem"
+            icon="tray-alert"
+            title={t('noComplaintsFound')}
+            subtitle={activeFilter === 'all' ? t('noComplaintsYet') : t('noFilteredComplaints', {status: t(FILTERS.find(f => f.id === activeFilter)?.labelKey ?? 'all')})}
+            ctaLabel={t('reportProblem')}
             onCTAPress={() => navigation.navigate('ReportProblem')}
           />
         }
       />
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

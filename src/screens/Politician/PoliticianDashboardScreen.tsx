@@ -1,13 +1,16 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {LinearGradient} from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {PoliticianStackParamList} from '@appTypes/navigation';
 import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
@@ -15,27 +18,29 @@ import {formatRelativeTime} from '@utils/formatters';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
 type Nav = NativeStackNavigationProp<PoliticianStackParamList>;
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const NAV_ACTIONS: {icon: MaterialCommunityIconName; label: string; screen: keyof PoliticianStackParamList}[] = [
-  {icon: 'account-group-outline', label: 'Volunteers', screen: 'VolunteerManagement'},
-  {icon: 'brain', label: 'AI Sentiment', screen: 'AISentimentDashboard'},
-  {icon: 'vote-outline', label: 'Election Mode', screen: 'ElectionMode'},
+const NAV_ACTIONS: {icon: MaterialCommunityIconName; labelKey: TranslationKey; screen: keyof PoliticianStackParamList}[] = [
+  {icon: 'account-group-outline', labelKey: 'volunteers', screen: 'VolunteerManagement'},
+  {icon: 'brain', labelKey: 'aiSentiment', screen: 'AISentimentDashboard'},
+  {icon: 'vote-outline', labelKey: 'electionMode', screen: 'ElectionMode'},
 ];
 
 export const PoliticianDashboardScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const navigation = useNavigation<Nav>();
   const user = useAuthStore(s => s.user);
   const [refreshing, setRefreshing] = useState(false);
   const statCards = [
-    {icon: 'clipboard-text-outline' as MaterialCommunityIconName, label: 'Total Complaints', value: '156', color: Colors.primaryLight},
-    {icon: 'check-circle-outline' as MaterialCommunityIconName, label: 'Resolved', value: '98', sub: '63%', color: Colors.successLight},
-    {icon: 'progress-wrench' as MaterialCommunityIconName, label: 'In Progress', value: '34', color: Colors.warningLight},
-    {icon: 'clock-outline' as MaterialCommunityIconName, label: 'Pending', value: '24', color: Colors.dangerLight},
+    {icon: 'clipboard-text-outline' as MaterialCommunityIconName, label: t('totalComplaints'), value: '156', color: Colors.primaryLight},
+    {icon: 'check-circle-outline' as MaterialCommunityIconName, label: t('resolved'), value: '98', sub: '63%', color: Colors.successLight},
+    {icon: 'progress-wrench' as MaterialCommunityIconName, label: t('inProgress'), value: '34', color: Colors.warningLight},
+    {icon: 'clock-outline' as MaterialCommunityIconName, label: t('pending'), value: '24', color: Colors.dangerLight},
   ];
 
   const onRefresh = () => {
@@ -52,9 +57,15 @@ export const PoliticianDashboardScreen: React.FC = () => {
 
         {/* Header */}
         <View style={styles.header}>
+          <LinearGradient
+            colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 1}}
+            style={StyleSheet.absoluteFill}
+          />
           <View>
-            <Text style={styles.greeting}>Constituency Dashboard</Text>
-            <Text style={styles.name}>{user?.name ?? 'Politician'}</Text>
+            <Text style={styles.greeting}>{t('constituencyDashboard')}</Text>
+            <Text style={styles.name}>{user?.name ?? t('politician')}</Text>
             {user?.constituency && <Text style={styles.constituency}>{user.constituency}</Text>}
           </View>
         </View>
@@ -83,19 +94,19 @@ export const PoliticianDashboardScreen: React.FC = () => {
               <View style={styles.navIconBubble}>
                 <MaterialCommunityIcons name={action.icon} size={24} color={Colors.primary} />
               </View>
-              <Text style={styles.navLabel}>{action.label}</Text>
+              <Text style={styles.navLabel}>{t(action.labelKey)}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Category Breakdown */}
-        <Text style={styles.sectionTitle}>Complaints by Category</Text>
+        <Text style={styles.sectionTitle}>{t('complaintsByCategory')}</Text>
         <AppCard>
           {[
-            {cat: '🛣️ Road', count: 54, pct: 35},
-            {cat: '💧 Water', count: 38, pct: 24},
-            {cat: '⚡ Electricity', count: 31, pct: 20},
-            {cat: '🗑️ Sanitation', count: 33, pct: 21},
+            {cat: t('road'), count: 54, pct: 35},
+            {cat: t('water'), count: 38, pct: 24},
+            {cat: t('electricity'), count: 31, pct: 20},
+            {cat: t('sanitation'), count: 33, pct: 21},
           ].map(row => (
             <View key={row.cat} style={styles.catRow}>
               <Text style={styles.catLabel}>{row.cat}</Text>
@@ -108,7 +119,7 @@ export const PoliticianDashboardScreen: React.FC = () => {
         </AppCard>
 
         {/* Recent Complaints */}
-        <Text style={styles.sectionTitle}>Recent Complaints</Text>
+        <Text style={styles.sectionTitle}>{t('recentComplaints')}</Text>
         {MOCK_COMPLAINTS.map(c => (
           <AppCard key={c.id}>
             <View style={styles.complaintRow}>
@@ -119,20 +130,34 @@ export const PoliticianDashboardScreen: React.FC = () => {
               <AppBadge status={c.status} />
             </View>
             <TouchableOpacity style={styles.assignBtn}>
-              <Text style={styles.assignText}>Assign Volunteer →</Text>
+              <Text style={styles.assignText}>{t('assignVolunteer')}</Text>
             </TouchableOpacity>
           </AppCard>
         ))}
 
         <View style={{height: Spacing[8]}} />
       </ScrollView>
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };
 
 const createStyles = (Colors: AppColors) => StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
-  header: {padding: Spacing[4]},
+  header: {
+    padding: Spacing[5],
+    margin: Spacing[4],
+    marginBottom: Spacing[3],
+    borderRadius: BorderRadius['2xl'],
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    shadowColor: Colors.black,
+    shadowOffset: {width: 0, height: 12},
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
+    elevation: 4,
+  },
   greeting: {fontSize: FontSize.sm, color: Colors.textSecondary},
   name: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
   constituency: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: '500'},
@@ -150,7 +175,7 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderRadius: BorderRadius['2xl'],
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.overlayLight,
+    borderColor: 'rgba(255,255,255,0.72)',
   },
   statIconBubble: {
     width: 46,
@@ -177,12 +202,12 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     padding: Spacing[4],
     alignItems: 'center',
     shadowColor: Colors.black,
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
+    shadowOffset: {width: 0, height: 12},
+    shadowOpacity: 0.06,
+    shadowRadius: 22,
+    elevation: 5,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: Colors.border,
   },
   navIconBubble: {
     width: 46,

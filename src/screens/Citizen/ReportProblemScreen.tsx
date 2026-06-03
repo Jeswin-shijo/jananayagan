@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -12,6 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -21,6 +23,7 @@ import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppChip} from '@components/common/AppChip';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useImagePicker} from '@hooks/useImagePicker';
 import {useCurrentLocation} from '@hooks/useCurrentLocation';
@@ -29,26 +32,28 @@ import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 import {getPriorityColor} from '@utils/formatters';
+import {TranslationKey} from '@constants/i18n';
 
 type Props = NativeStackScreenProps<CitizenStackParamList, 'ReportProblem'>;
 
 const CATEGORIES = [
-  {id: 'road', label: '🛣️ Road', subCategories: ['Pothole', 'Damaged Road', 'No Markings']},
-  {id: 'water', label: '💧 Water', subCategories: ['Leakage', 'No Supply', 'Contamination']},
-  {id: 'electricity', label: '⚡ Electricity', subCategories: ['Street Light', 'Power Cut', 'Damaged Wire']},
-  {id: 'sanitation', label: '🗑️ Sanitation', subCategories: ['Garbage', 'Drainage', 'Open Defecation']},
-  {id: 'other', label: '📋 Other', subCategories: ['Noise', 'Encroachment', 'Other']},
+  {id: 'road', labelKey: 'road', subCategories: ['Pothole', 'Damaged Road', 'No Markings']},
+  {id: 'water', labelKey: 'water', subCategories: ['Leakage', 'No Supply', 'Contamination']},
+  {id: 'electricity', labelKey: 'electricity', subCategories: ['Street Light', 'Power Cut', 'Damaged Wire']},
+  {id: 'sanitation', labelKey: 'sanitation', subCategories: ['Garbage', 'Drainage', 'Open Defecation']},
+  {id: 'other', labelKey: 'other', subCategories: ['Noise', 'Encroachment', 'Other']},
 ];
 
 const PRIORITIES = [
-  {id: 'low', label: 'Low'},
-  {id: 'medium', label: 'Medium'},
-  {id: 'high', label: 'High'},
+  {id: 'low', labelKey: 'low'},
+  {id: 'medium', labelKey: 'medium'},
+  {id: 'high', labelKey: 'high'},
 ];
 
 export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('medium');
@@ -74,7 +79,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
 
   const onSubmit = async (data: ReportProblemFormData) => {
     if (selectedImages.length === 0) {
-      Alert.alert('Photo Required', 'Please add at least one photo of the issue.');
+      Alert.alert(t('photoRequired'), t('photoRequiredMessage'));
       return;
     }
     setIsSubmitting(true);
@@ -87,18 +92,18 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="Report a Problem" showBack />
+      <AppHeader title={t('reportProblem')} showBack />
       <OfflineBanner />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
           {/* Category */}
-          <Text style={styles.label}>Category *</Text>
+          <Text style={styles.label}>{t('category')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
             {CATEGORIES.map(cat => (
               <AppChip
                 key={cat.id}
-                label={cat.label}
+                label={t(cat.labelKey as TranslationKey)}
                 isActive={selectedCategory === cat.id}
                 onPress={() => handleCategorySelect(cat.id)}
               />
@@ -109,7 +114,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           {/* Sub-category */}
           {subCategories.length > 0 && (
             <>
-              <Text style={styles.label}>Sub-Category</Text>
+              <Text style={styles.label}>{t('subCategory')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
                 {subCategories.map(sub => (
                   <AppChip
@@ -130,8 +135,8 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
             render={({field: {onChange, value, onBlur}}) => (
               <View>
                 <AppInput
-                  label={`Description * (${descLength}/500)`}
-                  placeholder="Describe the problem in detail..."
+                  label={`${t('description')} (${descLength}/500)`}
+                  placeholder={t('problemDescriptionPlaceholder')}
                   multiline
                   numberOfLines={4}
                   maxLength={500}
@@ -146,7 +151,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           />
 
           {/* Photos */}
-          <Text style={styles.label}>Photos * (min 1, max 5)</Text>
+          <Text style={styles.label}>{t('photosRequired')}</Text>
           <View style={styles.photoGrid}>
             {selectedImages.map(img => (
               <View key={img.uri} style={styles.photoThumb}>
@@ -160,17 +165,17 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
             ))}
             {selectedImages.length < 5 && (
               <TouchableOpacity onPress={openPicker} style={styles.addPhotoBtn}>
-                <Text style={styles.addPhotoIcon}>📷</Text>
-                <Text style={styles.addPhotoText}>Add Photo</Text>
+                <MaterialCommunityIcons name="camera-plus-outline" size={26} color={Colors.primary} />
+                <Text style={styles.addPhotoText}>{t('addPhoto')}</Text>
               </TouchableOpacity>
             )}
           </View>
 
           {/* Location */}
-          <Text style={styles.label}>Location *</Text>
+          <Text style={styles.label}>{t('locationRequired')}</Text>
           <View style={styles.locationRow}>
             <AppButton
-              title={locationLoading ? 'Detecting...' : '📍 Use Current Location'}
+              title={locationLoading ? t('detecting') : t('useCurrentLocation')}
               onPress={fetchLocation}
               loading={locationLoading}
               variant="outline"
@@ -179,14 +184,17 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
             />
           </View>
           {address && (
-            <Text style={styles.addressText}>📍 {address}</Text>
+            <View style={styles.addressRow}>
+              <MaterialCommunityIcons name="map-marker-outline" size={15} color={Colors.primary} />
+              <Text style={styles.addressText}>{address}</Text>
+            </View>
           )}
           <Controller
             control={control}
             name="address"
             render={({field: {onChange, value, onBlur}}) => (
               <AppInput
-                placeholder="Or type address manually"
+                placeholder={t('typeAddressManually')}
                 value={coords?.latitude ? `${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}` : value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -196,7 +204,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           />
 
           {/* Priority */}
-          <Text style={styles.label}>Priority</Text>
+          <Text style={styles.label}>{t('priority')}</Text>
           <View style={styles.priorityRow}>
             {PRIORITIES.map(p => (
               <TouchableOpacity
@@ -213,20 +221,21 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
                   styles.priorityText,
                   selectedPriority === p.id && {color: getPriorityColor(p.id as any)},
                 ]}>
-                  {p.label}
+                  {t(p.labelKey as TranslationKey)}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
           <AppButton
-            title={isSubmitting ? 'Submitting...' : 'Submit Complaint'}
+            title={isSubmitting ? t('submitting') : t('submitComplaint')}
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             style={styles.submitBtn}
           />
         </ScrollView>
       </KeyboardAvoidingView>
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };
@@ -271,10 +280,10 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addPhotoIcon: {fontSize: 22},
   addPhotoText: {fontSize: 10, color: Colors.primary, marginTop: 2},
   locationRow: {marginBottom: Spacing[2]},
-  addressText: {fontSize: FontSize.sm, color: Colors.textSecondary, marginBottom: Spacing[2]},
+  addressRow: {flexDirection: 'row', alignItems: 'center', gap: Spacing[1], marginBottom: Spacing[2]},
+  addressText: {flex: 1, fontSize: FontSize.sm, color: Colors.textSecondary},
   priorityRow: {flexDirection: 'row', gap: Spacing[2], marginBottom: Spacing[4]},
   priorityBtn: {
     flex: 1,

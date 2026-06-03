@@ -1,15 +1,18 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, StyleSheet, ScrollView, Switch, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppButton} from '@components/common/AppButton';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
 const ELECTION_DATE = '2025-11-15';
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -23,17 +26,18 @@ const getDaysUntil = (dateStr: string) => {
 export const ElectionModeScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [electionModeOn, setElectionModeOn] = useState(false);
   const daysLeft = getDaysUntil(ELECTION_DATE);
 
   const handleToggle = (value: boolean) => {
     if (value) {
       Alert.alert(
-        'Enable Election Mode',
-        'This will activate election tracking features for your constituency. Continue?',
+        t('enableElectionMode'),
+        t('enableElectionModeMessage'),
         [
-          {text: 'Cancel', style: 'cancel'},
-          {text: 'Enable', onPress: () => setElectionModeOn(true)},
+          {text: t('cancel'), style: 'cancel'},
+          {text: t('enable'), onPress: () => setElectionModeOn(true)},
         ],
       );
     } else {
@@ -43,7 +47,7 @@ export const ElectionModeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="Election Mode" showBack />
+      <AppHeader title={t('electionMode')} showBack />
       <OfflineBanner />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
@@ -53,10 +57,10 @@ export const ElectionModeScreen: React.FC = () => {
             <View style={styles.toggleInfo}>
               <View style={styles.titleRow}>
                 <MaterialCommunityIcons name="vote-outline" size={20} color={Colors.primary} />
-                <Text style={styles.toggleTitle}>Election Mode</Text>
+                <Text style={styles.toggleTitle}>{t('electionMode')}</Text>
               </View>
               <Text style={styles.toggleSub}>
-                {electionModeOn ? 'Active — Election tracking enabled' : 'Inactive — Enable for election features'}
+                {electionModeOn ? t('electionActive') : t('electionInactive')}
               </Text>
             </View>
             <Switch
@@ -70,7 +74,7 @@ export const ElectionModeScreen: React.FC = () => {
 
         {/* Countdown */}
         <AppCard style={styles.countdownCard}>
-          <Text style={styles.countdownLabel}>Days Until Election</Text>
+          <Text style={styles.countdownLabel}>{t('daysUntilElection')}</Text>
           <Text style={styles.countdownValue}>{daysLeft}</Text>
           <View style={styles.dateRow}>
             <MaterialCommunityIcons name="calendar-outline" size={15} color={Colors.textSecondary} />
@@ -79,27 +83,27 @@ export const ElectionModeScreen: React.FC = () => {
         </AppCard>
 
         {/* Features */}
-        <Text style={styles.sectionTitle}>Election Features</Text>
+        <Text style={styles.sectionTitle}>{t('electionFeatures')}</Text>
 
         {[
-          {icon: 'bank-outline' as MaterialCommunityIconName, title: 'Candidate Profiles', desc: 'View and compare candidate manifestos', ready: false},
-          {icon: 'map-marker-radius-outline' as MaterialCommunityIconName, title: 'Polling Booth Locator', desc: 'Find nearest polling booth on map', ready: false},
-          {icon: 'chart-bar' as MaterialCommunityIconName, title: 'Voter Turnout Stats', desc: 'Real-time turnout data by ward', ready: false},
-          {icon: 'newspaper-variant-outline' as MaterialCommunityIconName, title: 'Election News Feed', desc: 'Latest election news from verified sources', ready: false},
-          {icon: 'bell-outline' as MaterialCommunityIconName, title: 'Election Reminders', desc: 'Automated voter reminder notifications', ready: electionModeOn},
+          {icon: 'bank-outline' as MaterialCommunityIconName, titleKey: 'candidateProfiles' as TranslationKey, descKey: 'candidateProfilesDesc' as TranslationKey, ready: false},
+          {icon: 'map-marker-radius-outline' as MaterialCommunityIconName, titleKey: 'pollingBoothLocator' as TranslationKey, descKey: 'pollingBoothLocatorDesc' as TranslationKey, ready: false},
+          {icon: 'chart-bar' as MaterialCommunityIconName, titleKey: 'voterTurnoutStats' as TranslationKey, descKey: 'voterTurnoutStatsDesc' as TranslationKey, ready: false},
+          {icon: 'newspaper-variant-outline' as MaterialCommunityIconName, titleKey: 'electionNewsFeed' as TranslationKey, descKey: 'electionNewsFeedDesc' as TranslationKey, ready: false},
+          {icon: 'bell-outline' as MaterialCommunityIconName, titleKey: 'electionReminders' as TranslationKey, descKey: 'electionRemindersDesc' as TranslationKey, ready: electionModeOn},
         ].map(feature => (
-          <AppCard key={feature.title}>
+          <AppCard key={feature.titleKey}>
             <View style={styles.featureRow}>
               <View style={styles.featureIconBubble}>
                 <MaterialCommunityIcons name={feature.icon} size={22} color={Colors.primary} />
               </View>
               <View style={styles.featureInfo}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDesc}>{feature.desc}</Text>
+                <Text style={styles.featureTitle}>{t(feature.titleKey)}</Text>
+                <Text style={styles.featureDesc}>{t(feature.descKey)}</Text>
               </View>
               <View style={[styles.featureBadge, {backgroundColor: feature.ready ? Colors.successLight : Colors.borderLight}]}>
                 <Text style={[styles.featureBadgeText, {color: feature.ready ? Colors.success : Colors.textDisabled}]}>
-                  {feature.ready ? 'Active' : 'Coming'}
+                  {feature.ready ? t('active') : t('coming')}
                 </Text>
               </View>
             </View>
@@ -108,12 +112,13 @@ export const ElectionModeScreen: React.FC = () => {
 
         {electionModeOn && (
           <AppButton
-            title="Send Voter Reminders"
-            onPress={() => Alert.alert('Reminders Queued', 'Voter reminders will be sent to registered citizens.')}
+            title={t('sendVoterReminders')}
+            onPress={() => Alert.alert(t('remindersQueued'), t('remindersQueuedMessage'))}
             style={styles.reminderBtn}
           />
         )}
       </ScrollView>
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

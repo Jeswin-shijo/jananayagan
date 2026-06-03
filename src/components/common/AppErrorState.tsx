@@ -2,11 +2,12 @@ import React from 'react';
 import {useThemedStyles} from '@hooks/useThemedStyles';
 import {View, Text, StyleSheet} from 'react-native';
 import Animated, {FadeInDown} from 'react-native-reanimated';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {BorderRadius, Spacing} from '@constants/spacing';
 import {AppButton} from './AppButton';
-import {AppStrings} from '@constants/strings';
+import {useTranslation} from '@hooks/useTranslation';
 
 interface AppErrorStateProps {
   message?: string;
@@ -14,21 +15,22 @@ interface AppErrorStateProps {
 }
 
 export const AppErrorState: React.FC<AppErrorStateProps> = ({
-  message = AppStrings.errorGeneric,
+  message,
   onRetry,
 }) => {
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
 
   return (
     <Animated.View entering={FadeInDown.springify()} style={styles.container}>
       <View style={styles.iconBubble}>
-        <Text style={styles.icon}>⚠️</Text>
+        <MaterialCommunityIcons name="alert-circle-outline" size={42} style={styles.icon} />
       </View>
-      <Text style={styles.title}>Something went wrong</Text>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={styles.title}>{t('errorTitle')}</Text>
+      <Text style={styles.message}>{message ?? t('errorGeneric')}</Text>
       {onRetry && (
         <AppButton
-          title={AppStrings.retry}
+          title={t('retry')}
           onPress={onRetry}
           variant="outline"
           fullWidth={false}
@@ -55,7 +57,7 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing[4],
   },
-  icon: {fontSize: 38},
+  icon: {color: Colors.danger},
   title: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.semiBold,

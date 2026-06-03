@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ const OTP_LENGTH = 6;
 export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const {phone} = route.params;
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +72,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
   const handleVerify = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== OTP_LENGTH) {
-      setError('Please enter the complete 6-digit OTP');
+      setError(t('otpIncomplete'));
       return;
     }
     setIsLoading(true);
@@ -96,15 +98,14 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="Verify OTP" showBack />
+      <AppHeader title={t('verifyOTP')} showBack />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}>
         <View style={styles.content}>
-          <Text style={styles.title}>Enter Verification Code</Text>
+          <Text style={styles.title}>{t('enterVerificationCode')}</Text>
           <Text style={styles.subtitle}>
-            We sent a 6-digit code to {'\n'}
-            <Text style={styles.phone}>{formatPhone(phone)}</Text>
+            {t('otpSubtitle', {phone: formatPhone(phone)})}
           </Text>
 
           <View style={styles.otpRow}>
@@ -126,7 +127,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <AppButton
-            title={isLoading ? 'Verifying...' : 'Verify OTP'}
+            title={isLoading ? t('verifying') : t('verifyOTP')}
             onPress={handleVerify}
             loading={isLoading}
             style={styles.btn}
@@ -134,7 +135,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
 
           <TouchableOpacity onPress={handleResend} disabled={!canResend} style={styles.resendRow}>
             <Text style={[styles.resendText, !canResend && styles.resendDisabled]}>
-              {canResend ? 'Resend OTP' : `Resend in ${countdown}s`}
+              {canResend ? t('resendOTP') : t('resendIn', {seconds: countdown})}
             </Text>
           </TouchableOpacity>
         </View>

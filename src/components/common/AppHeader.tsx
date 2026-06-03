@@ -1,6 +1,7 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {LinearGradient} from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppColors} from '@constants/colors';
@@ -30,6 +31,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, ri
 
   return (
     <View style={styles.header}>
+      <LinearGradient
+        colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        style={StyleSheet.absoluteFill}
+      />
       <View style={styles.left}>
         {showBack && (
           <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
@@ -48,10 +55,10 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     height: HEADER_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     paddingHorizontal: Spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLight,
+    overflow: 'hidden',
   },
   left: {width: 44},
   right: {width: 44, alignItems: 'flex-end'},
@@ -68,8 +75,8 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: Colors.border,
   },
 });

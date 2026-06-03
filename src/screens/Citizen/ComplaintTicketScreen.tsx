@@ -1,5 +1,6 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, StyleSheet, ScrollView, Share, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -8,36 +9,39 @@ import {CitizenStackParamList} from '@appTypes/navigation';
 import {AppButton} from '@components/common/AppButton';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppCard} from '@components/common/AppCard';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
 type Props = NativeStackScreenProps<CitizenStackParamList, 'ComplaintTicket'>;
 
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const STEPS: {id: string; label: string; icon: MaterialCommunityIconName}[] = [
-  {id: 'submitted', label: 'Submitted', icon: 'send-check-outline'},
-  {id: 'under_review', label: 'Under Review', icon: 'magnify'},
-  {id: 'in_progress', label: 'In Progress', icon: 'progress-wrench'},
-  {id: 'resolved', label: 'Resolved', icon: 'check-circle-outline'},
+const STEPS: {id: string; labelKey: TranslationKey; icon: MaterialCommunityIconName}[] = [
+  {id: 'submitted', labelKey: 'submitted', icon: 'send-check-outline'},
+  {id: 'under_review', labelKey: 'underReview', icon: 'magnify'},
+  {id: 'in_progress', labelKey: 'inProgress', icon: 'progress-wrench'},
+  {id: 'resolved', labelKey: 'resolved', icon: 'check-circle-outline'},
 ];
 
 export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const {ticketId} = route.params;
   const activeStep = 0;
 
   const handleShare = async () => {
     await Share.share({
-      message: `I've filed a complaint with JANANAYAGAN. Ticket ID: ${ticketId}. Track your civic issues at JANANAYAGAN App.`,
+      message: t('shareComplaintMessage', {ticketId}),
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="Complaint Ticket" showBack />
+      <AppHeader title={t('complaintTicket')} showBack />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Success */}
@@ -45,25 +49,25 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
           <View style={styles.successIcon}>
             <MaterialCommunityIcons name="check-circle-outline" size={44} color={Colors.success} />
           </View>
-          <Text style={styles.successTitle}>Complaint Submitted!</Text>
+          <Text style={styles.successTitle}>{t('complaintSubmitted')}</Text>
           <Text style={styles.successSub}>
-            Your complaint has been registered. We'll keep you updated.
+            {t('complaintRegistered')}
           </Text>
         </View>
 
         {/* Ticket ID */}
         <AppCard style={styles.ticketCard}>
-          <Text style={styles.ticketLabel}>Ticket ID</Text>
+          <Text style={styles.ticketLabel}>{t('ticketId')}</Text>
           <Text style={styles.ticketId}>{ticketId}</Text>
           <View style={styles.etaRow}>
             <MaterialCommunityIcons name="clock-outline" size={15} color={Colors.textSecondary} />
-            <Text style={styles.etaText}>Estimated resolution: 5-7 working days</Text>
+            <Text style={styles.etaText}>{t('estimatedResolution')}</Text>
           </View>
         </AppCard>
 
         {/* Status Timeline */}
         <AppCard>
-          <Text style={styles.sectionTitle}>Status Timeline</Text>
+          <Text style={styles.sectionTitle}>{t('statusTimeline')}</Text>
           {STEPS.map((step, idx) => (
             <View key={step.id} style={styles.stepRow}>
               <View style={styles.stepLeft}>
@@ -86,10 +90,10 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
                   styles.stepLabel,
                   idx <= activeStep ? styles.stepLabelActive : styles.stepLabelInactive,
                 ]}>
-                  {step.label}
+                  {t(step.labelKey)}
                 </Text>
                 {idx === activeStep && (
-                  <Text style={styles.stepDate}>Just now</Text>
+                  <Text style={styles.stepDate}>{t('justNow')}</Text>
                 )}
               </View>
             </View>
@@ -99,13 +103,13 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
         {/* Actions */}
         <View style={styles.actions}>
           <AppButton
-            title="Share Ticket"
+            title={t('shareTicket')}
             onPress={handleShare}
             variant="outline"
             style={styles.actionBtn}
           />
           <AppButton
-            title="Track Complaints"
+            title={t('trackComplaints')}
             onPress={() => navigation.navigate('CitizenTabs')}
             style={styles.actionBtn}
           />
@@ -114,9 +118,10 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.navigate('ReportProblem')}
           style={styles.reportAnother}>
-          <Text style={styles.reportAnotherText}>+ Report Another Problem</Text>
+          <Text style={styles.reportAnotherText}>{t('reportAnotherProblem')}</Text>
         </TouchableOpacity>
       </ScrollView>
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

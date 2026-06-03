@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
@@ -19,6 +20,7 @@ import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppEmptyState} from '@components/common/AppEmptyState';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {Volunteer} from '@appTypes/api';
 import {volunteerSchema, VolunteerFormData} from '@utils/validators';
@@ -30,6 +32,7 @@ import {Spacing, BorderRadius} from '@constants/spacing';
 export const VolunteerManagementScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [volunteers, setVolunteers] = useState(MOCK_VOLUNTEERS);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,25 +82,25 @@ export const VolunteerManagementScreen: React.FC = () => {
         </View>
         <View style={[styles.availBadge, {backgroundColor: item.isAvailable ? Colors.successLight : Colors.dangerLight}]}>
           <Text style={[styles.availText, {color: item.isAvailable ? Colors.success : Colors.danger}]}>
-            {item.isAvailable ? 'Available' : 'Busy'}
+            {item.isAvailable ? t('available') : t('busy')}
           </Text>
         </View>
       </View>
       <View style={styles.statsRow}>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{item.activeComplaints}</Text>
-          <Text style={styles.statLabel}>Active</Text>
+          <Text style={styles.statLabel}>{t('active')}</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statValue}>{item.totalResolved}</Text>
-          <Text style={styles.statLabel}>Resolved</Text>
+          <Text style={styles.statLabel}>{t('resolved')}</Text>
         </View>
         <View style={styles.stat}>
           <View style={styles.scoreRow}>
             <MaterialCommunityIcons name="star" size={15} color={Colors.warning} />
             <Text style={styles.statValue}>{item.performanceScore.toFixed(1)}</Text>
           </View>
-          <Text style={styles.statLabel}>Score</Text>
+          <Text style={styles.statLabel}>{t('score')}</Text>
         </View>
       </View>
     </AppCard>
@@ -105,7 +108,7 @@ export const VolunteerManagementScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="Volunteer Management" showBack />
+      <AppHeader title={t('volunteerManagement')} showBack />
       <OfflineBanner />
 
       <FlatList
@@ -117,9 +120,9 @@ export const VolunteerManagementScreen: React.FC = () => {
         ListEmptyComponent={
           <AppEmptyState
             icon="🤲"
-            title="No volunteers yet"
-            subtitle="Add volunteers to help manage complaints in your constituency."
-            ctaLabel="Add Volunteer"
+            title={t('noVolunteersYet')}
+            subtitle={t('noVolunteersSubtitle')}
+            ctaLabel={t('addVolunteer')}
             onCTAPress={() => setShowModal(true)}
           />
         }
@@ -127,35 +130,36 @@ export const VolunteerManagementScreen: React.FC = () => {
 
       <View style={styles.fab}>
         <AppButton
-          title="+ Add Volunteer"
+          title={t('addVolunteer')}
           onPress={() => setShowModal(true)}
           size="sm"
           fullWidth={false}
         />
       </View>
+      <CitizenCreateFab />
 
       {/* Add Volunteer Modal */}
       <Modal visible={showModal} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={styles.modal}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Volunteer</Text>
-            <AppButton title="Cancel" onPress={() => {setShowModal(false); reset();}} variant="ghost" size="sm" fullWidth={false} />
+            <Text style={styles.modalTitle}>{t('addVolunteer')}</Text>
+            <AppButton title={t('cancel')} onPress={() => {setShowModal(false); reset();}} variant="ghost" size="sm" fullWidth={false} />
           </View>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
             <ScrollView contentContainerStyle={styles.modalScroll} keyboardShouldPersistTaps="handled">
               <Controller control={control} name="name" render={({field: {onChange, value, onBlur}}) => (
-                <AppInput label="Full Name *" placeholder="Enter volunteer name" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name?.message} />
+                <AppInput label={t('fullName')} placeholder={t('volunteerNamePlaceholder')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.name?.message} />
               )} />
               <Controller control={control} name="phone" render={({field: {onChange, value, onBlur}}) => (
-                <AppInput label="Phone Number *" placeholder="10-digit number" keyboardType="phone-pad" maxLength={10} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.phone?.message} />
+                <AppInput label={t('phoneNumber')} placeholder={t('mobilePlaceholder')} keyboardType="phone-pad" maxLength={10} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.phone?.message} />
               )} />
               <Controller control={control} name="area" render={({field: {onChange, value, onBlur}}) => (
-                <AppInput label="Area / Ward *" placeholder="Enter area name" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.area?.message} />
+                <AppInput label={t('areaWard')} placeholder={t('areaNamePlaceholder')} value={value} onChangeText={onChange} onBlur={onBlur} error={errors.area?.message} />
               )} />
               <Controller control={control} name="email" render={({field: {onChange, value, onBlur}}) => (
-                <AppInput label="Email (Optional)" placeholder="email@example.com" keyboardType="email-address" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email?.message} />
+                <AppInput label={t('emailOptional')} placeholder="email@example.com" keyboardType="email-address" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email?.message} />
               )} />
-              <AppButton title={isSubmitting ? 'Adding...' : 'Add Volunteer'} onPress={handleSubmit(onAddVolunteer)} loading={isSubmitting} />
+              <AppButton title={isSubmitting ? t('adding') : t('addVolunteer')} onPress={handleSubmit(onAddVolunteer)} loading={isSubmitting} />
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -203,7 +207,7 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   statLabel: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2},
   fab: {
     position: 'absolute',
-    bottom: Spacing[6],
+    bottom: 112,
     right: Spacing[4],
   },
   modal: {flex: 1, backgroundColor: Colors.background},

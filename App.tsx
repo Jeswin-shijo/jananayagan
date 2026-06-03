@@ -8,9 +8,11 @@ import {
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import Toast from 'react-native-toast-message';
 import {RootNavigator} from './src/navigation/RootNavigator';
 import {useThemeStore} from './src/store/themeStore';
+import {useLanguageStore} from './src/store/languageStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +25,12 @@ const queryClient = new QueryClient({
 
 function App(): React.JSX.Element {
   const {colors, isDark, restoreTheme} = useThemeStore();
+  const restoreLanguage = useLanguageStore(state => state.restoreLanguage);
 
   useEffect(() => {
     restoreTheme();
-  }, [restoreTheme]);
+    restoreLanguage();
+  }, [restoreTheme, restoreLanguage]);
 
   const navigationTheme = {
     ...(isDark ? NavigationDarkTheme : NavigationLightTheme),
@@ -50,9 +54,11 @@ function App(): React.JSX.Element {
             backgroundColor={colors.surface}
             translucent={false}
           />
-          <NavigationContainer theme={navigationTheme}>
-            <RootNavigator />
-          </NavigationContainer>
+          <BottomSheetModalProvider>
+            <NavigationContainer theme={navigationTheme}>
+              <RootNavigator />
+            </NavigationContainer>
+          </BottomSheetModalProvider>
           <Toast />
         </QueryClientProvider>
       </SafeAreaProvider>

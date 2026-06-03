@@ -53,8 +53,8 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     marginRight: Spacing[2],
   },
   active: {backgroundColor: Colors.primary, borderColor: Colors.primary},
-  inactive: {backgroundColor: Colors.white, borderColor: Colors.border},
-  text: {fontSize: FontSize.sm, fontWeight: '500'},
-  activeText: {color: Colors.white},
+  inactive: {backgroundColor: Colors.surface, borderColor: Colors.border},
+  text: {fontSize: FontSize.sm, fontWeight: '600'},
+  activeText: {color: Colors.textOnPrimary},
   inactiveText: {color: Colors.textSecondary},
 });

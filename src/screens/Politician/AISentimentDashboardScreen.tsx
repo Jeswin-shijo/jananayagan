@@ -1,28 +1,40 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {LinearGradient} from 'react-native-linear-gradient';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppChip} from '@components/common/AppChip';
+import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_SENTIMENT_DATA} from '@utils/mockData';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+import {TranslationKey} from '@constants/i18n';
 
-const DATE_RANGES = ['7 Days', '30 Days', '3 Months', '6 Months'];
+const DATE_RANGES: {id: string; labelKey: TranslationKey}[] = [
+  {id: '7', labelKey: 'sevenDays'},
+  {id: '30', labelKey: 'thirtyDays'},
+  {id: '90', labelKey: 'threeMonths'},
+  {id: '180', labelKey: 'sixMonths'},
+];
+type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 export const AISentimentDashboardScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
-  const [selectedRange, setSelectedRange] = useState('30 Days');
+  const {t} = useTranslation();
+  const [selectedRange, setSelectedRange] = useState('30');
   const data = MOCK_SENTIMENT_DATA;
 
-  const getSentimentEmoji = (score: number) => {
-    if (score >= 70) return '😊';
-    if (score >= 40) return '😐';
-    return '😟';
+  const getSentimentIcon = (score: number): MaterialCommunityIconName => {
+    if (score >= 70) return 'emoticon-happy-outline';
+    if (score >= 40) return 'emoticon-neutral-outline';
+    return 'emoticon-sad-outline';
   };
 
   const getSentimentColor = (score: number) => {
@@ -33,14 +45,15 @@ export const AISentimentDashboardScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title="AI Sentiment Dashboard" showBack />
+      <AppHeader title={t('aiSentimentDashboard')} showBack />
       <OfflineBanner />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
         {/* Disclaimer */}
         <View style={styles.disclaimer}>
+          <MaterialCommunityIcons name="robot-outline" size={16} color={Colors.primary} />
           <Text style={styles.disclaimerText}>
-            🤖 Data powered by backend AI service
+            {t('aiDisclaimer')}
           </Text>
         </View>
 
@@ -48,19 +61,30 @@ export const AISentimentDashboardScreen: React.FC = () => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.rangeRow}>
           {DATE_RANGES.map(range => (
             <AppChip
-              key={range}
-              label={range}
-              isActive={selectedRange === range}
-              onPress={() => setSelectedRange(range)}
+              key={range.id}
+              label={t(range.labelKey)}
+              isActive={selectedRange === range.id}
+              onPress={() => setSelectedRange(range.id)}
             />
           ))}
         </ScrollView>
 
         {/* Overall Score */}
         <AppCard style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>Overall Sentiment Score</Text>
+          <LinearGradient
+            colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 1}}
+            style={StyleSheet.absoluteFill}
+          />
+          <Text style={styles.scoreLabel}>{t('overallSentimentScore')}</Text>
           <View style={styles.scoreRow}>
-            <Text style={styles.scoreEmoji}>{getSentimentEmoji(data.overallScore)}</Text>
+            <MaterialCommunityIcons
+              name={getSentimentIcon(data.overallScore)}
+              size={42}
+              color={getSentimentColor(data.overallScore)}
+              style={styles.scoreIcon}
+            />
             <Text style={[styles.scoreValue, {color: getSentimentColor(data.overallScore)}]}>
               {data.overallScore}
             </Text>
@@ -76,7 +100,7 @@ export const AISentimentDashboardScreen: React.FC = () => {
 
         {/* Trend */}
         <AppCard>
-          <Text style={styles.sectionTitle}>Sentiment Trend</Text>
+          <Text style={styles.sectionTitle}>{t('sentimentTrend')}</Text>
           <View style={styles.chartPlaceholder}>
             <View style={styles.trendBars}>
               {data.trend.map((point, idx) => (
@@ -97,7 +121,7 @@ export const AISentimentDashboardScreen: React.FC = () => {
 
         {/* By Category */}
         <AppCard>
-          <Text style={styles.sectionTitle}>By Category</Text>
+          <Text style={styles.sectionTitle}>{t('byCategory')}</Text>
           {data.byCategory.map(cat => (
             <View key={cat.category} style={styles.catRow}>
               <Text style={styles.catName}>{cat.category}</Text>
@@ -119,17 +143,18 @@ export const AISentimentDashboardScreen: React.FC = () => {
 
         {/* Top Comments */}
         <AppCard>
-          <Text style={styles.sectionTitle}>Sample Feedback</Text>
+          <Text style={styles.sectionTitle}>{t('sampleFeedback')}</Text>
           {data.topComments.map(comment => (
             <View key={comment.id} style={styles.commentRow}>
               <Text style={styles.commentSentiment}>
-                {comment.sentiment === 'positive' ? '👍' : comment.sentiment === 'negative' ? '👎' : '➡️'}
+                {comment.sentiment === 'positive' ? '+' : comment.sentiment === 'negative' ? '-' : '='}
               </Text>
               <Text style={styles.commentText}>{comment.text}</Text>
             </View>
           ))}
         </AppCard>
       </ScrollView>
+      <CitizenCreateFab />
     </SafeAreaView>
   );
 };
@@ -142,13 +167,23 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderRadius: BorderRadius.lg,
     padding: Spacing[3],
     marginBottom: Spacing[3],
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing[2],
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
-  disclaimerText: {fontSize: FontSize.xs, color: Colors.primary, textAlign: 'center'},
+  disclaimerText: {fontSize: FontSize.xs, color: Colors.primary, textAlign: 'center', fontWeight: '600'},
   rangeRow: {marginBottom: Spacing[4]},
-  scoreCard: {alignItems: 'center'},
+  scoreCard: {
+    alignItems: 'center',
+    overflow: 'hidden',
+    borderColor: Colors.border,
+  },
   scoreLabel: {fontSize: FontSize.sm, color: Colors.textSecondary, marginBottom: Spacing[3]},
   scoreRow: {flexDirection: 'row', alignItems: 'flex-end', marginBottom: Spacing[3]},
-  scoreEmoji: {fontSize: 40, marginRight: Spacing[2]},
+  scoreIcon: {marginRight: Spacing[2], marginBottom: 8},
   scoreValue: {fontSize: 56, fontWeight: FontWeight.bold, lineHeight: 60},
   scoreMax: {fontSize: FontSize.lg, color: Colors.textSecondary, marginBottom: 8},
   scoreBar: {

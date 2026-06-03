@@ -2,10 +2,13 @@ import React from 'react';
 import {useThemedStyles} from '@hooks/useThemedStyles';
 import {View, Text, StyleSheet} from 'react-native';
 import Animated, {FadeInDown} from 'react-native-reanimated';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {BorderRadius, Spacing} from '@constants/spacing';
 import {AppButton} from './AppButton';
+
+type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 interface AppEmptyStateProps {
   icon?: string;
@@ -16,7 +19,7 @@ interface AppEmptyStateProps {
 }
 
 export const AppEmptyState: React.FC<AppEmptyStateProps> = ({
-  icon = '📭',
+  icon = 'tray-alert',
   title,
   subtitle,
   ctaLabel,
@@ -27,7 +30,7 @@ export const AppEmptyState: React.FC<AppEmptyStateProps> = ({
   return (
     <Animated.View entering={FadeInDown.springify()} style={styles.container}>
       <View style={styles.iconBubble}>
-        <Text style={styles.icon}>{icon}</Text>
+        <MaterialCommunityIcons name={icon as MaterialCommunityIconName} size={42} style={styles.icon} />
       </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -59,9 +62,14 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing[4],
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: Colors.border,
+    shadowColor: Colors.black,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.06,
+    shadowRadius: 18,
+    elevation: 3,
   },
-  icon: {fontSize: 44},
+  icon: {color: Colors.primary},
   title: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.semiBold,
