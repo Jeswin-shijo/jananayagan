@@ -4,7 +4,6 @@ import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
@@ -23,6 +22,7 @@ import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppChip} from '@components/common/AppChip';
+import {VoiceNoteRecorder} from '@components/common/VoiceNoteRecorder';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useImagePicker} from '@hooks/useImagePicker';
@@ -31,7 +31,6 @@ import {useLocationStore} from '@store/locationStore';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
-import {getPriorityColor} from '@utils/formatters';
 import {TranslationKey} from '@constants/i18n';
 
 type Props = NativeStackScreenProps<CitizenStackParamList, 'ReportProblem'>;
@@ -59,6 +58,8 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
   const [selectedPriority, setSelectedPriority] = useState('medium');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [descLength, setDescLength] = useState(0);
+  const [voiceUri, setVoiceUri] = useState<string | null>(null);
+  const [messageError, setMessageError] = useState('');
 
   const {selectedImages, openPicker, removeImage} = useImagePicker(5);
   const {fetchLocation, isLoading: locationLoading} = useCurrentLocation();
@@ -78,15 +79,22 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
   const subCategories = CATEGORIES.find(c => c.id === selectedCategory)?.subCategories ?? [];
 
   const onSubmit = async (data: ReportProblemFormData) => {
+    // A complaint needs EITHER a typed description (min 20 chars) OR a voice note.
+    const hasDescription = !!data.description && data.description.trim().length >= 20;
+    if (!hasDescription && !voiceUri) {
+      setMessageError(t('voiceOrDescriptionRequired'));
+      return;
+    }
+    setMessageError('');
     if (selectedImages.length === 0) {
       Alert.alert(t('photoRequired'), t('photoRequiredMessage'));
       return;
     }
     setIsSubmitting(true);
-    // TODO: call submitComplaint API + upload images
+    // TODO: call submitComplaint API + upload images + voice note
     setTimeout(() => {
       setIsSubmitting(false);
-      navigation.navigate('ComplaintTicket', {ticketId: 'JAN-' + Date.now().toString().slice(-6)});
+      navigation.navigate('Success', {kind: 'complaint', refId: 'JAN-' + Date.now().toString().slice(-6)});
     }, 2000);
   };
 
@@ -150,6 +158,17 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
             )}
           />
 
+          {/* Voice note (alternative to description) */}
+          <Text style={styles.label}>{t('voiceNote')}</Text>
+          <VoiceNoteRecorder
+            value={voiceUri}
+            onChange={uri => {
+              setVoiceUri(uri);
+              if (uri) setMessageError('');
+            }}
+          />
+          {!!messageError && <Text style={styles.errorText}>{messageError}</Text>}
+
           {/* Photos */}
           <Text style={styles.label}>{t('photosRequired')}</Text>
           <View style={styles.photoGrid}>
@@ -206,25 +225,33 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           {/* Priority */}
           <Text style={styles.label}>{t('priority')}</Text>
           <View style={styles.priorityRow}>
-            {PRIORITIES.map(p => (
-              <TouchableOpacity
-                key={p.id}
-                onPress={() => {setSelectedPriority(p.id); setValue('priority', p.id as any);}}
-                style={[
-                  styles.priorityBtn,
-                  selectedPriority === p.id && {
-                    backgroundColor: getPriorityColor(p.id as any) + '20',
-                    borderColor: getPriorityColor(p.id as any),
-                  },
-                ]}>
-                <Text style={[
-                  styles.priorityText,
-                  selectedPriority === p.id && {color: getPriorityColor(p.id as any)},
-                ]}>
-                  {t(p.labelKey as TranslationKey)}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {PRIORITIES.map(p => {
+              const pColor =
+                p.id === 'low'
+                  ? Colors.priorityLow
+                  : p.id === 'medium'
+                  ? Colors.priorityMedium
+                  : Colors.priorityHigh;
+              return (
+                <TouchableOpacity
+                  key={p.id}
+                  onPress={() => {setSelectedPriority(p.id); setValue('priority', p.id as any);}}
+                  style={[
+                    styles.priorityBtn,
+                    selectedPriority === p.id && {
+                      backgroundColor: pColor + '20',
+                      borderColor: pColor,
+                    },
+                  ]}>
+                  <Text style={[
+                    styles.priorityText,
+                    selectedPriority === p.id && {color: pColor},
+                  ]}>
+                    {t(p.labelKey as TranslationKey)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           <AppButton
@@ -240,7 +267,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   flex: {flex: 1},
   scroll: {padding: Spacing[4], paddingBottom: Spacing[10]},
@@ -296,4 +323,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   priorityText: {fontSize: FontSize.sm, fontWeight: '500', color: Colors.textSecondary},
   submitBtn: {marginTop: Spacing[4]},
-});
+} as const);

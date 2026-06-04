@@ -22,6 +22,7 @@ export interface User {
   name: string;
   phone: string;
   role: import('./navigation').UserRole;
+  gender?: import('./navigation').Gender;
   constituency?: string;
   avatarUrl?: string;
 }

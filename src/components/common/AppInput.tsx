@@ -5,7 +5,6 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
-  StyleSheet,
   TextInputProps,
   ViewStyle,
 } from 'react-native';
@@ -70,7 +69,7 @@ export const AppInput: React.FC<AppInputProps> = ({
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {marginBottom: Spacing[4]},
   label: {
     fontSize: FontSize.sm,
@@ -111,4 +110,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   iconRight: {paddingRight: Spacing[3]},
   toggleText: {fontSize: FontSize.sm, color: Colors.primary},
   errorText: {fontSize: FontSize.xs, color: Colors.danger, marginTop: Spacing[1]},
-});
+} as const);

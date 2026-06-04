@@ -5,6 +5,8 @@ import {useAuthStore} from '@store/authStore';
 import {AuthNavigator} from './AuthNavigator';
 import {CitizenNavigator} from './CitizenNavigator';
 import {PoliticianNavigator} from './PoliticianNavigator';
+import {AdminNavigator} from './AdminNavigator';
+import {VolunteerNavigator} from './VolunteerNavigator';
 import {AppLoader} from '@components/common/AppLoader';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -13,10 +15,12 @@ const AppNavigator: React.FC = () => {
   const role = useAuthStore(s => s.role);
 
   switch (role) {
-    case 'politician':
     case 'admin':
+      return <AdminNavigator />;
+    case 'politician':
       return <PoliticianNavigator />;
     case 'volunteer':
+      return <VolunteerNavigator />;
     case 'citizen':
     default:
       return <CitizenNavigator />;

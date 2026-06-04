@@ -1,6 +1,6 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppColors} from '@constants/colors';
 import {FontSize} from '@constants/typography';
@@ -24,7 +24,7 @@ export const OfflineBanner: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   banner: {
     backgroundColor: Colors.warning,
     paddingVertical: Spacing[2],
@@ -35,4 +35,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     gap: Spacing[2],
   },
   text: {color: Colors.white, fontSize: FontSize.sm, fontWeight: '600'},
-});
+} as const);

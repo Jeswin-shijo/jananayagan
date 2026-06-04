@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {LinearGradient} from 'react-native-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
-import {AppHeader} from '@components/common/AppHeader';
+import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppChip} from '@components/common/AppChip';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
@@ -45,7 +45,7 @@ export const AISentimentDashboardScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title={t('aiSentimentDashboard')} showBack />
+      <DrawerHeader title={t('aiInsights')} />
       <OfflineBanner />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
@@ -159,7 +159,7 @@ export const AISentimentDashboardScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   scroll: {padding: Spacing[4]},
   disclaimer: {
@@ -231,4 +231,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   commentSentiment: {fontSize: 20, marginRight: Spacing[2]},
   commentText: {flex: 1, fontSize: FontSize.sm, color: Colors.text, lineHeight: 20},
-});
+} as const);

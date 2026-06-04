@@ -1,10 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -26,10 +25,9 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'OTPVerification'>;
 const OTP_LENGTH = 6;
 
 export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
-  const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
-  const {phone} = route.params;
+  const {phone, role, gender} = route.params;
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -81,7 +79,14 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
     setTimeout(async () => {
       setIsLoading(false);
       await login(
-        {id: '1', name: 'Demo User', phone, role: 'citizen'},
+        {
+          id: '1',
+          name: 'Demo User',
+          phone,
+          role,
+          gender,
+          constituency: role === 'politician' || role === 'admin' ? 'Coimbatore South' : undefined,
+        },
         'mock_token_12345',
       );
     }, 1200);
@@ -144,7 +149,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   flex: {flex: 1},
   content: {flex: 1, padding: Spacing[6], alignItems: 'center'},
@@ -183,4 +188,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   resendRow: {marginTop: Spacing[6]},
   resendText: {fontSize: FontSize.base, color: Colors.primary, fontWeight: '500'},
   resendDisabled: {color: Colors.textDisabled},
-});
+} as const);

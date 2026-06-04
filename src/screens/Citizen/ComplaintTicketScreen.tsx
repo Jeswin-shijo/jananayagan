@@ -1,7 +1,7 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, StyleSheet, ScrollView, Share, TouchableOpacity} from 'react-native';
+import {View, Text, ScrollView, Share, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -126,7 +126,7 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   scroll: {padding: Spacing[4], paddingBottom: Spacing[10]},
   successSection: {alignItems: 'center', paddingVertical: Spacing[6]},
@@ -194,4 +194,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     color: Colors.primary,
     fontWeight: FontWeight.semiBold,
   },
-});
+} as const);

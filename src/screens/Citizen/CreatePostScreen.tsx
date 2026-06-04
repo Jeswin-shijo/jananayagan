@@ -32,7 +32,7 @@ export const CreatePostScreen: React.FC = () => {
   const {t} = useTranslation();
   const navigation = useNavigation<any>();
   const user = useAuthStore(s => s.user);
-  const {selectedImages, openPicker, removeImage, clearImages, isPickerLoading} = useImagePicker(6);
+  const {selectedImages, openPicker, removeImage, clearImages, isPickerLoading} = useImagePicker(6, {allowVideos: true});
   const [description, setDescription] = useState('');
 
   const publishPost = () => {
@@ -98,26 +98,36 @@ export const CreatePostScreen: React.FC = () => {
           <Text style={styles.counter}>{description.length}/500</Text>
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.label}>{t('uploadImages')}</Text>
+            <Text style={styles.label}>{t('uploadMedia')}</Text>
             <Text style={styles.photoCount}>{selectedImages.length}/6</Text>
           </View>
 
           <View style={[styles.imageGrid, selectedImages.length === 0 && styles.imageGridEmpty]}>
-            {selectedImages.map(image => (
-              <View key={image.uri} style={styles.imageThumb}>
-                <Image source={{uri: image.uri}} style={styles.image} />
-                <TouchableOpacity style={styles.removeImageBtn} onPress={() => removeImage(image.uri!)}>
-                  <MaterialCommunityIcons name="close" size={15} color={Colors.white} />
-                </TouchableOpacity>
-              </View>
-            ))}
+            {selectedImages.map(asset => {
+              const isVideo = asset.type === 'video';
+              return (
+                <View key={asset.uri} style={styles.imageThumb}>
+                  {isVideo ? (
+                    <View style={styles.videoTile}>
+                      <MaterialCommunityIcons name="play-circle" size={30} color={Colors.white} />
+                      <Text style={styles.videoTag}>{t('video')}</Text>
+                    </View>
+                  ) : (
+                    <Image source={{uri: asset.uri}} style={styles.image} />
+                  )}
+                  <TouchableOpacity style={styles.removeImageBtn} onPress={() => removeImage(asset.uri!)}>
+                    <MaterialCommunityIcons name="close" size={15} color={Colors.white} />
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
             {selectedImages.length < 6 && (
               <TouchableOpacity
                 style={[styles.uploadTile, selectedImages.length === 0 && styles.uploadTileEmpty]}
                 onPress={openPicker}
                 disabled={isPickerLoading}>
-                <MaterialCommunityIcons name="camera-plus-outline" size={28} color={Colors.primary} />
-                <Text style={styles.uploadText}>{t('addPhoto')}</Text>
+                <MaterialCommunityIcons name="image-plus-outline" size={28} color={Colors.primary} />
+                <Text style={styles.uploadText}>{t('addMedia')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -134,7 +144,7 @@ export const CreatePostScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   flex: {flex: 1},
   scroll: {padding: Spacing[4], paddingBottom: Spacing[10]},
@@ -185,6 +195,8 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   imageGridEmpty: {justifyContent: 'center'},
   imageThumb: {width: '31.5%', aspectRatio: 1, borderRadius: BorderRadius.xl, overflow: 'hidden', position: 'relative'},
   image: {width: '100%', height: '100%'},
+  videoTile: {width: '100%', height: '100%', backgroundColor: Colors.text, alignItems: 'center', justifyContent: 'center'},
+  videoTag: {fontSize: 10, color: Colors.white, fontWeight: FontWeight.semiBold, marginTop: 2},
   removeImageBtn: {
     position: 'absolute',
     top: 6,
@@ -210,4 +222,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   uploadTileEmpty: {width: 142, height: 122, aspectRatio: undefined},
   uploadText: {fontSize: FontSize.xs, color: Colors.primary, fontWeight: FontWeight.semiBold, marginTop: Spacing[1]},
   publishButton: {marginTop: Spacing[6]},
-});
+} as const);

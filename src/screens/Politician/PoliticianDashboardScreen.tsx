@@ -7,10 +7,11 @@ import {LinearGradient} from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {PoliticianStackParamList} from '@appTypes/navigation';
+import {PoliticianDrawerParamList} from '@appTypes/navigation';
 import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
+import {DrawerHeader} from '@components/common/DrawerHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
@@ -20,10 +21,10 @@ import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 import {TranslationKey} from '@constants/i18n';
 
-type Nav = NativeStackNavigationProp<PoliticianStackParamList>;
+type Nav = NativeStackNavigationProp<PoliticianDrawerParamList>;
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const NAV_ACTIONS: {icon: MaterialCommunityIconName; labelKey: TranslationKey; screen: keyof PoliticianStackParamList}[] = [
+const NAV_ACTIONS: {icon: MaterialCommunityIconName; labelKey: TranslationKey; screen: keyof PoliticianDrawerParamList}[] = [
   {icon: 'account-group-outline', labelKey: 'volunteers', screen: 'VolunteerManagement'},
   {icon: 'brain', labelKey: 'aiSentiment', screen: 'AISentimentDashboard'},
   {icon: 'vote-outline', labelKey: 'electionMode', screen: 'ElectionMode'},
@@ -49,7 +50,8 @@ export const PoliticianDashboardScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <DrawerHeader title={t('dashboard')} subtitle={user?.constituency ?? t('constituencyDashboard')} />
       <OfflineBanner />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -119,9 +121,14 @@ export const PoliticianDashboardScreen: React.FC = () => {
         </AppCard>
 
         {/* Recent Complaints */}
-        <Text style={styles.sectionTitle}>{t('recentComplaints')}</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{t('recentComplaints')}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Complaints')}>
+            <Text style={styles.seeAll}>{t('seeAll')}</Text>
+          </TouchableOpacity>
+        </View>
         {MOCK_COMPLAINTS.map(c => (
-          <AppCard key={c.id}>
+          <AppCard key={c.id} onPress={() => navigation.navigate('Complaints')}>
             <View style={styles.complaintRow}>
               <View style={styles.complaintInfo}>
                 <Text style={styles.complaintDesc} numberOfLines={1}>{c.description}</Text>
@@ -129,7 +136,7 @@ export const PoliticianDashboardScreen: React.FC = () => {
               </View>
               <AppBadge status={c.status} />
             </View>
-            <TouchableOpacity style={styles.assignBtn}>
+            <TouchableOpacity style={styles.assignBtn} onPress={() => navigation.navigate('Complaints')}>
               <Text style={styles.assignText}>{t('assignVolunteer')}</Text>
             </TouchableOpacity>
           </AppCard>
@@ -142,7 +149,7 @@ export const PoliticianDashboardScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   header: {
     padding: Spacing[5],
@@ -226,6 +233,13 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     paddingHorizontal: Spacing[4],
     marginBottom: Spacing[3],
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: Spacing[4],
+  },
+  seeAll: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: FontWeight.semiBold},
   catRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,4 +262,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   complaintMeta: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2},
   assignBtn: {marginTop: Spacing[2]},
   assignText: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: '500'},
-});
+} as const);

@@ -18,10 +18,13 @@ export const otpSchema = z.object({
 export const reportProblemSchema = z.object({
   category: z.string().min(1, 'Please select a category'),
   subCategory: z.string().optional(),
+  // Description is optional at the schema level — a complaint needs EITHER a typed
+  // description OR a voice note (enforced in the screen's submit handler).
   description: z
     .string()
-    .min(20, 'Description must be at least 20 characters')
-    .max(500, 'Description cannot exceed 500 characters'),
+    .max(500, 'Description cannot exceed 500 characters')
+    .optional()
+    .or(z.literal('')),
   address: z.string().min(5, 'Please provide a location'),
   priority: z.enum(['low', 'medium', 'high']),
 });

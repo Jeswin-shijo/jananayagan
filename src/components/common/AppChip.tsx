@@ -1,6 +1,6 @@
 import React from 'react';
 import {useThemedStyles} from '@hooks/useThemedStyles';
-import {Pressable, Text, StyleSheet, ViewStyle} from 'react-native';
+import {Pressable, Text, ViewStyle} from 'react-native';
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {AppColors} from '@constants/colors';
 import {FontSize} from '@constants/typography';
@@ -44,7 +44,7 @@ export const AppChip: React.FC<AppChipProps> = ({
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   chip: {
     paddingHorizontal: Spacing[4],
     paddingVertical: Spacing[2],
@@ -57,4 +57,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   text: {fontSize: FontSize.sm, fontWeight: '600'},
   activeText: {color: Colors.textOnPrimary},
   inactiveText: {color: Colors.textSecondary},
-});
+} as const);

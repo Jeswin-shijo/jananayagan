@@ -1,6 +1,6 @@
 import React from 'react';
 import {useThemedStyles} from '@hooks/useThemedStyles';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import Animated, {FadeInDown} from 'react-native-reanimated';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppColors} from '@constants/colors';
@@ -41,7 +41,7 @@ export const AppErrorState: React.FC<AppErrorStateProps> = ({
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -71,4 +71,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     marginBottom: Spacing[6],
   },
   btn: {paddingHorizontal: Spacing[8]},
-});
+} as const);

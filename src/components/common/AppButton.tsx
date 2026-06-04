@@ -98,7 +98,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   base: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -137,4 +137,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   textSize_sm: {fontSize: FontSize.sm},
   textSize_md: {fontSize: FontSize.base},
   textSize_lg: {fontSize: FontSize.md},
-});
+} as const);

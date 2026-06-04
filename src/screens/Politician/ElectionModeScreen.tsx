@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, StyleSheet, ScrollView, Switch, Alert} from 'react-native';
+import {View, Text, ScrollView, Switch, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
-import {AppHeader} from '@components/common/AppHeader';
+import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppButton} from '@components/common/AppButton';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
@@ -47,7 +47,7 @@ export const ElectionModeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title={t('electionMode')} showBack />
+      <DrawerHeader title={t('voterSentiment')} />
       <OfflineBanner />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
@@ -123,7 +123,7 @@ export const ElectionModeScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   scroll: {padding: Spacing[4], paddingBottom: Spacing[10]},
   toggleCard: {},
@@ -170,4 +170,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   featureBadgeText: {fontSize: FontSize.xs, fontWeight: '600'},
   reminderBtn: {marginTop: Spacing[4]},
-});
+} as const);

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Poll, PollOption} from '@appTypes/api';
@@ -155,7 +155,7 @@ export const PublicPollScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   header: {padding: Spacing[4], paddingBottom: Spacing[2]},
   title: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
@@ -215,4 +215,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     color: Colors.success,
     fontWeight: '500',
   },
-});
+} as const);

@@ -1,6 +1,6 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {View, ActivityIndicator, Text, StyleSheet} from 'react-native';
+import {View, ActivityIndicator, Text} from 'react-native';
 import Animated, {FadeIn} from 'react-native-reanimated';
 import {AppColors} from '@constants/colors';
 import {FontSize} from '@constants/typography';
@@ -31,7 +31,7 @@ export const AppLoader: React.FC<AppLoaderProps> = ({fullScreen = false, message
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   fullScreen: {
     flex: 1,
     alignItems: 'center',
@@ -63,4 +63,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     fontSize: FontSize.base,
     color: Colors.textSecondary,
   },
-});
+} as const);

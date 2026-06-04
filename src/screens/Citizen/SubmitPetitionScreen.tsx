@@ -4,13 +4,12 @@ import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {RouteProp, useRoute, useNavigation} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -28,17 +27,14 @@ import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing} from '@constants/spacing';
 import {CitizenTabParamList} from '@appTypes/navigation';
 
-const CATEGORIES = ['Road Safety', 'Water', 'Electricity', 'Health', 'Education', 'Environment', 'Other'];
-const CONSTITUENCIES = ['Anna Nagar', 'T. Nagar', 'Adyar', 'Velachery', 'Tambaram', 'Guindy'];
-
-export const SubmitPetitionScreen: React.FC = () => {
+export const SubmitPetitionScreen: React.FC<{embedded?: boolean}> = ({embedded}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const route = useRoute<RouteProp<CitizenTabParamList, 'SubmitPetition'>>();
+  const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<'create' | 'browse'>('browse');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const {control, handleSubmit, formState: {errors}} = useForm<PetitionFormData>({
     resolver: zodResolver(petitionSchema),
@@ -56,28 +52,15 @@ export const SubmitPetitionScreen: React.FC = () => {
     // TODO: call submitPetition API
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitted(true);
+      navigation.navigate('Success', {kind: 'petition', refId: 'PET-' + Date.now().toString().slice(-6)});
     }, 1500);
   };
 
-  if (submitted) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <AppEmptyState
-          icon="check-decagram-outline"
-          title={t('petitionSubmitted')}
-          subtitle={t('petitionSubmittedSubtitle')}
-          ctaLabel={t('viewPetitions')}
-          onCTAPress={() => {setSubmitted(false); setActiveTab('browse');}}
-        />
-        <CitizenCreateFab />
-      </SafeAreaView>
-    );
-  }
+  const Container: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <OfflineBanner />
+    <Container style={styles.container}>
+      {!embedded && <OfflineBanner />}
       <View style={styles.tabBar}>
         {(['browse', 'create'] as const).map(tab => (
           <AppButton
@@ -182,12 +165,12 @@ export const SubmitPetitionScreen: React.FC = () => {
           </ScrollView>
         </KeyboardAvoidingView>
       )}
-      <CitizenCreateFab />
-    </SafeAreaView>
+      {!embedded && <CitizenCreateFab />}
+    </Container>
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   flex: {flex: 1},
   tabBar: {
@@ -229,4 +212,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   signBtn: {marginTop: Spacing[3]},
   textarea: {height: 120, textAlignVertical: 'top'},
   submitBtn: {marginTop: Spacing[4]},
-});
+} as const);

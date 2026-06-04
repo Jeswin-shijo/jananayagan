@@ -1,31 +1,27 @@
 import React, {useMemo, useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {View, Text, StyleSheet, ScrollView, Alert, Switch, TouchableOpacity, Modal, Pressable} from 'react-native';
+import {View, Text, ScrollView, Alert, Switch, TouchableOpacity, Modal, Pressable} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {LinearGradient} from 'react-native-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
-import {AppButton} from '@components/common/AppButton';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
-import {useNotificationStore} from '@store/notificationStore';
 import {useThemeStore} from '@store/themeStore';
 import {useLanguageStore} from '@store/languageStore';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppColors} from '@constants/colors';
-import {SUPPORTED_LANGUAGES} from '@constants/i18n';
+import {SUPPORTED_LANGUAGES, TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
-import {MOCK_NOTIFICATIONS} from '@utils/mockData';
-import {formatRelativeTime} from '@utils/formatters';
+
+type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 export const ProfileScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t, language} = useTranslation();
   const {user, logout} = useAuthStore();
-  const {notifications, markRead} = useNotificationStore();
   const {isDark, toggleMode} = useThemeStore();
   const setLanguage = useLanguageStore(state => state.setLanguage);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -42,63 +38,52 @@ export const ProfileScreen: React.FC = () => {
     ]);
   };
 
-  const displayNotifications = notifications.length > 0 ? notifications : MOCK_NOTIFICATIONS;
+  // Same rows/actions as before — only the styling changed.
+  const links: {icon: MaterialCommunityIconName; labelKey: TranslationKey}[] = [
+    {icon: 'bell-outline', labelKey: 'notificationSettings'},
+    {icon: 'shield-lock-outline', labelKey: 'privacyPolicy'},
+    {icon: 'phone-outline', labelKey: 'contactSupport'},
+    {icon: 'information-outline', labelKey: 'aboutApp'},
+  ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
+      <View style={styles.headerBar}>
+        <Text style={styles.headerTitle}>{t('myProfile')}</Text>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <LinearGradient
-            colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={StyleSheet.absoluteFill}
-          />
+        {/* Profile */}
+        <View style={styles.profileRow}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user?.name?.charAt(0)?.toUpperCase() ?? '?'}
-            </Text>
+            <Text style={styles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() ?? '?'}</Text>
           </View>
-          <Text style={styles.name}>{user?.name ?? t('user')}</Text>
-          <Text style={styles.phone}>{user?.phone ?? ''}</Text>
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>{user?.role ? t(user.role).toUpperCase() : t('citizen').toUpperCase()}</Text>
+          <View style={styles.profileInfo}>
+            <Text style={styles.name}>{user?.name ?? t('user')}</Text>
+            <Text style={styles.role}>{user?.role ? t(user.role) : t('citizen')}</Text>
+            {!!user?.phone && <Text style={styles.phone}>{user.phone}</Text>}
           </View>
         </View>
 
-        {/* Notifications */}
-        <Text style={styles.sectionTitle}>{t('notifications')}</Text>
-        {displayNotifications.slice(0, 5).map(notif => (
-          <AppCard
-            key={notif.id}
-            onPress={() => markRead(notif.id)}
-            style={[styles.notifCard, !notif.isRead && styles.notifUnread]}>
-            <View style={styles.notifRow}>
-              <View style={styles.notifInfo}>
-                <Text style={styles.notifTitle}>{notif.title}</Text>
-                <Text style={styles.notifBody}>{notif.body}</Text>
-                <Text style={styles.notifTime}>{formatRelativeTime(notif.createdAt)}</Text>
-              </View>
-              {!notif.isRead && <View style={styles.unreadDot} />}
+        {/* Preferences (language + dark mode) */}
+        <AppCard padding={0} style={styles.menuCard}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setLanguageModalVisible(true)}
+            style={[styles.row, styles.divider]}>
+            <View style={styles.iconBubble}>
+              <MaterialCommunityIcons name="translate" size={20} color={Colors.primary} />
             </View>
-          </AppCard>
-        ))}
+            <Text style={styles.label}>{t('language')}</Text>
+            <Text style={styles.value}>{selectedLanguage.nativeLabel}</Text>
+            <MaterialCommunityIcons name="chevron-right" size={22} color={Colors.textDisabled} />
+          </TouchableOpacity>
 
-        {/* Settings */}
-        <Text style={styles.sectionTitle}>{t('account')}</Text>
-        <AppCard style={styles.settingItem}>
-          <View style={styles.settingRow}>
-            <View style={styles.settingIconBubble}>
-              <MaterialCommunityIcons
-                name={isDark ? 'weather-night' : 'white-balance-sunny'}
-                size={20}
-                color={Colors.primary}
-              />
+          <View style={styles.row}>
+            <View style={styles.iconBubble}>
+              <MaterialCommunityIcons name={isDark ? 'weather-night' : 'white-balance-sunny'} size={20} color={Colors.primary} />
             </View>
-            <Text style={styles.settingLabel}>{t('darkMode')}</Text>
+            <Text style={styles.label}>{t('darkMode')}</Text>
             <Switch
               value={isDark}
               onValueChange={toggleMode}
@@ -107,37 +92,30 @@ export const ProfileScreen: React.FC = () => {
             />
           </View>
         </AppCard>
-        <AppCard padding={0}>
-          {[
-            {icon: 'bell-outline', label: t('notificationSettings')},
-            {icon: 'translate', label: t('language'), value: selectedLanguage.nativeLabel, onPress: () => setLanguageModalVisible(true)},
-            {icon: 'shield-lock-outline', label: t('privacyPolicy')},
-            {icon: 'phone-outline', label: t('contactSupport')},
-            {icon: 'information-outline', label: t('aboutApp')},
-          ].map((item, index, items) => (
+
+        {/* Other links (same as before) */}
+        <AppCard padding={0} style={styles.menuCard}>
+          {links.map((item, i) => (
             <TouchableOpacity
-              key={item.label}
-              onPress={item.onPress}
-              activeOpacity={0.75}
-              style={[styles.settingRowButton, index < items.length - 1 && styles.settingDivider]}>
-              <View style={styles.settingRow}>
-                <View style={styles.settingIconBubble}>
-                  <MaterialCommunityIcons name={item.icon as any} size={20} color={Colors.primary} />
-                </View>
-                <Text style={styles.settingLabel}>{item.label}</Text>
-                {item.value && <Text style={styles.settingValue}>{item.value}</Text>}
-                <MaterialCommunityIcons name="chevron-right" size={22} color={Colors.textDisabled} />
+              key={item.labelKey}
+              activeOpacity={0.7}
+              style={[styles.row, i < links.length - 1 && styles.divider]}>
+              <View style={styles.iconBubble}>
+                <MaterialCommunityIcons name={item.icon} size={20} color={Colors.primary} />
               </View>
+              <Text style={styles.label}>{t(item.labelKey)}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={22} color={Colors.textDisabled} />
             </TouchableOpacity>
           ))}
         </AppCard>
 
-        <AppButton
-          title={t('logout')}
-          onPress={handleLogout}
-          variant="danger"
-          style={styles.logoutBtn}
-        />
+        {/* Logout */}
+        <TouchableOpacity style={styles.logoutRow} activeOpacity={0.7} onPress={handleLogout}>
+          <MaterialCommunityIcons name="logout" size={20} color={Colors.danger} />
+          <Text style={styles.logoutText}>{t('logout')}</Text>
+        </TouchableOpacity>
+
+        <View style={{height: Spacing[10]}} />
       </ScrollView>
 
       <Modal
@@ -177,71 +155,31 @@ export const ProfileScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
-  scroll: {padding: Spacing[4], paddingBottom: Spacing[10]},
-  profileSection: {
-    alignItems: 'center',
-    paddingVertical: Spacing[6],
-    borderRadius: BorderRadius['2xl'],
-    overflow: 'hidden',
-    marginBottom: Spacing[5],
-    borderWidth: 1,
-    borderColor: Colors.border,
-    shadowColor: Colors.black,
-    shadowOffset: {width: 0, height: 12},
-    shadowOpacity: 0.06,
-    shadowRadius: 24,
-    elevation: 4,
-  },
+  headerBar: {alignItems: 'center', paddingVertical: Spacing[3]},
+  headerTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
+  scroll: {paddingHorizontal: Spacing[4], paddingTop: Spacing[2]},
+  profileRow: {flexDirection: 'row', alignItems: 'center', marginBottom: Spacing[5], gap: Spacing[4]},
   avatar: {
-    width: 80,
-    height: 80,
+    width: 72,
+    height: 72,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing[3],
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: Colors.surface,
   },
-  avatarText: {fontSize: FontSize['3xl'], color: Colors.white, fontWeight: FontWeight.bold},
+  avatarText: {fontSize: FontSize['2xl'], color: Colors.white, fontWeight: FontWeight.bold},
+  profileInfo: {flex: 1},
   name: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
-  phone: {fontSize: FontSize.base, color: Colors.textSecondary, marginTop: 4},
-  roleBadge: {
-    backgroundColor: Colors.primaryLight,
-    paddingHorizontal: Spacing[3],
-    paddingVertical: Spacing[1],
-    borderRadius: BorderRadius.full,
-    marginTop: Spacing[2],
-  },
-  roleText: {fontSize: FontSize.xs, color: Colors.primary, fontWeight: FontWeight.bold, letterSpacing: 1},
-  sectionTitle: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semiBold,
-    color: Colors.text,
-    marginBottom: Spacing[3],
-    marginTop: Spacing[2],
-  },
-  notifCard: {marginHorizontal: 0},
-  notifUnread: {borderLeftWidth: 3, borderLeftColor: Colors.primary},
-  notifRow: {flexDirection: 'row', alignItems: 'flex-start'},
-  notifInfo: {flex: 1},
-  notifTitle: {fontSize: FontSize.sm, fontWeight: FontWeight.semiBold, color: Colors.text},
-  notifBody: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2},
-  notifTime: {fontSize: FontSize.xs, color: Colors.textDisabled, marginTop: 4},
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary,
-    marginTop: 4,
-  },
-  settingItem: {marginBottom: Spacing[3]},
-  settingRow: {flexDirection: 'row', alignItems: 'center'},
-  settingRowButton: {paddingHorizontal: Spacing[4], paddingVertical: Spacing[3]},
-  settingDivider: {borderBottomWidth: 1, borderBottomColor: Colors.borderLight},
-  settingIconBubble: {
+  role: {fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2},
+  phone: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: FontWeight.semiBold, marginTop: 2},
+  menuCard: {marginHorizontal: 0, marginBottom: Spacing[3]},
+  row: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing[4], paddingVertical: Spacing[3]},
+  divider: {borderBottomWidth: 1, borderBottomColor: Colors.borderLight},
+  iconBubble: {
     width: 38,
     height: 38,
     borderRadius: BorderRadius.full,
@@ -250,15 +188,18 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     justifyContent: 'center',
     marginRight: Spacing[3],
   },
-  settingLabel: {flex: 1, fontSize: FontSize.base, color: Colors.text},
-  settingValue: {fontSize: FontSize.sm, color: Colors.textSecondary, marginRight: Spacing[2]},
-  logoutBtn: {marginTop: Spacing[6]},
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: Colors.overlay,
-    justifyContent: 'flex-end',
-    padding: Spacing[4],
+  label: {flex: 1, fontSize: FontSize.base, color: Colors.text},
+  value: {fontSize: FontSize.sm, color: Colors.textSecondary, marginRight: Spacing[2]},
+  logoutRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing[2],
+    paddingVertical: Spacing[4],
+    marginTop: Spacing[2],
   },
+  logoutText: {fontSize: FontSize.base, color: Colors.danger, fontWeight: FontWeight.semiBold},
+  modalOverlay: {flex: 1, backgroundColor: Colors.overlay, justifyContent: 'flex-end', padding: Spacing[4]},
   languageSheet: {
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius['2xl'],
@@ -266,12 +207,7 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  modalTitle: {
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.bold,
-    color: Colors.text,
-    marginBottom: Spacing[3],
-  },
+  modalTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text, marginBottom: Spacing[3]},
   languageOption: {
     minHeight: 64,
     borderRadius: BorderRadius.lg,
@@ -284,4 +220,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   languageOptionActive: {backgroundColor: Colors.primaryLight},
   languageNative: {fontSize: FontSize.base, fontWeight: FontWeight.semiBold, color: Colors.text},
   languageEnglish: {fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2},
-});
+} as const);

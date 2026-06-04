@@ -4,7 +4,6 @@ import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   Modal,
   KeyboardAvoidingView,
@@ -18,11 +17,12 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
-import {AppHeader} from '@components/common/AppHeader';
+import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {Volunteer} from '@appTypes/api';
+import {toastSuccess} from '@utils/toast';
 import {volunteerSchema, VolunteerFormData} from '@utils/validators';
 import {MOCK_VOLUNTEERS} from '@utils/mockData';
 import {AppColors} from '@constants/colors';
@@ -60,6 +60,7 @@ export const VolunteerManagementScreen: React.FC = () => {
       setVolunteers(prev => [newVol, ...prev]);
       setShowModal(false);
       reset();
+      toastSuccess(t('volunteerAdded'), data.name);
     }, 1200);
   };
 
@@ -108,7 +109,7 @@ export const VolunteerManagementScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title={t('volunteerManagement')} showBack />
+      <DrawerHeader title={t('volunteerManagement')} />
       <OfflineBanner />
 
       <FlatList
@@ -168,7 +169,7 @@ export const VolunteerManagementScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   flex: {flex: 1},
   list: {padding: Spacing[4]},
@@ -222,4 +223,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   modalTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
   modalScroll: {padding: Spacing[4]},
-});
+} as const);

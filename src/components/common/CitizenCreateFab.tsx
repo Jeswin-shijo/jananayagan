@@ -34,6 +34,21 @@ export const CitizenCreateFab: React.FC = () => {
 
   const getRouteNames = () => navigation.getState?.().routeNames ?? [];
 
+  // The citizen tab bar (FloatingTabBar) already exposes a center create button, and
+  // the volunteer Community tab has its own create affordance. Both tab shells contain
+  // a "Dashboard" route, so we hide this floating bottom-right FAB whenever one is present.
+  const isWithinCitizenTabs = () => {
+    let nav: any = navigation;
+    while (nav) {
+      const routeNames = nav.getState?.()?.routeNames;
+      if (Array.isArray(routeNames) && routeNames.includes('Dashboard')) {
+        return true;
+      }
+      nav = nav.getParent?.();
+    }
+    return false;
+  };
+
   const navigateToStack = (routeName: string, params?: object) => {
     const routeNames = getRouteNames();
     if (routeNames.includes(routeName)) {
@@ -80,6 +95,10 @@ export const CitizenCreateFab: React.FC = () => {
       onPress: () => navigateToStack('CreatePost'),
     },
   ];
+
+  if (isWithinCitizenTabs()) {
+    return null;
+  }
 
   return (
     <View pointerEvents="box-none" style={styles.container}>
@@ -128,7 +147,7 @@ export const CitizenCreateFab: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {
     position: 'absolute',
     top: 0,
@@ -198,4 +217,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     shadowRadius: 20,
     elevation: 8,
   },
-});
+} as const);

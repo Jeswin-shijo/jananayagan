@@ -1,6 +1,6 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import {AppColors} from '@constants/colors';
 import {FontSize} from '@constants/typography';
 import {BorderRadius, Spacing} from '@constants/spacing';
@@ -36,7 +36,7 @@ export const AppProgressBar: React.FC<AppProgressBarProps> = ({current, total, l
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {marginVertical: Spacing[1]},
   labelRow: {
     flexDirection: 'row',
@@ -56,4 +56,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.full,
   },
-});
+} as const);

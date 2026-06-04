@@ -38,11 +38,15 @@ import {formatRelativeTime} from '@utils/formatters';
 type Nav = NativeStackNavigationProp<CitizenStackParamList>;
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
+type TileToken = 'tileBlue' | 'tileGreen' | 'tilePurple' | 'tileAmber';
+type IconToken = 'primary' | 'secondary' | 'statusInProgress' | 'warning';
+
 type QuickAction = {
   id: string;
   icon: MaterialCommunityIconName;
   labelKey: 'reportProblem' | 'myComplaints' | 'petition' | 'vote';
-  color: string;
+  tile: TileToken;
+  iconColor: IconToken;
   route:
     | {type: 'stack'; screen: 'ReportProblem'}
     | {type: 'tab'; screen: keyof CitizenTabParamList};
@@ -53,28 +57,32 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'report',
     icon: 'alert-outline',
     labelKey: 'reportProblem',
-    color: '#FEF3C7',
+    tile: 'tileAmber',
+    iconColor: 'warning',
     route: {type: 'stack', screen: 'ReportProblem'},
   },
   {
     id: 'complaints',
     icon: 'clipboard-text-outline',
     labelKey: 'myComplaints',
-    color: '#E0F2FE',
+    tile: 'tileBlue',
+    iconColor: 'primary',
     route: {type: 'tab', screen: 'MyComplaints'},
   },
   {
     id: 'petition',
     icon: 'file-sign',
     labelKey: 'petition',
-    color: '#F3E8FF',
+    tile: 'tilePurple',
+    iconColor: 'statusInProgress',
     route: {type: 'tab', screen: 'SubmitPetition'},
   },
   {
     id: 'poll',
     icon: 'poll',
     labelKey: 'vote',
-    color: '#DCFCE7',
+    tile: 'tileGreen',
+    iconColor: 'secondary',
     route: {type: 'tab', screen: 'PublicPoll'},
   },
 ];
@@ -125,9 +133,9 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
         onPressOut={() => {
           scale.value = withSpring(1, {damping: 14, stiffness: 220});
         }}
-        style={[styles.actionCard, {backgroundColor: action.color}, animatedStyle]}>
+        style={[styles.actionCard, {backgroundColor: colors[action.tile]}, animatedStyle]}>
         <View style={styles.actionIconWrap}>
-          <MaterialCommunityIcons name={action.icon} size={28} color={colors.primary} />
+          <MaterialCommunityIcons name={action.icon} size={28} color={colors[action.iconColor]} />
         </View>
         <Text style={styles.actionLabel}>{label}</Text>
       </AnimatedPressable>
@@ -172,7 +180,9 @@ export const CitizenHomeScreen: React.FC = () => {
             <Text style={styles.greeting}>{t(getTimeGreetingKey())}</Text>
             <Text style={styles.name}>{user?.name ?? t('citizen')}</Text>
           </View>
-          <TouchableOpacity style={styles.notifBtn}>
+          <TouchableOpacity
+            style={styles.notifBtn}
+            onPress={() => navigation.navigate('CitizenTabs', {screen: 'Profile'})}>
             <MaterialCommunityIcons name="bell-outline" size={24} color={Colors.text} />
             {unreadCount > 0 && (
               <View style={styles.badge}>
@@ -183,7 +193,7 @@ export const CitizenHomeScreen: React.FC = () => {
         </Animated.View>
 
         {/* Banner */}
-        <Animated.View entering={FadeInDown.delay(90).springify()} style={[styles.banner, { marginTop: -20 }]}>
+        <Animated.View entering={FadeInDown.delay(90).springify()} style={styles.banner}>
           <LinearGradient
             colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
             start={{x: 0, y: 0}}
@@ -220,8 +230,8 @@ export const CitizenHomeScreen: React.FC = () => {
 
         {/* Recent Complaints */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('recentComplaints')}</Text>
-          <TouchableOpacity>
+          <Text style={styles.sectionHeaderTitle}>{t('recentComplaints')}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('CitizenTabs', {screen: 'MyComplaints'})}>
             <Text style={styles.seeAll}>{t('seeAll')}</Text>
           </TouchableOpacity>
         </View>
@@ -266,14 +276,15 @@ export const CitizenHomeScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: Spacing[4],
-    paddingTop: Spacing[4],
+    paddingTop: Spacing[3],
+    paddingBottom: Spacing[2],
   },
   greeting: {
     fontSize: FontSize.sm,
@@ -310,8 +321,9 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   badgeText: {color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold},
   banner: {
-    margin: Spacing[4],
-    marginTop: -10,
+    marginHorizontal: Spacing[4],
+    marginTop: Spacing[2],
+    marginBottom: Spacing[4],
     padding: Spacing[4],
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius['2xl'],
@@ -355,18 +367,25 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   sectionTitle: {
     fontSize: FontSize.md,
+    lineHeight: 24,
     fontWeight: FontWeight.semiBold,
     color: Colors.text,
     paddingHorizontal: Spacing[4],
-    // marginBottom: Spacing[4],
     marginTop: Spacing[4],
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingRight: Spacing[4],
-    marginBottom: -10,
+    paddingHorizontal: Spacing[4],
+    marginTop: Spacing[4],
+    marginBottom: Spacing[2],
+  },
+  sectionHeaderTitle: {
+    fontSize: FontSize.md,
+    lineHeight: 24,
+    fontWeight: FontWeight.semiBold,
+    color: Colors.text,
   },
   seeAll: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: '500'},
   actionsGrid: {
@@ -388,7 +407,7 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     paddingHorizontal: Spacing[3],
     borderRadius: BorderRadius['2xl'],
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.7)',
+    borderColor: Colors.borderLight,
     shadowColor: Colors.black,
     shadowOffset: {width: 0, height: 12},
     shadowOpacity: 0.07,
@@ -440,4 +459,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     marginTop: Spacing[1],
   },
   pollBannerSub: {fontSize: FontSize.sm, color: Colors.textSecondary, textAlign: 'center'},
-});
+} as const);

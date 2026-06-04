@@ -7,14 +7,17 @@
     "userInterfaceStyle": "automatic",
     "scheme": "jananayagan",
     "icon": "./src/assets/icon.png",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jananayagan",
       "infoPlist": {
         "NSCameraUsageDescription": "JANANAYAGAN needs camera access to attach photos to citizen reports.",
         "NSLocationWhenInUseUsageDescription": "JANANAYAGAN needs location access to tag reports with the issue location.",
-        "NSPhotoLibraryUsageDescription": "JANANAYAGAN needs photo library access to attach photos to citizen reports."
+        "NSPhotoLibraryUsageDescription": "JANANAYAGAN needs photo library access to attach photos to citizen reports.",
+        "NSMicrophoneUsageDescription": "JANANAYAGAN needs microphone access to record voice notes for your complaints."
       }
     },
     "android": {
@@ -23,7 +26,14 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#1A4ED8"
       },
-      "permissions": ["ACCESS_FINE_LOCATION", "CAMERA", "READ_MEDIA_IMAGES"]
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "RECORD_AUDIO",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "plugins": [
       [
@@ -37,6 +47,12 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "JANANAYAGAN needs location access to tag reports with the issue location."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "JANANAYAGAN needs microphone access to record voice notes for your complaints."
         }
       ]
     ]

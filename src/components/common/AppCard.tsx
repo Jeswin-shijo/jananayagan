@@ -1,6 +1,6 @@
 import React from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {Pressable, View, StyleSheet, ViewStyle, StyleProp} from 'react-native';
+import {Pressable, View, ViewStyle, StyleProp} from 'react-native';
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {AppColors} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
@@ -45,7 +45,7 @@ export const AppCard: React.FC<AppCardProps> = ({
   return <View style={[styles.card, {padding}, style]}>{children}</View>;
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   card: {
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.xl,
@@ -58,4 +58,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-});
+} as const);

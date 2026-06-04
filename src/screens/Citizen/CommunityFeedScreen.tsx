@@ -20,13 +20,13 @@ import {
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {LinearGradient} from 'react-native-linear-gradient';
 import Animated, {FadeInDown, FadeInUp, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming} from 'react-native-reanimated';
-import {AppButton} from '@components/common/AppButton';
 import {AppCard} from '@components/common/AppCard';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useAuthStore} from '@store/authStore';
+import {useNotificationStore} from '@store/notificationStore';
 import {CitizenTabParamList} from '@appTypes/navigation';
 import {AppColors} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
@@ -40,6 +40,8 @@ type FeedComment = {
   text: string;
 };
 
+type AccentToken = 'tileGreen' | 'tileTeal' | 'tileAmber' | 'tileBlue' | 'tilePurple';
+
 type CommunityPost = {
   id: string;
   author: string;
@@ -49,7 +51,7 @@ type CommunityPost = {
   createdAt: string;
   likes: number;
   isLiked: boolean;
-  accent: string;
+  accent: AccentToken;
   imageUris?: string[];
   comments: FeedComment[];
 };
@@ -66,7 +68,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     createdAt: '18 min',
     likes: 42,
     isLiked: false,
-    accent: '#DFF6E9',
+    accent: 'tileGreen',
     comments: [
       {id: 'c1', author: 'Arun', text: 'Great update. This area feels safer now.'},
       {id: 'c2', author: 'Priya', text: 'We should check the next lane too.'},
@@ -81,7 +83,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     createdAt: '1 hr',
     likes: 87,
     isLiked: true,
-    accent: '#E7F5F7',
+    accent: 'tileTeal',
     imageUris: [SAMPLE_POST_IMAGE],
     comments: [
       {id: 'c3', author: 'Siva', text: 'Please add South Street if possible.'},
@@ -96,7 +98,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     createdAt: '3 hr',
     likes: 126,
     isLiked: false,
-    accent: '#FFF4D7',
+    accent: 'tileAmber',
     comments: [],
   },
 ];
@@ -111,6 +113,8 @@ export const CommunityFeedScreen: React.FC = () => {
   const route = useRoute<CommunityRoute>();
   const navigation = useNavigation<any>();
   const user = useAuthStore(s => s.user);
+  const unreadCount = useNotificationStore(s => s.unreadCount);
+  const isCitizen = user?.role === 'citizen';
   const [posts, setPosts] = useState<CommunityPost[]>(INITIAL_POSTS);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [heartPostId, setHeartPostId] = useState<string | null>(null);
@@ -152,7 +156,7 @@ export const CommunityFeedScreen: React.FC = () => {
           ...newPost,
           likes: 0,
           isLiked: false,
-          accent: Colors.secondaryLight,
+          accent: 'tileGreen',
           comments: [],
         }, ...prev];
       });
@@ -246,7 +250,7 @@ export const CommunityFeedScreen: React.FC = () => {
     <Animated.View entering={FadeInDown.delay(index * 70).springify()}>
       <AppCard style={styles.postCard}>
         <View style={styles.postHeader}>
-          <View style={[styles.avatar, {backgroundColor: item.accent}]}>
+          <View style={[styles.avatar, {backgroundColor: Colors[item.accent]}]}>
             <Text style={styles.avatarText}>{item.author.charAt(0).toUpperCase()}</Text>
           </View>
           <View style={styles.authorBlock}>
@@ -272,7 +276,7 @@ export const CommunityFeedScreen: React.FC = () => {
           ) : (
             <>
               <LinearGradient
-                colors={[item.accent, Colors.surface, Colors.primaryLight]}
+                colors={[Colors[item.accent], Colors.surface, Colors.primaryLight]}
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 1}}
                 style={StyleSheet.absoluteFill}
@@ -326,21 +330,52 @@ export const CommunityFeedScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
-          <Animated.View entering={FadeInUp.duration(420)} style={styles.header}>
-            <LinearGradient
-              colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 1}}
-              style={StyleSheet.absoluteFill}
-            />
-            <View style={styles.headerText}>
-              <Text style={styles.title}>{t('communityFeed')}</Text>
-              <Text style={styles.subtitle}>{t('communitySubtitle')}</Text>
-            </View>
-            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('CreatePost')}>
-              <MaterialCommunityIcons name="plus" size={24} color={Colors.textOnPrimary} />
-            </TouchableOpacity>
-          </Animated.View>
+          isCitizen ? (
+            <Animated.View entering={FadeInUp.duration(420)} style={styles.quickBanner}>
+              <LinearGradient
+                colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+                style={StyleSheet.absoluteFill}
+              />
+              <Text style={styles.quickTitle}>{t('quickLinks')}</Text>
+              <View style={styles.quickRow}>
+                <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Dashboard')}>
+                  <View style={styles.quickIcon}>
+                    <MaterialCommunityIcons name="view-dashboard-outline" size={22} color={Colors.primary} />
+                  </View>
+                  <Text style={styles.quickLabel}>{t('dashboard')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Notifications')}>
+                  <View style={styles.quickIcon}>
+                    <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.primary} />
+                    {unreadCount > 0 && (
+                      <View style={styles.quickBadge}>
+                        <Text style={styles.quickBadgeText}>{unreadCount}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.quickLabel}>{t('notifications')}</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          ) : (
+            <Animated.View entering={FadeInUp.duration(420)} style={styles.header}>
+              <LinearGradient
+                colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+                style={StyleSheet.absoluteFill}
+              />
+              <View style={styles.headerText}>
+                <Text style={styles.title}>{t('communityFeed')}</Text>
+                <Text style={styles.subtitle}>{t('communitySubtitle')}</Text>
+              </View>
+              <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('CreatePost')}>
+                <MaterialCommunityIcons name="plus" size={24} color={Colors.textOnPrimary} />
+              </TouchableOpacity>
+            </Animated.View>
+          )
         }
       />
 
@@ -400,7 +435,7 @@ export const CommunityFeedScreen: React.FC = () => {
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   list: {padding: Spacing[4], paddingBottom: Spacing[16]},
   header: {
@@ -430,6 +465,50 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  quickBanner: {
+    borderRadius: BorderRadius['2xl'],
+    overflow: 'hidden',
+    padding: Spacing[4],
+    marginBottom: Spacing[4],
+    shadowColor: Colors.primary,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.22,
+    shadowRadius: 24,
+    elevation: 6,
+  },
+  quickTitle: {fontSize: FontSize.md, fontWeight: FontWeight.bold, color: Colors.textOnPrimary, marginBottom: Spacing[3]},
+  quickRow: {flexDirection: 'row', gap: Spacing[3]},
+  quickLink: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[2],
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing[3],
+  },
+  quickIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  quickBadgeText: {color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold},
+  quickLabel: {color: Colors.textOnPrimary, fontWeight: FontWeight.semiBold, fontSize: FontSize.sm},
   postCard: {marginHorizontal: 0},
   postHeader: {flexDirection: 'row', alignItems: 'center', marginBottom: Spacing[3]},
   avatar: {
@@ -572,4 +651,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+} as const);

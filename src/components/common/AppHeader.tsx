@@ -50,7 +50,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, ri
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   header: {
     height: HEADER_HEIGHT,
     flexDirection: 'row',
@@ -79,4 +79,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-});
+} as const);

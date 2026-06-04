@@ -11,8 +11,10 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import Toast from 'react-native-toast-message';
 import {RootNavigator} from './src/navigation/RootNavigator';
+import {SosButton} from './src/components/common/SosButton';
 import {useThemeStore} from './src/store/themeStore';
 import {useLanguageStore} from './src/store/languageStore';
+import {useStartupPermissions} from './src/hooks/useStartupPermissions';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +28,8 @@ const queryClient = new QueryClient({
 function App(): React.JSX.Element {
   const {colors, isDark, restoreTheme} = useThemeStore();
   const restoreLanguage = useLanguageStore(state => state.restoreLanguage);
+
+  useStartupPermissions();
 
   useEffect(() => {
     restoreTheme();
@@ -58,6 +62,7 @@ function App(): React.JSX.Element {
             <NavigationContainer theme={navigationTheme}>
               <RootNavigator />
             </NavigationContainer>
+            <SosButton />
           </BottomSheetModalProvider>
           <Toast />
         </QueryClientProvider>

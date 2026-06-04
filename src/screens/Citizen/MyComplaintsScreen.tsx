@@ -4,7 +4,6 @@ import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   RefreshControl,
   TextInput,
@@ -37,7 +36,7 @@ const FILTERS: {id: ComplaintStatus | 'all'; labelKey: TranslationKey}[] = [
   {id: 'resolved', labelKey: 'resolved'},
 ];
 
-export const MyComplaintsScreen: React.FC = () => {
+export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
@@ -78,14 +77,18 @@ export const MyComplaintsScreen: React.FC = () => {
         <Text style={styles.date}>{formatRelativeTime(item.createdAt)}</Text>
       </View>
     </AppCard>
-  ), [navigation]);
+  ), [navigation, styles]);
+
+  const Container: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <OfflineBanner />
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('myComplaints')}</Text>
-      </View>
+    <Container style={styles.container}>
+      {!embedded && <OfflineBanner />}
+      {!embedded && (
+        <View style={styles.header}>
+          <Text style={styles.title}>{t('myComplaints')}</Text>
+        </View>
+      )}
 
       {/* Search */}
       <View style={styles.searchRow}>
@@ -128,12 +131,12 @@ export const MyComplaintsScreen: React.FC = () => {
           />
         }
       />
-      <CitizenCreateFab />
-    </SafeAreaView>
+      {!embedded && <CitizenCreateFab />}
+    </Container>
   );
 };
 
-const createStyles = (Colors: AppColors) => StyleSheet.create({
+const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   header: {padding: Spacing[4], paddingBottom: Spacing[2]},
   title: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
@@ -193,4 +196,4 @@ const createStyles = (Colors: AppColors) => StyleSheet.create({
   },
   ticketId: {fontSize: FontSize.xs, color: Colors.textSecondary},
   date: {fontSize: FontSize.xs, color: Colors.textDisabled},
-});
+} as const);
