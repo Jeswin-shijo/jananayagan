@@ -69,10 +69,6 @@ export const FloatingTabBar: React.FC<BottomTabBarProps> = ({state, descriptors,
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({transform: [{scale: scale.value}]}));
 
-  const navigateToTab = (screen: string) => {
-    navigation.navigate(screen as never);
-  };
-
   const navigateToStack = (routeName: string, params?: object) => {
     const parent: any = navigation.getParent?.();
     if (parent) {
@@ -100,7 +96,7 @@ export const FloatingTabBar: React.FC<BottomTabBarProps> = ({state, descriptors,
       label: t('createPetition'),
       icon: 'file-sign',
       tile: 'tileBlue',
-      onPress: () => navigateToTab('SubmitPetition'),
+      onPress: () => navigateToStack('SubmitPetition'),
     },
     {
       key: 'post',

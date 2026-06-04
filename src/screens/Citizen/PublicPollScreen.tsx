@@ -4,9 +4,10 @@ import {useTranslation} from '@hooks/useTranslation';
 import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {Poll, PollOption} from '@appTypes/api';
+import {Poll} from '@appTypes/api';
 import {AppCard} from '@components/common/AppCard';
 import {AppButton} from '@components/common/AppButton';
+import {AppHeader} from '@components/common/AppHeader';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppChip} from '@components/common/AppChip';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
@@ -119,11 +120,9 @@ export const PublicPollScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader title={t('publicPolls')} showBack />
       <OfflineBanner />
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('publicPolls')}</Text>
-      </View>
 
       <View style={styles.filterRow}>
         {(['active', 'ended', 'voted'] as PollFilter[]).map(f => (

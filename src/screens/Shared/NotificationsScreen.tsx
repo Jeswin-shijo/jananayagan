@@ -2,9 +2,10 @@ import React from 'react';
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {useThemedStyles} from '@hooks/useThemedStyles';
+import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppEmptyState} from '@components/common/AppEmptyState';
+import {AppHeader} from '@components/common/AppHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useNotificationStore} from '@store/notificationStore';
 import {MOCK_NOTIFICATIONS} from '@utils/mockData';
@@ -25,6 +26,7 @@ const TYPE_META: Record<Notification['type'], {icon: MaterialCommunityIconName; 
 };
 
 export const NotificationsScreen: React.FC = () => {
+  const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const {notifications, markRead, markAllRead} = useNotificationStore();
@@ -34,14 +36,17 @@ export const NotificationsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('notifications')}</Text>
-        {hasUnread && (
-          <TouchableOpacity onPress={() => markAllRead?.()}>
-            <Text style={styles.markAll}>{t('markAllRead')}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <AppHeader
+        title={t('notifications')}
+        showBack
+        rightAction={
+          hasUnread ? (
+            <TouchableOpacity onPress={() => markAllRead?.()} accessibilityLabel={t('markAllRead')}>
+              <MaterialCommunityIcons name="check-all" size={22} color={Colors.primary} />
+            </TouchableOpacity>
+          ) : undefined
+        }
+      />
       <OfflineBanner />
       {data.length === 0 ? (
         <AppEmptyState icon="bell-outline" title={t('noNotifications')} subtitle={t('noNotificationsSubtitle')} />

@@ -15,9 +15,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Animated, {
-  FadeInDown,
-  FadeInUp,
-  Layout,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -25,6 +22,7 @@ import Animated, {
 import {CitizenStackParamList, CitizenTabParamList} from '@appTypes/navigation';
 import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
+import {AppHeader} from '@components/common/AppHeader';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
@@ -48,7 +46,7 @@ type QuickAction = {
   tile: TileToken;
   iconColor: IconToken;
   route:
-    | {type: 'stack'; screen: 'ReportProblem'}
+    | {type: 'stack'; screen: 'ReportProblem' | 'SubmitPetition' | 'PublicPoll'}
     | {type: 'tab'; screen: keyof CitizenTabParamList};
 };
 
@@ -75,7 +73,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     labelKey: 'petition',
     tile: 'tilePurple',
     iconColor: 'statusInProgress',
-    route: {type: 'tab', screen: 'SubmitPetition'},
+    route: {type: 'stack', screen: 'SubmitPetition'},
   },
   {
     id: 'poll',
@@ -83,7 +81,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     labelKey: 'vote',
     tile: 'tileGreen',
     iconColor: 'secondary',
-    route: {type: 'tab', screen: 'PublicPoll'},
+    route: {type: 'stack', screen: 'PublicPoll'},
   },
 ];
 
@@ -100,7 +98,6 @@ const getTimeGreetingKey = () => {
 
 interface QuickActionCardProps {
   action: QuickAction;
-  index: number;
   colors: AppColors;
   styles: ReturnType<typeof createStyles>;
   label: string;
@@ -109,7 +106,6 @@ interface QuickActionCardProps {
 
 const QuickActionCard: React.FC<QuickActionCardProps> = ({
   action,
-  index,
   colors,
   styles,
   label,
@@ -121,10 +117,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   }));
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(180 + index * 70).springify()}
-      layout={Layout.springify()}
-      style={styles.actionCardWrapper}>
+    <View style={styles.actionCardWrapper}>
       <AnimatedPressable
         onPress={() => onPress(action)}
         onPressIn={() => {
@@ -139,7 +132,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
         </View>
         <Text style={styles.actionLabel}>{label}</Text>
       </AnimatedPressable>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -168,19 +161,20 @@ export const CitizenHomeScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader title={t('dashboard')} showBack />
       <OfflineBanner />
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}>
 
         {/* Header */}
-        <Animated.View entering={FadeInUp.duration(450)} style={styles.header}>
+        <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{t(getTimeGreetingKey())}</Text>
             <Text style={styles.name}>{user?.name ?? t('citizen')}</Text>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.notifBtn}
             onPress={() => navigation.navigate('CitizenTabs', {screen: 'Profile'})}>
             <MaterialCommunityIcons name="bell-outline" size={24} color={Colors.text} />
@@ -189,11 +183,11 @@ export const CitizenHomeScreen: React.FC = () => {
                 <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
             )}
-          </TouchableOpacity>
-        </Animated.View>
+          </TouchableOpacity> */}
+        </View>
 
         {/* Banner */}
-        <Animated.View entering={FadeInDown.delay(90).springify()} style={styles.banner}>
+        <View style={styles.banner}>
           <LinearGradient
             colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
             start={{x: 0, y: 0}}
@@ -210,16 +204,15 @@ export const CitizenHomeScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.bannerGlow} />
-        </Animated.View>
+        </View>
 
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>{t('quickActions')}</Text>
         <View style={styles.actionsGrid}>
-          {QUICK_ACTIONS.map((action, index) => (
+          {QUICK_ACTIONS.map(action => (
             <QuickActionCard
               key={action.id}
               action={action}
-              index={index}
               colors={Colors}
               styles={styles}
               label={t(action.labelKey)}
@@ -236,10 +229,8 @@ export const CitizenHomeScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {MOCK_COMPLAINTS.slice(0, 3).map((complaint, index) => (
-          <Animated.View
-            key={complaint.id}
-            entering={FadeInDown.delay(420 + index * 70).springify()} style={{paddingHorizontal: Spacing[4]}}>
+        {MOCK_COMPLAINTS.slice(0, 3).map(complaint => (
+          <View key={complaint.id} style={{paddingHorizontal: Spacing[4]}}>
             <AppCard
               onPress={() => navigation.navigate('ComplaintTicket', {ticketId: complaint.ticketId})}>
               <View style={styles.complaintRow}>
@@ -253,14 +244,14 @@ export const CitizenHomeScreen: React.FC = () => {
                 <AppBadge status={complaint.status} />
               </View>
             </AppCard>
-          </Animated.View>
+          </View>
         ))}
 
         {/* Active Poll Banner */}
         {MOCK_POLLS.filter(p => p.status === 'active').length > 0 && (
           <AppCard
             style={styles.pollBanner}
-            onPress={() => navigation.navigate('CitizenTabs', {screen: 'PublicPoll'})}>
+            onPress={() => navigation.navigate('PublicPoll')}>
             <MaterialCommunityIcons name="poll" size={34} color={Colors.secondary} />
             <Text style={styles.pollBannerTitle}>{t('newPoll')}</Text>
             <Text style={styles.pollBannerSub} numberOfLines={1}>

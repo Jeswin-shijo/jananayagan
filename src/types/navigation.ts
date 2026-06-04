@@ -14,13 +14,10 @@ export type AuthStackParamList = {
 };
 
 export type CitizenTabParamList = {
-  // The Community feed is the "Home" tab; Dashboard holds the quick-actions/overview content.
+  // The Community feed is the "Home" tab. Dashboard/Petition/Polls/Notifications are
+  // pushed stack screens (see CitizenStackParamList) so they get proper back navigation.
   CommunityFeed: {newPost?: CommunityPostParam} | undefined;
-  Dashboard: undefined;
   MyComplaints: {initial?: 'complaints' | 'petitions'} | undefined;
-  SubmitPetition: {mode?: 'browse' | 'create'} | undefined;
-  PublicPoll: undefined;
-  Notifications: undefined;
   Safety: undefined;
   Profile: undefined;
 };
@@ -37,6 +34,10 @@ export type CommunityPostParam = {
 
 export type CitizenStackParamList = {
   CitizenTabs: NavigatorScreenParams<CitizenTabParamList> | undefined;
+  Dashboard: undefined;
+  SubmitPetition: {mode?: 'browse' | 'create'} | undefined;
+  PublicPoll: undefined;
+  Notifications: undefined;
   ReportProblem: undefined;
   ComplaintTicket: { ticketId: string };
   Success: { kind: 'complaint' | 'petition'; refId: string };

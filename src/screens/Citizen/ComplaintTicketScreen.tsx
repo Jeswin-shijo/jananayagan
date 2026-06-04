@@ -10,6 +10,8 @@ import {AppButton} from '@components/common/AppButton';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppCard} from '@components/common/AppCard';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
+import {MOCK_COMPLAINTS} from '@utils/mockData';
+import {ComplaintStatus} from '@appTypes/api';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -17,21 +19,27 @@ import {TranslationKey} from '@constants/i18n';
 
 type Props = NativeStackScreenProps<CitizenStackParamList, 'ComplaintTicket'>;
 
-type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-
-const STEPS: {id: string; labelKey: TranslationKey; icon: MaterialCommunityIconName}[] = [
-  {id: 'submitted', labelKey: 'submitted', icon: 'send-check-outline'},
-  {id: 'under_review', labelKey: 'underReview', icon: 'magnify'},
-  {id: 'in_progress', labelKey: 'inProgress', icon: 'progress-wrench'},
-  {id: 'resolved', labelKey: 'resolved', icon: 'check-circle-outline'},
+const STEPS: {id: ComplaintStatus; labelKey: TranslationKey}[] = [
+  {id: 'submitted', labelKey: 'submitted'},
+  {id: 'under_review', labelKey: 'underReview'},
+  {id: 'in_progress', labelKey: 'inProgress'},
+  {id: 'resolved', labelKey: 'resolved'},
 ];
+
+const STEP_INDEX: Record<string, number> = {
+  submitted: 0,
+  under_review: 1,
+  in_progress: 2,
+  resolved: 3,
+};
 
 export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const {ticketId} = route.params;
-  const activeStep = 0;
+  const complaint = MOCK_COMPLAINTS.find(c => c.ticketId === ticketId);
+  const activeStep = STEP_INDEX[complaint?.status ?? 'submitted'] ?? 0;
 
   const handleShare = async () => {
     await Share.share({
@@ -65,39 +73,32 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
           </View>
         </AppCard>
 
-        {/* Status Timeline */}
+        {/* Status Stepper */}
         <AppCard>
           <Text style={styles.sectionTitle}>{t('statusTimeline')}</Text>
-          {STEPS.map((step, idx) => (
-            <View key={step.id} style={styles.stepRow}>
-              <View style={styles.stepLeft}>
-                <View style={[
-                  styles.stepCircle,
-                  idx <= activeStep ? styles.stepActive : styles.stepInactive,
-                ]}>
-                  <MaterialCommunityIcons
-                    name={step.icon}
-                    size={18}
-                    color={idx <= activeStep ? Colors.primary : Colors.textDisabled}
-                  />
+          <View style={styles.stepperRow}>
+            {STEPS.map((step, idx) => {
+              const done = idx <= activeStep;
+              const leftActive = idx > 0 && idx <= activeStep + 1;
+              const rightActive = idx < STEPS.length - 1 && idx <= activeStep;
+              return (
+                <View key={step.id} style={styles.stepCol}>
+                  <View style={styles.trackRow}>
+                    <View style={[styles.halfLine, idx === 0 && styles.lineHidden, leftActive && styles.lineActive]} />
+                    <View style={[styles.dot, done ? styles.dotDone : styles.dotPending]}>
+                      {done && <MaterialCommunityIcons name="check" size={16} color={Colors.white} />}
+                    </View>
+                    <View style={[styles.halfLine, idx === STEPS.length - 1 && styles.lineHidden, rightActive && styles.lineActive]} />
+                  </View>
+                  <Text
+                    style={[styles.stepCaption, done ? styles.captionActive : styles.captionInactive]}
+                    numberOfLines={1}>
+                    {t(step.labelKey)}
+                  </Text>
                 </View>
-                {idx < STEPS.length - 1 && (
-                  <View style={[styles.stepLine, idx < activeStep && styles.stepLineActive]} />
-                )}
-              </View>
-              <View style={styles.stepContent}>
-                <Text style={[
-                  styles.stepLabel,
-                  idx <= activeStep ? styles.stepLabelActive : styles.stepLabelInactive,
-                ]}>
-                  {t(step.labelKey)}
-                </Text>
-                {idx === activeStep && (
-                  <Text style={styles.stepDate}>{t('justNow')}</Text>
-                )}
-              </View>
-            </View>
-          ))}
+              );
+            })}
+          </View>
         </AppCard>
 
         {/* Actions */}
@@ -110,7 +111,7 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
           />
           <AppButton
             title={t('trackComplaints')}
-            onPress={() => navigation.navigate('CitizenTabs')}
+            onPress={() => navigation.navigate('CitizenTabs', {screen: 'MyComplaints'})}
             style={styles.actionBtn}
           />
         </View>
@@ -168,24 +169,24 @@ const createStyles = (Colors: AppColors) => ({
     color: Colors.text,
     marginBottom: Spacing[4],
   },
-  stepRow: {flexDirection: 'row', marginBottom: Spacing[1]},
-  stepLeft: {alignItems: 'center', marginRight: Spacing[3]},
-  stepCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
+  stepperRow: {flexDirection: 'row', marginTop: Spacing[1]},
+  stepCol: {flex: 1, alignItems: 'center'},
+  trackRow: {flexDirection: 'row', alignItems: 'center', alignSelf: 'stretch'},
+  halfLine: {flex: 1, height: 3, backgroundColor: Colors.border, borderRadius: 2},
+  lineActive: {backgroundColor: Colors.primary},
+  lineHidden: {backgroundColor: 'transparent'},
+  dot: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepActive: {backgroundColor: Colors.primaryLight},
-  stepInactive: {backgroundColor: Colors.borderLight},
-  stepLine: {width: 2, flex: 1, backgroundColor: Colors.border, marginVertical: 2},
-  stepLineActive: {backgroundColor: Colors.primary},
-  stepContent: {flex: 1, paddingVertical: Spacing[2]},
-  stepLabel: {fontSize: FontSize.base, fontWeight: '500'},
-  stepLabelActive: {color: Colors.text},
-  stepLabelInactive: {color: Colors.textDisabled},
-  stepDate: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 2},
+  dotDone: {backgroundColor: Colors.primary},
+  dotPending: {backgroundColor: Colors.surface, borderWidth: 2, borderColor: Colors.border},
+  stepCaption: {fontSize: FontSize.xs, marginTop: Spacing[2], textAlign: 'center'},
+  captionActive: {color: Colors.text, fontWeight: FontWeight.semiBold},
+  captionInactive: {color: Colors.textDisabled},
   actions: {flexDirection: 'row', gap: Spacing[3], marginTop: Spacing[2]},
   actionBtn: {flex: 1},
   reportAnother: {alignItems: 'center', marginTop: Spacing[4]},

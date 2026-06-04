@@ -16,7 +16,6 @@ import {ProfileScreen} from '@screens/Shared/ProfileScreen';
 import {NotificationsScreen} from '@screens/Shared/NotificationsScreen';
 import {SuccessScreen} from '@screens/Shared/SuccessScreen';
 import {FloatingTabBar} from '@components/common/FloatingTabBar';
-import {useNotificationStore} from '@store/notificationStore';
 import {useAppColors} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 
@@ -27,7 +26,6 @@ type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIc
 const CitizenTabs: React.FC = () => {
   const Colors = useAppColors();
   const {t} = useTranslation();
-  const unreadCount = useNotificationStore(s => s.unreadCount);
 
   return (
     <Tab.Navigator
@@ -40,11 +38,7 @@ const CitizenTabs: React.FC = () => {
         tabBarIcon: ({color, focused, size}) => {
           const icons: Record<string, {active: MaterialCommunityIconName; inactive: MaterialCommunityIconName}> = {
             CommunityFeed: {active: 'home-variant', inactive: 'home-variant-outline'},
-            Dashboard: {active: 'view-dashboard', inactive: 'view-dashboard-outline'},
             MyComplaints: {active: 'file-document', inactive: 'file-document-outline'},
-            SubmitPetition: {active: 'file-sign', inactive: 'file-sign'},
-            PublicPoll: {active: 'poll', inactive: 'poll'},
-            Notifications: {active: 'bell', inactive: 'bell-outline'},
             Safety: {active: 'shield-check', inactive: 'shield-check-outline'},
             Profile: {active: 'account', inactive: 'account-outline'},
           };
@@ -59,18 +53,7 @@ const CitizenTabs: React.FC = () => {
         },
       })}>
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
-      <Tab.Screen name="Dashboard" component={CitizenHomeScreen} options={{title: t('dashboard')}} />
       <Tab.Screen name="MyComplaints" component={MyActivityScreen} options={{title: t('complaints')}} />
-      <Tab.Screen name="SubmitPetition" component={SubmitPetitionScreen} options={{title: t('petition')}} />
-      <Tab.Screen name="PublicPoll" component={PublicPollScreen} options={{title: t('polls')}} />
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          title: t('notifications'),
-          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
-        }}
-      />
       <Tab.Screen name="Safety" component={WomenSafetyScreen} options={{title: t('safety')}} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>
@@ -80,6 +63,10 @@ const CitizenTabs: React.FC = () => {
 export const CitizenNavigator: React.FC = () => (
   <Stack.Navigator screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
     <Stack.Screen name="CitizenTabs" component={CitizenTabs} />
+    <Stack.Screen name="Dashboard" component={CitizenHomeScreen} />
+    <Stack.Screen name="SubmitPetition" component={SubmitPetitionScreen} />
+    <Stack.Screen name="PublicPoll" component={PublicPollScreen} />
+    <Stack.Screen name="Notifications" component={NotificationsScreen} />
     <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
     <Stack.Screen name="ComplaintTicket" component={ComplaintTicketScreen} />
     <Stack.Screen name="ComplaintDetail" component={ComplaintTicketScreen as any} />

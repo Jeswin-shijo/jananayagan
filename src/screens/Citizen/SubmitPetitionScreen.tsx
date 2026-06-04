@@ -14,6 +14,7 @@ import {useForm, Controller} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppButton} from '@components/common/AppButton';
+import {AppHeader} from '@components/common/AppHeader';
 import {AppInput} from '@components/common/AppInput';
 import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppProgressBar} from '@components/common/AppProgressBar';
@@ -25,13 +26,13 @@ import {MOCK_PETITIONS} from '@utils/mockData';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing} from '@constants/spacing';
-import {CitizenTabParamList} from '@appTypes/navigation';
+import {CitizenStackParamList} from '@appTypes/navigation';
 
 export const SubmitPetitionScreen: React.FC<{embedded?: boolean}> = ({embedded}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
-  const route = useRoute<RouteProp<CitizenTabParamList, 'SubmitPetition'>>();
+  const route = useRoute<RouteProp<CitizenStackParamList, 'SubmitPetition'>>();
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<'create' | 'browse'>('browse');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,6 +61,7 @@ export const SubmitPetitionScreen: React.FC<{embedded?: boolean}> = ({embedded})
 
   return (
     <Container style={styles.container}>
+      {!embedded && <AppHeader title={t('petition')} showBack />}
       {!embedded && <OfflineBanner />}
       <View style={styles.tabBar}>
         {(['browse', 'create'] as const).map(tab => (
