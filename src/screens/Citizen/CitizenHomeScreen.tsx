@@ -43,6 +43,7 @@ type QuickAction = {
   id: string;
   icon: MaterialCommunityIconName;
   labelKey: 'reportProblem' | 'myComplaints' | 'petition' | 'vote';
+  subtitle: string;
   tile: TileToken;
   iconColor: IconToken;
   route:
@@ -55,6 +56,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'report',
     icon: 'alert-outline',
     labelKey: 'reportProblem',
+    subtitle: 'Raise an issue in your area',
     tile: 'tileAmber',
     iconColor: 'warning',
     route: {type: 'stack', screen: 'ReportProblem'},
@@ -63,6 +65,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'complaints',
     icon: 'clipboard-text-outline',
     labelKey: 'myComplaints',
+    subtitle: 'Track and manage your complaints',
     tile: 'tileBlue',
     iconColor: 'primary',
     route: {type: 'tab', screen: 'MyComplaints'},
@@ -71,6 +74,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'petition',
     icon: 'file-sign',
     labelKey: 'petition',
+    subtitle: 'Create or sign petitions',
     tile: 'tilePurple',
     iconColor: 'statusInProgress',
     route: {type: 'stack', screen: 'SubmitPetition'},
@@ -79,6 +83,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'poll',
     icon: 'poll',
     labelKey: 'vote',
+    subtitle: 'Participate in polls and make your voice count',
     tile: 'tileGreen',
     iconColor: 'secondary',
     route: {type: 'stack', screen: 'PublicPoll'},
@@ -101,6 +106,7 @@ interface QuickActionCardProps {
   colors: AppColors;
   styles: ReturnType<typeof createStyles>;
   label: string;
+  variant: 'feature' | 'compact' | 'wide';
   onPress: (action: QuickAction) => void;
 }
 
@@ -109,6 +115,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   colors,
   styles,
   label,
+  variant,
   onPress,
 }) => {
   const scale = useSharedValue(1);
@@ -117,22 +124,43 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   }));
 
   return (
-    <View style={styles.actionCardWrapper}>
-      <AnimatedPressable
-        onPress={() => onPress(action)}
-        onPressIn={() => {
-          scale.value = withSpring(0.96, {damping: 16, stiffness: 240});
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1, {damping: 14, stiffness: 220});
-        }}
-        style={[styles.actionCard, {backgroundColor: colors[action.tile]}, animatedStyle]}>
-        <View style={styles.actionIconWrap}>
-          <MaterialCommunityIcons name={action.icon} size={28} color={colors[action.iconColor]} />
-        </View>
+    <AnimatedPressable
+      onPress={() => onPress(action)}
+      onPressIn={() => {
+        scale.value = withSpring(0.96, {damping: 16, stiffness: 240});
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, {damping: 14, stiffness: 220});
+      }}
+      style={[
+        styles.actionCard,
+        variant === 'feature' && styles.actionCardFeature,
+        variant === 'compact' && styles.actionCardCompact,
+        variant === 'wide' && styles.actionCardWide,
+        {backgroundColor: colors[action.tile]},
+        animatedStyle,
+      ]}>
+      <View
+        style={[
+          styles.actionIconWrap,
+          variant === 'feature' && styles.actionIconFeature,
+          variant === 'wide' && styles.actionIconWide,
+          {backgroundColor: colors[action.iconColor]},
+        ]}>
+        <MaterialCommunityIcons
+          name={action.icon}
+          size={variant === 'compact' ? 24 : 30}
+          color={colors.textOnPrimary}
+        />
+      </View>
+      <View style={styles.actionCopy}>
         <Text style={styles.actionLabel}>{label}</Text>
-      </AnimatedPressable>
-    </View>
+        <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+      </View>
+      <View style={[styles.actionArrow, variant === 'feature' && styles.actionArrowFeature]}>
+        <MaterialCommunityIcons name="chevron-right" size={24} color={colors[action.iconColor]} />
+      </View>
+    </AnimatedPressable>
   );
 };
 
@@ -144,6 +172,10 @@ export const CitizenHomeScreen: React.FC = () => {
   const user = useAuthStore(s => s.user);
   const unreadCount = useNotificationStore(s => s.unreadCount);
   const [refreshing, setRefreshing] = useState(false);
+  const reportAction = QUICK_ACTIONS[0];
+  const complaintsAction = QUICK_ACTIONS[1];
+  const petitionAction = QUICK_ACTIONS[2];
+  const pollAction = QUICK_ACTIONS[3];
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -207,18 +239,53 @@ export const CitizenHomeScreen: React.FC = () => {
         </View>
 
         {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>{t('quickActions')}</Text>
-        <View style={styles.actionsGrid}>
-          {QUICK_ACTIONS.map(action => (
+        <View style={styles.quickHeader}>
+          <View style={styles.quickHeaderTitle}>
+            <MaterialCommunityIcons name="flash" size={20} color={Colors.primary} />
+            <Text style={styles.sectionHeaderTitle}>{t('quickActions')}</Text>
+          </View>
+          {/* <TouchableOpacity style={styles.viewAllBtn} onPress={() => navigation.navigate('Dashboard')}>
+            <Text style={styles.seeAll}>{t('viewAll')}</Text>
+            <MaterialCommunityIcons name="chevron-right" size={20} color={Colors.primary} />
+          </TouchableOpacity> */}
+        </View>
+        <View style={styles.actionsPanel}>
+          <View style={styles.actionsTopRow}>
             <QuickActionCard
-              key={action.id}
-              action={action}
+              action={reportAction}
               colors={Colors}
               styles={styles}
-              label={t(action.labelKey)}
+              label={t(reportAction.labelKey)}
+              variant="feature"
               onPress={handleQuickAction}
             />
-          ))}
+            <View style={styles.actionsSideColumn}>
+              <QuickActionCard
+                action={complaintsAction}
+                colors={Colors}
+                styles={styles}
+                label={t(complaintsAction.labelKey)}
+                variant="compact"
+                onPress={handleQuickAction}
+              />
+              <QuickActionCard
+                action={petitionAction}
+                colors={Colors}
+                styles={styles}
+                label={t(petitionAction.labelKey)}
+                variant="compact"
+                onPress={handleQuickAction}
+              />
+            </View>
+          </View>
+          <QuickActionCard
+            action={pollAction}
+            colors={Colors}
+            styles={styles}
+            label={`${t(pollAction.labelKey)} & ${t('polls')}`}
+            variant="wide"
+            onPress={handleQuickAction}
+          />
         </View>
 
         {/* Recent Complaints */}
@@ -356,13 +423,23 @@ const createStyles = (Colors: AppColors) => ({
     marginTop: Spacing[1],
     lineHeight: 20,
   },
-  sectionTitle: {
-    fontSize: FontSize.md,
-    lineHeight: 24,
-    fontWeight: FontWeight.semiBold,
-    color: Colors.text,
+  quickHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing[4],
     marginTop: Spacing[4],
+    marginBottom: Spacing[3],
+  },
+  quickHeaderTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[1],
+  },
+  viewAllBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -379,23 +456,23 @@ const createStyles = (Colors: AppColors) => ({
     color: Colors.text,
   },
   seeAll: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: '500'},
-  actionsGrid: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  actionsPanel: {
     paddingHorizontal: Spacing[4],
     marginBottom: Spacing[4],
-    minHeight: 200,
+    gap: Spacing[3],
   },
-  actionCardWrapper: {
-    width: '48%',
-    marginBottom: Spacing[3],
+  actionsTopRow: {
+    flexDirection: 'row',
+    gap: Spacing[3],
+    minHeight: 238,
+  },
+  actionsSideColumn: {
+    flex: 0.95,
+    gap: Spacing[3],
   },
   actionCard: {
-    alignItems: 'center',
-    paddingVertical: Spacing[5],
-    paddingHorizontal: Spacing[3],
+    position: 'relative',
+    overflow: 'hidden',
     borderRadius: BorderRadius['2xl'],
     borderWidth: 1,
     borderColor: Colors.borderLight,
@@ -405,25 +482,81 @@ const createStyles = (Colors: AppColors) => ({
     shadowRadius: 22,
     elevation: 5,
   },
+  actionCardFeature: {
+    flex: 1.15,
+    minHeight: 238,
+    justifyContent: 'space-between',
+    padding: Spacing[5],
+    borderColor: Colors.warning,
+  },
+  actionCardCompact: {
+    flex: 1,
+    minHeight: 112,
+    justifyContent: 'space-between',
+    padding: Spacing[3],
+  },
+  actionCardWide: {
+    minHeight: 92,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing[4],
+    gap: Spacing[3],
+    borderColor: Colors.secondarySoft,
+  },
   actionIconWrap: {
-    width: 54,
-    height: 54,
+    width: 56,
+    height: 56,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing[3],
     shadowColor: Colors.black,
     shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 2,
   },
+  actionIconFeature: {
+    width: 68,
+    height: 68,
+  },
+  actionIconWide: {
+    width: 62,
+    height: 62,
+  },
+  actionCopy: {flex: 1, paddingRight: Spacing[4]},
   actionLabel: {
     fontSize: FontSize.sm,
-    fontWeight: FontWeight.semiBold,
+    fontWeight: FontWeight.bold,
     color: Colors.text,
-    textAlign: 'center',
+    marginBottom: Spacing[1],
+  },
+  actionSubtitle: {
+    fontSize: FontSize.xs,
+    lineHeight: 17,
+    color: Colors.textSecondary,
+  },
+  actionArrow: {
+    position: 'absolute',
+    right: Spacing[3],
+    top: '50%',
+    marginTop: -15,
+    width: 30,
+    height: 30,
+    borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionArrowFeature: {
+    position: 'absolute',
+    right: Spacing[4],
+    bottom: Spacing[4],
+    top: undefined,
+    marginTop: 0,
+    width: 36,
+    height: 36,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.warning,
   },
   complaintRow: {
     flexDirection: 'row',

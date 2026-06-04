@@ -29,7 +29,11 @@ export const SuccessScreen: React.FC = () => {
     if (kind === 'complaint') {
       navigation.replace('ComplaintTicket', {ticketId: refId});
     } else {
-      navigation.goBack();
+      navigation.popToTop?.();
+      navigation.navigate('CitizenTabs', {
+        screen: 'MyComplaints',
+        params: {initial: 'petitions'},
+      });
     }
   };
 

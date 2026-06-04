@@ -12,6 +12,7 @@ import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import Toast from 'react-native-toast-message';
 import {RootNavigator} from './src/navigation/RootNavigator';
 import {SosButton} from './src/components/common/SosButton';
+import {AppAlertProvider} from './src/components/common/AppAlert';
 import {useThemeStore} from './src/store/themeStore';
 import {useLanguageStore} from './src/store/languageStore';
 import {useStartupPermissions} from './src/hooks/useStartupPermissions';
@@ -59,10 +60,12 @@ function App(): React.JSX.Element {
             translucent={false}
           />
           <BottomSheetModalProvider>
-            <NavigationContainer theme={navigationTheme}>
-              <RootNavigator />
-            </NavigationContainer>
-            <SosButton />
+            <AppAlertProvider>
+              <NavigationContainer theme={navigationTheme}>
+                <RootNavigator />
+              </NavigationContainer>
+              <SosButton />
+            </AppAlertProvider>
           </BottomSheetModalProvider>
           <Toast />
         </QueryClientProvider>

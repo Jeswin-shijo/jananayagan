@@ -1,7 +1,8 @@
 import {useState, useCallback, useMemo} from 'react';
-import {Platform, Alert, ActionSheetIOS} from 'react-native';
+import {Platform, ActionSheetIOS} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {useTranslation} from '@hooks/useTranslation';
+import {useAppAlert} from '@components/common/AppAlert';
 
 interface UseImagePickerOptions {
   allowVideos?: boolean;
@@ -20,6 +21,7 @@ export const useImagePicker = (
   options: UseImagePickerOptions = {},
 ): UseImagePickerResult => {
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const allowVideos = options.allowVideos ?? false;
   const [selectedImages, setSelectedImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [isPickerLoading, setIsPickerLoading] = useState(false);
@@ -39,7 +41,12 @@ export const useImagePicker = (
   const openCamera = useCallback(async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert(t('permissionRequired'), t('cameraPermissionMessage'));
+      showAlert({
+        title: t('permissionRequired'),
+        message: t('cameraPermissionMessage'),
+        variant: 'warning',
+        icon: 'camera-off-outline',
+      });
       return;
     }
     setIsPickerLoading(true);
@@ -55,12 +62,17 @@ export const useImagePicker = (
     } finally {
       setIsPickerLoading(false);
     }
-  }, [handleAssets, mediaTypes, t]);
+  }, [handleAssets, mediaTypes, showAlert, t]);
 
   const openGallery = useCallback(async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert(t('permissionRequired'), t('galleryPermissionMessage'));
+      showAlert({
+        title: t('permissionRequired'),
+        message: t('galleryPermissionMessage'),
+        variant: 'warning',
+        icon: 'image-off-outline',
+      });
       return;
     }
     setIsPickerLoading(true);
@@ -79,11 +91,16 @@ export const useImagePicker = (
     } finally {
       setIsPickerLoading(false);
     }
-  }, [handleAssets, mediaTypes, maxImages, selectedImages.length, t]);
+  }, [handleAssets, mediaTypes, maxImages, selectedImages.length, showAlert, t]);
 
   const openPicker = useCallback(async () => {
     if (selectedImages.length >= maxImages) {
-      Alert.alert(t('limitReached'), t('limitReachedMessage', {count: maxImages}));
+      showAlert({
+        title: t('limitReached'),
+        message: t('limitReachedMessage', {count: maxImages}),
+        variant: 'warning',
+        icon: 'image-multiple-outline',
+      });
       return;
     }
 
@@ -98,13 +115,18 @@ export const useImagePicker = (
         },
       );
     } else {
-      Alert.alert(title, '', [
-        {text: t('camera'), onPress: openCamera},
-        {text: t('gallery'), onPress: openGallery},
-        {text: t('cancel'), style: 'cancel'},
-      ]);
+      showAlert({
+        title,
+        variant: 'info',
+        icon: allowVideos ? 'image-multiple-outline' : 'camera-plus-outline',
+        actions: [
+          {text: t('cancel'), style: 'cancel'},
+          {text: t('camera'), onPress: openCamera},
+          {text: t('gallery'), onPress: openGallery},
+        ],
+      });
     }
-  }, [selectedImages.length, maxImages, allowVideos, openCamera, openGallery, t]);
+  }, [selectedImages.length, maxImages, allowVideos, openCamera, openGallery, showAlert, t]);
 
   const removeImage = useCallback((uri: string) => {
     setSelectedImages(prev => prev.filter(img => img.uri !== uri));

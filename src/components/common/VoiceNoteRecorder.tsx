@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   useAudioRecorder,
@@ -12,6 +12,7 @@ import {
 } from 'expo-audio';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
+import {useAppAlert} from '@components/common/AppAlert';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -72,6 +73,7 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({value, onCh
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder);
   const [busy, setBusy] = useState(false);
@@ -84,7 +86,12 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({value, onCh
     try {
       const perm = await AudioModule.requestRecordingPermissionsAsync();
       if (!perm.granted) {
-        Alert.alert(t('micPermissionNeeded'), t('micPermissionMessage'));
+        showAlert({
+          title: t('micPermissionNeeded'),
+          message: t('micPermissionMessage'),
+          variant: 'warning',
+          icon: 'microphone-off',
+        });
         return;
       }
       setBusy(true);
@@ -92,7 +99,12 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({value, onCh
       await recorder.prepareToRecordAsync();
       recorder.record();
     } catch (e) {
-      Alert.alert(t('recordingError'), String(e));
+      showAlert({
+        title: t('recordingError'),
+        message: String(e),
+        variant: 'danger',
+        icon: 'alert-circle-outline',
+      });
     } finally {
       setBusy(false);
     }
@@ -107,7 +119,12 @@ export const VoiceNoteRecorder: React.FC<VoiceNoteRecorderProps> = ({value, onCh
         onChange(recorder.uri);
       }
     } catch (e) {
-      Alert.alert(t('recordingError'), String(e));
+      showAlert({
+        title: t('recordingError'),
+        message: String(e),
+        variant: 'danger',
+        icon: 'alert-circle-outline',
+      });
     } finally {
       setBusy(false);
     }

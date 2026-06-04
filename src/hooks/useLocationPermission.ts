@@ -1,7 +1,8 @@
 import {useState, useCallback} from 'react';
-import {Linking, Alert} from 'react-native';
+import {Linking} from 'react-native';
 import * as Location from 'expo-location';
 import {useLocationStore} from '@store/locationStore';
+import {useAppAlert} from '@components/common/AppAlert';
 
 type PermissionStatus = 'unknown' | 'granted' | 'denied' | 'blocked';
 
@@ -12,6 +13,7 @@ interface UseLocationPermissionResult {
 
 export const useLocationPermission = (): UseLocationPermissionResult => {
   const {permissionStatus, setPermissionStatus} = useLocationStore();
+  const {showAlert} = useAppAlert();
   const [localStatus, setLocalStatus] = useState<PermissionStatus>(permissionStatus);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
@@ -26,14 +28,16 @@ export const useLocationPermission = (): UseLocationPermissionResult => {
     if (!checked.canAskAgain) {
       setPermissionStatus('blocked');
       setLocalStatus('blocked');
-      Alert.alert(
-        'Location Permission Required',
-        'Please enable location access in Settings to use this feature.',
-        [
+      showAlert({
+        title: 'Location Permission Required',
+        message: 'Please enable location access in Settings to use this feature.',
+        variant: 'warning',
+        icon: 'map-marker-alert-outline',
+        actions: [
           {text: 'Cancel', style: 'cancel'},
           {text: 'Open Settings', onPress: () => Linking.openSettings()},
         ],
-      );
+      });
       return false;
     }
 
@@ -47,7 +51,7 @@ export const useLocationPermission = (): UseLocationPermissionResult => {
     setPermissionStatus('denied');
     setLocalStatus('denied');
     return false;
-  }, [setPermissionStatus]);
+  }, [setPermissionStatus, showAlert]);
 
   return {permissionStatus: localStatus, requestPermission};
 };

@@ -37,6 +37,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
   const {login} = useAuthStore();
 
   useEffect(() => {
+    const focusTimer = setTimeout(() => inputs.current[0]?.focus(), 300);
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -47,7 +48,10 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(focusTimer);
+      clearInterval(timer);
+    };
   }, []);
 
   const handleOTPChange = (text: string, index: number) => {

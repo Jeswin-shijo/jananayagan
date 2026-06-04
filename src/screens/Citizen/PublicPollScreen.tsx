@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Poll} from '@appTypes/api';
@@ -12,6 +12,7 @@ import {AppEmptyState} from '@components/common/AppEmptyState';
 import {AppChip} from '@components/common/AppChip';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {useAppAlert} from '@components/common/AppAlert';
 import {MOCK_POLLS} from '@utils/mockData';
 import {formatDate} from '@utils/formatters';
 import {AppColors} from '@constants/colors';
@@ -25,6 +26,7 @@ export const PublicPollScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const [polls, setPolls] = useState(MOCK_POLLS);
   const [filter, setFilter] = useState<PollFilter>('active');
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
@@ -39,7 +41,12 @@ export const PublicPollScreen: React.FC = () => {
   const handleVote = (pollId: string) => {
     const optionId = selectedOptions[pollId];
     if (!optionId) {
-      Alert.alert(t('chooseOption'), t('chooseOptionMessage'));
+      showAlert({
+        title: t('chooseOption'),
+        message: t('chooseOptionMessage'),
+        variant: 'warning',
+        icon: 'checkbox-marked-circle-outline',
+      });
       return;
     }
     // TODO: call submitVote API
@@ -53,7 +60,12 @@ export const PublicPollScreen: React.FC = () => {
           : p,
       ),
     );
-    Alert.alert(t('voteSubmitted'), t('voteSubmittedMessage'));
+    showAlert({
+      title: t('voteSubmitted'),
+      message: t('voteSubmittedMessage'),
+      variant: 'success',
+      icon: 'poll',
+    });
   };
 
   const renderPoll = ({item}: {item: Poll}) => {

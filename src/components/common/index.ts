@@ -8,6 +8,7 @@ export * from './AppErrorState';
 export * from './AppHeader';
 export * from './AppProgressBar';
 export * from './AppChip';
+export * from './AppAlert';
 export * from './OfflineBanner';
 export * from './FloatingTabBar';
 export * from './DrawerHeader';

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +17,7 @@ import {LinearGradient} from 'react-native-linear-gradient';
 import {AppButton} from '@components/common/AppButton';
 import {AppHeader} from '@components/common/AppHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {useAppAlert} from '@components/common/AppAlert';
 import {useImagePicker} from '@hooks/useImagePicker';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
@@ -30,6 +30,7 @@ export const CreatePostScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const navigation = useNavigation<any>();
   const user = useAuthStore(s => s.user);
   const {selectedImages, openPicker, removeImage, clearImages, isPickerLoading} = useImagePicker(6, {allowVideos: true});
@@ -53,7 +54,12 @@ export const CreatePostScreen: React.FC = () => {
 
     clearImages();
     setDescription('');
-    Alert.alert(t('postPublished'), t('postPublishedMessage'));
+    showAlert({
+      title: t('postPublished'),
+      message: t('postPublishedMessage'),
+      variant: 'success',
+      icon: 'check-circle-outline',
+    });
 
     const routeNames = navigation.getState?.().routeNames ?? [];
     if (routeNames.includes('CitizenTabs')) {

@@ -1,11 +1,12 @@
 import React, {useMemo, useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
-import {View, Text, ScrollView, Alert, Switch, TouchableOpacity, Modal, Pressable} from 'react-native';
+import {View, Text, ScrollView, Switch, TouchableOpacity, Modal, Pressable} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {useAppAlert} from '@components/common/AppAlert';
 import {useAuthStore} from '@store/authStore';
 import {useThemeStore} from '@store/themeStore';
 import {useLanguageStore} from '@store/languageStore';
@@ -21,6 +22,7 @@ export const ProfileScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t, language} = useTranslation();
+  const {showAlert} = useAppAlert();
   const {user, logout} = useAuthStore();
   const {isDark, toggleMode} = useThemeStore();
   const setLanguage = useLanguageStore(state => state.setLanguage);
@@ -32,10 +34,15 @@ export const ProfileScreen: React.FC = () => {
   );
 
   const handleLogout = () => {
-    Alert.alert(t('logout'), t('logoutMessage'), [
-      {text: t('cancel'), style: 'cancel'},
-      {text: t('logout'), style: 'destructive', onPress: logout},
-    ]);
+    showAlert({
+      title: t('logout'),
+      message: t('logoutMessage'),
+      variant: 'danger',
+      actions: [
+        {text: t('cancel'), style: 'cancel'},
+        {text: t('logout'), style: 'destructive', onPress: logout},
+      ],
+    });
   };
 
   // Same rows/actions as before — only the styling changed.

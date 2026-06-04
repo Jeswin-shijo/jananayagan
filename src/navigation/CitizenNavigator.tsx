@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {CitizenTabParamList, CitizenStackParamList} from '@appTypes/navigation';
 import {CitizenHomeScreen} from '@screens/Citizen/CitizenHomeScreen';
@@ -12,20 +13,34 @@ import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
 import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
 import {ReportProblemScreen} from '@screens/Citizen/ReportProblemScreen';
 import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
+import {PetitionDetailScreen} from '@screens/Citizen/PetitionDetailScreen';
 import {ProfileScreen} from '@screens/Shared/ProfileScreen';
 import {NotificationsScreen} from '@screens/Shared/NotificationsScreen';
 import {SuccessScreen} from '@screens/Shared/SuccessScreen';
 import {FloatingTabBar} from '@components/common/FloatingTabBar';
 import {useAppColors} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
+import {useAuthStore} from '@store/authStore';
 
 const Tab = createBottomTabNavigator<CitizenTabParamList>();
 const Stack = createNativeStackNavigator<CitizenStackParamList>();
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
+const PetitionTabScreen: React.FC = () => {
+  const Colors = useAppColors();
+
+  return (
+    <SafeAreaView edges={['top']} style={{flex: 1, backgroundColor: Colors.background}}>
+      <SubmitPetitionScreen embedded />
+    </SafeAreaView>
+  );
+};
+
 const CitizenTabs: React.FC = () => {
   const Colors = useAppColors();
   const {t} = useTranslation();
+  const gender = useAuthStore(state => state.user?.gender);
+  const showSafetyTab = gender === 'female';
 
   return (
     <Tab.Navigator
@@ -40,6 +55,7 @@ const CitizenTabs: React.FC = () => {
             CommunityFeed: {active: 'home-variant', inactive: 'home-variant-outline'},
             MyComplaints: {active: 'file-document', inactive: 'file-document-outline'},
             Safety: {active: 'shield-check', inactive: 'shield-check-outline'},
+            Petition: {active: 'file-sign', inactive: 'file-sign'},
             Profile: {active: 'account', inactive: 'account-outline'},
           };
           const icon = icons[route.name];
@@ -54,7 +70,11 @@ const CitizenTabs: React.FC = () => {
       })}>
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
       <Tab.Screen name="MyComplaints" component={MyActivityScreen} options={{title: t('complaints')}} />
-      <Tab.Screen name="Safety" component={WomenSafetyScreen} options={{title: t('safety')}} />
+      {showSafetyTab ? (
+        <Tab.Screen name="Safety" component={WomenSafetyScreen} options={{title: t('safety')}} />
+      ) : (
+        <Tab.Screen name="Petition" component={PetitionTabScreen} options={{title: t('petition')}} />
+      )}
       <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>
   );
@@ -69,6 +89,7 @@ export const CitizenNavigator: React.FC = () => (
     <Stack.Screen name="Notifications" component={NotificationsScreen} />
     <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
     <Stack.Screen name="ComplaintTicket" component={ComplaintTicketScreen} />
+    <Stack.Screen name="PetitionDetail" component={PetitionDetailScreen} />
     <Stack.Screen name="ComplaintDetail" component={ComplaintTicketScreen as any} />
     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
     <Stack.Screen name="Success" component={SuccessScreen} />

@@ -9,7 +9,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -25,6 +24,7 @@ import {AppChip} from '@components/common/AppChip';
 import {VoiceNoteRecorder} from '@components/common/VoiceNoteRecorder';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {useAppAlert} from '@components/common/AppAlert';
 import {useImagePicker} from '@hooks/useImagePicker';
 import {useCurrentLocation} from '@hooks/useCurrentLocation';
 import {useLocationStore} from '@store/locationStore';
@@ -53,6 +53,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('medium');
@@ -87,7 +88,12 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
     }
     setMessageError('');
     if (selectedImages.length === 0) {
-      Alert.alert(t('photoRequired'), t('photoRequiredMessage'));
+      showAlert({
+        title: t('photoRequired'),
+        message: t('photoRequiredMessage'),
+        variant: 'warning',
+        icon: 'camera-plus-outline',
+      });
       return;
     }
     setIsSubmitting(true);

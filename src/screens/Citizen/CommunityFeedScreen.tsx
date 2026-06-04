@@ -437,7 +437,11 @@ export const CommunityFeedScreen: React.FC = () => {
 
 const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
-  list: {padding: Spacing[4], paddingBottom: Spacing[16]},
+  list: {
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[6],
+    paddingBottom: Spacing[16],
+  },
   header: {
     minHeight: 142,
     borderRadius: BorderRadius['2xl'],

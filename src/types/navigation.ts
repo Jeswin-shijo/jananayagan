@@ -19,6 +19,7 @@ export type CitizenTabParamList = {
   CommunityFeed: {newPost?: CommunityPostParam} | undefined;
   MyComplaints: {initial?: 'complaints' | 'petitions'} | undefined;
   Safety: undefined;
+  Petition: undefined;
   Profile: undefined;
 };
 
@@ -40,6 +41,7 @@ export type CitizenStackParamList = {
   Notifications: undefined;
   ReportProblem: undefined;
   ComplaintTicket: { ticketId: string };
+  PetitionDetail: { petitionId: string };
   Success: { kind: 'complaint' | 'petition'; refId: string };
   ComplaintDetail: { ticketId: string };
   CreatePost: undefined;

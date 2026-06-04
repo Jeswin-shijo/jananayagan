@@ -14,7 +14,7 @@ import {FontSize, FontWeight} from '@constants/typography';
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 // Tabs shown in the bar (4 + center FAB). Other registered tabs stay reachable via navigation.
-const VISIBLE_TABS = ['CommunityFeed', 'MyComplaints', 'Safety', 'Profile'];
+const VISIBLE_TABS = ['CommunityFeed', 'MyComplaints', 'Safety', 'Petition', 'Profile'];
 
 type CreateAction = {
   key: string;
@@ -52,7 +52,6 @@ const TabButton: React.FC<{
           </View>
         )}
       </View>
-      <View style={[styles.activeDot, isFocused && styles.activeDotOn]} />
       <Text style={[styles.tabLabel, {color}]} numberOfLines={1}>
         {label}
       </Text>
@@ -236,18 +235,10 @@ const createStyles = (Colors: AppColors) => ({
     paddingTop: Spacing[2],
     paddingBottom: Spacing[1],
   },
-  activeDot: {
-    width: 5,
-    height: 5,
-    borderRadius: BorderRadius.full,
-    marginTop: 3,
-    backgroundColor: 'transparent',
-  },
-  activeDotOn: {backgroundColor: Colors.primary},
   tabLabel: {
     fontSize: 10,
     fontWeight: FontWeight.semiBold,
-    marginTop: 1,
+    marginTop: 3,
   },
   tabBadge: {
     position: 'absolute',

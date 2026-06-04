@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {View, Text, ScrollView, Switch, Alert} from 'react-native';
+import {View, Text, ScrollView, Switch} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
@@ -9,6 +9,7 @@ import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppButton} from '@components/common/AppButton';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {useAppAlert} from '@components/common/AppAlert';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -27,19 +28,22 @@ export const ElectionModeScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
+  const {showAlert} = useAppAlert();
   const [electionModeOn, setElectionModeOn] = useState(false);
   const daysLeft = getDaysUntil(ELECTION_DATE);
 
   const handleToggle = (value: boolean) => {
     if (value) {
-      Alert.alert(
-        t('enableElectionMode'),
-        t('enableElectionModeMessage'),
-        [
+      showAlert({
+        title: t('enableElectionMode'),
+        message: t('enableElectionModeMessage'),
+        variant: 'warning',
+        icon: 'vote-outline',
+        actions: [
           {text: t('cancel'), style: 'cancel'},
           {text: t('enable'), onPress: () => setElectionModeOn(true)},
         ],
-      );
+      });
     } else {
       setElectionModeOn(false);
     }
@@ -113,7 +117,14 @@ export const ElectionModeScreen: React.FC = () => {
         {electionModeOn && (
           <AppButton
             title={t('sendVoterReminders')}
-            onPress={() => Alert.alert(t('remindersQueued'), t('remindersQueuedMessage'))}
+            onPress={() =>
+              showAlert({
+                title: t('remindersQueued'),
+                message: t('remindersQueuedMessage'),
+                variant: 'success',
+                icon: 'bell-check-outline',
+              })
+            }
             style={styles.reminderBtn}
           />
         )}
