@@ -17,8 +17,7 @@ export type CitizenTabParamList = {
   // The Community feed is the "Home" tab. Dashboard/Petition/Polls/Notifications are
   // pushed stack screens (see CitizenStackParamList) so they get proper back navigation.
   CommunityFeed: {newPost?: CommunityPostParam} | undefined;
-  MyComplaints: {initial?: 'complaints' | 'petitions'} | undefined;
-  Safety: undefined;
+  MyComplaints: undefined;
   Petition: undefined;
   Profile: undefined;
 };
@@ -38,6 +37,8 @@ export type CitizenStackParamList = {
   Dashboard: undefined;
   SubmitPetition: {mode?: 'browse' | 'create'} | undefined;
   PublicPoll: undefined;
+  Announcements: undefined;
+  WomenSafety: undefined;
   Notifications: undefined;
   ReportProblem: undefined;
   SilentReport: undefined;

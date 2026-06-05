@@ -1,5 +1,75 @@
 import {Complaint, Poll, Petition, Volunteer, SentimentData, Notification} from '@appTypes/api';
 
+// Civic announcements shown to citizens (power cuts, water supply, roadwork, etc.).
+export type AnnouncementCategory =
+  | 'power'
+  | 'water'
+  | 'roadwork'
+  | 'health'
+  | 'weather'
+  | 'event'
+  | 'general';
+
+export interface CitizenAnnouncement {
+  id: string;
+  category: AnnouncementCategory;
+  title: string;
+  body: string;
+  area: string;
+  createdAt: string;
+}
+
+export const MOCK_CITIZEN_ANNOUNCEMENTS: CitizenAnnouncement[] = [
+  {
+    id: 'an-1',
+    category: 'power',
+    title: 'Scheduled power cut today',
+    body: 'Power supply will be shut down from 10:00 AM to 2:00 PM for maintenance work on the main transformer.',
+    area: 'Anna Nagar',
+    createdAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+  },
+  {
+    id: 'an-2',
+    category: 'water',
+    title: 'Water supply interruption',
+    body: 'Drinking water supply will be disrupted tomorrow morning due to pipeline repair near the junction.',
+    area: 'T. Nagar',
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+  },
+  {
+    id: 'an-3',
+    category: 'roadwork',
+    title: 'Road re-laying work begins',
+    body: 'Main road re-laying starts Monday. Expect minor traffic diversions for about one week.',
+    area: 'Adyar',
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+  },
+  {
+    id: 'an-4',
+    category: 'health',
+    title: 'Free medical camp this Sunday',
+    body: 'Free health check-up and medicines at the community hall from 9:00 AM to 4:00 PM. All residents welcome.',
+    area: 'Velachery',
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+  },
+  {
+    id: 'an-5',
+    category: 'weather',
+    title: 'Heavy rain alert',
+    body: 'Heavy rainfall expected over the next 48 hours. Avoid low-lying areas and keep emergency numbers handy.',
+    area: 'Coimbatore',
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+  },
+  {
+    id: 'an-6',
+    category: 'event',
+    title: 'Ward grievance meeting',
+    body: 'Public grievance meeting with the local representative on Saturday at 10:00 AM in the community hall.',
+    area: 'Singanallur',
+    createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+  },
+];
+
 export const MOCK_COMPLAINTS: Complaint[] = [
   {
     id: '1',

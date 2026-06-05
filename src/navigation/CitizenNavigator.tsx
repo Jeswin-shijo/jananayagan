@@ -1,14 +1,14 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {CitizenTabParamList, CitizenStackParamList} from '@appTypes/navigation';
 import {CitizenHomeScreen} from '@screens/Citizen/CitizenHomeScreen';
-import {MyActivityScreen} from '@screens/Citizen/MyActivityScreen';
+import {MyComplaintsScreen} from '@screens/Citizen/MyComplaintsScreen';
 import {WomenSafetyScreen} from '@screens/Citizen/WomenSafetyScreen';
 import {SubmitPetitionScreen} from '@screens/Citizen/SubmitPetitionScreen';
 import {PublicPollScreen} from '@screens/Citizen/PublicPollScreen';
+import {AnnouncementsScreen} from '@screens/Citizen/AnnouncementsScreen';
 import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
 import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
 import {ReportProblemScreen} from '@screens/Citizen/ReportProblemScreen';
@@ -29,21 +29,11 @@ const Tab = createBottomTabNavigator<CitizenTabParamList>();
 const Stack = createNativeStackNavigator<CitizenStackParamList>();
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-const PetitionTabScreen: React.FC = () => {
-  const Colors = useAppColors();
-
-  return (
-    <SafeAreaView edges={['top']} style={{flex: 1, backgroundColor: Colors.background}}>
-      <SubmitPetitionScreen embedded />
-    </SafeAreaView>
-  );
-};
+const PetitionTabScreen: React.FC = () => <SubmitPetitionScreen embedded />;
 
 const CitizenTabs: React.FC = () => {
   const Colors = useAppColors();
   const {t} = useTranslation();
-  // Women Safety hub is available to every citizen login (not gender-gated).
-  const showSafetyTab = true;
 
   return (
     <Tab.Navigator
@@ -57,7 +47,6 @@ const CitizenTabs: React.FC = () => {
           const icons: Record<string, {active: MaterialCommunityIconName; inactive: MaterialCommunityIconName}> = {
             CommunityFeed: {active: 'home-variant', inactive: 'home-variant-outline'},
             MyComplaints: {active: 'file-document', inactive: 'file-document-outline'},
-            Safety: {active: 'shield-check', inactive: 'shield-check-outline'},
             Petition: {active: 'file-sign', inactive: 'file-sign'},
             Profile: {active: 'account', inactive: 'account-outline'},
           };
@@ -72,12 +61,8 @@ const CitizenTabs: React.FC = () => {
         },
       })}>
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
-      <Tab.Screen name="MyComplaints" component={MyActivityScreen} options={{title: t('complaints')}} />
-      {showSafetyTab ? (
-        <Tab.Screen name="Safety" component={WomenSafetyScreen} options={{title: t('safety')}} />
-      ) : (
-        <Tab.Screen name="Petition" component={PetitionTabScreen} options={{title: t('petition')}} />
-      )}
+      <Tab.Screen name="MyComplaints" component={MyComplaintsScreen} options={{title: t('complaints')}} />
+      <Tab.Screen name="Petition" component={PetitionTabScreen} options={{title: t('petition')}} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>
   );
@@ -89,6 +74,8 @@ export const CitizenNavigator: React.FC = () => (
     <Stack.Screen name="Dashboard" component={CitizenHomeScreen} />
     <Stack.Screen name="SubmitPetition" component={SubmitPetitionScreen} />
     <Stack.Screen name="PublicPoll" component={PublicPollScreen} />
+    <Stack.Screen name="Announcements" component={AnnouncementsScreen} />
+    <Stack.Screen name="WomenSafety" component={WomenSafetyScreen} />
     <Stack.Screen name="Notifications" component={NotificationsScreen} />
     <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
     <Stack.Screen name="SilentReport" component={SilentReportScreen} />

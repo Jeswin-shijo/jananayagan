@@ -323,43 +323,46 @@ export const CommunityFeedScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <OfflineBanner />
+      {isCitizen && (
+        <Animated.View entering={FadeInUp.duration(420)} style={styles.stickyQuickLinks}>
+          <View style={styles.quickBanner}>
+            <LinearGradient
+              colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+              style={StyleSheet.absoluteFill}
+            />
+            <Text style={styles.quickTitle}>{t('quickLinks')}</Text>
+            <View style={styles.quickRow}>
+              <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Dashboard')}>
+                <View style={styles.quickIcon}>
+                  <MaterialCommunityIcons name="view-dashboard-outline" size={22} color={Colors.primary} />
+                </View>
+                <Text style={styles.quickLabel}>{t('dashboard')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Notifications')}>
+                <View style={styles.quickIcon}>
+                  <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.primary} />
+                  {unreadCount > 0 && (
+                    <View style={styles.quickBadge}>
+                      <Text style={styles.quickBadgeText}>{unreadCount}</Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={styles.quickLabel}>{t('notifications')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Animated.View>
+      )}
       <FlatList
         data={posts}
         keyExtractor={item => item.id}
         renderItem={renderPost}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, isCitizen && styles.listCitizen]}
         ListHeaderComponent={
-          isCitizen ? (
-            <Animated.View entering={FadeInUp.duration(420)} style={styles.quickBanner}>
-              <LinearGradient
-                colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}
-                style={StyleSheet.absoluteFill}
-              />
-              <Text style={styles.quickTitle}>{t('quickLinks')}</Text>
-              <View style={styles.quickRow}>
-                <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Dashboard')}>
-                  <View style={styles.quickIcon}>
-                    <MaterialCommunityIcons name="view-dashboard-outline" size={22} color={Colors.primary} />
-                  </View>
-                  <Text style={styles.quickLabel}>{t('dashboard')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Notifications')}>
-                  <View style={styles.quickIcon}>
-                    <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.primary} />
-                    {unreadCount > 0 && (
-                      <View style={styles.quickBadge}>
-                        <Text style={styles.quickBadgeText}>{unreadCount}</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.quickLabel}>{t('notifications')}</Text>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-          ) : (
+          isCitizen ? null : (
             <Animated.View entering={FadeInUp.duration(420)} style={styles.header}>
               <LinearGradient
                 colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
@@ -441,6 +444,15 @@ const createStyles = (Colors: AppColors) => ({
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[6],
     paddingBottom: Spacing[16],
+  },
+  listCitizen: {
+    paddingTop: Spacing[3],
+  },
+  stickyQuickLinks: {
+    backgroundColor: Colors.background,
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[3],
+    zIndex: 10,
   },
   header: {
     minHeight: 142,

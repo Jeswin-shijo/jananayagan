@@ -20,16 +20,16 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {CitizenStackParamList, CitizenTabParamList} from '@appTypes/navigation';
-import {AppBadge} from '@components/common/AppBadge';
 import {AppHeader} from '@components/common/AppHeader';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {useNotificationStore} from '@store/notificationStore';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
-import {MOCK_COMPLAINTS, MOCK_POLLS} from '@utils/mockData';
+import {MOCK_CITIZEN_ANNOUNCEMENTS, MOCK_POLLS} from '@utils/mockData';
+import {ANNOUNCEMENT_META} from '@screens/Citizen/AnnouncementsScreen';
 import {formatRelativeTime} from '@utils/formatters';
 
 type Nav = NativeStackNavigationProp<CitizenStackParamList>;
@@ -64,7 +64,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'complaints',
     icon: 'clipboard-text-outline',
     labelKey: 'myComplaints',
-    subtitle: 'Track and manage your complaints',
+    subtitle: 'Manage your complaints',
     tile: 'tileBlue',
     iconColor: 'primary',
     route: {type: 'tab', screen: 'MyComplaints'},
@@ -156,9 +156,15 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
           color={colors.textOnPrimary}
         />
       </View>
-      <View style={[styles.actionCopy, variant === 'compact' && styles.actionCopyCompact]}>
+      <View
+        style={[
+          styles.actionCopy,
+          variant === 'compact' && styles.actionCopyCompact,
+          variant === 'feature' && styles.actionCopyFeature,
+        ]}>
         <Text style={[styles.actionLabel, variant === 'feature' && styles.actionLabelFeature]}>{label}</Text>
         <Text
+          numberOfLines={variant === 'compact' ? 1 : undefined}
           style={[styles.actionSubtitle, variant === 'feature' && styles.actionSubtitleFeature]}>
           {action.subtitle}
         </Text>
@@ -308,47 +314,51 @@ export const CitizenHomeScreen: React.FC = () => {
           />
         </View>
 
-        {/* Recent Complaints — dark navy section (two-tone) */}
+        {/* Announcements — dark navy section (two-tone) */}
         <View style={styles.darkSection}>
           <LinearGradient
-            colors={['#102A47', '#0A1626']}
+            colors={[Navy.surface, Navy.base]}
             start={{x: 0, y: 0}}
             end={{x: 0, y: 1}}
             style={StyleSheet.absoluteFill}
           />
           <View style={styles.darkHeader}>
             <View style={styles.darkHeaderTitle}>
-              <MaterialCommunityIcons name="file-document-outline" size={18} color="#8FC0FF" />
-              <Text style={styles.darkSectionTitle}>{t('recentComplaints')}</Text>
+              <MaterialCommunityIcons name="bullhorn-outline" size={18} color="#8FC0FF" />
+              <Text style={styles.darkSectionTitle}>{t('announcements')}</Text>
             </View>
             <TouchableOpacity
               style={styles.darkSeeAllBtn}
-              onPress={() => navigation.navigate('CitizenTabs', {screen: 'MyComplaints'})}>
+              onPress={() => navigation.navigate('Announcements')}>
               <Text style={styles.darkSeeAll}>{t('viewAll')}</Text>
               <MaterialCommunityIcons name="chevron-right" size={18} color="#8FC0FF" />
             </TouchableOpacity>
           </View>
 
-          {MOCK_COMPLAINTS.slice(0, 3).map(complaint => (
-            <TouchableOpacity
-              key={complaint.id}
-              style={styles.darkCard}
-              activeOpacity={0.85}
-              onPress={() => navigation.navigate('ComplaintTicket', {ticketId: complaint.ticketId})}>
-              <View style={styles.darkCardBody}>
-                <Text style={styles.darkId}>{complaint.ticketId}</Text>
-                <Text style={styles.darkDesc} numberOfLines={2}>{complaint.description}</Text>
-                <Text style={styles.darkDate}>{formatRelativeTime(complaint.createdAt)}</Text>
-              </View>
-              <View style={styles.darkCardRight}>
-                <AppBadge status={complaint.status} />
-                <MaterialCommunityIcons name="chevron-right" size={20} color="#6B819B" />
-              </View>
-            </TouchableOpacity>
-          ))}
+          {MOCK_CITIZEN_ANNOUNCEMENTS.slice(0, 2).map(item => {
+            const meta = ANNOUNCEMENT_META[item.category];
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.darkCard}
+                activeOpacity={0.85}
+                // onPress={() => navigation.navigate('Announcements')}
+                >
+                <View style={[styles.darkIconBubble, {backgroundColor: meta.bg}]}>
+                  <MaterialCommunityIcons name={meta.icon} size={20} color={meta.color} />
+                </View>
+                <View style={styles.darkCardBody}>
+                  <Text style={styles.darkDesc} numberOfLines={1}>{item.title}</Text>
+                  <Text style={styles.darkAnnouncementBody} numberOfLines={2}>{item.body}</Text>
+                  <Text style={styles.darkDate}>{item.area} • {formatRelativeTime(item.createdAt)}</Text>
+                </View>
+                {/* <MaterialCommunityIcons name="chevron-right" size={20} color="#6B819B" /> */}
+              </TouchableOpacity>
+            );
+          })}
 
           {/* Active Poll Banner */}
-          {MOCK_POLLS.filter(p => p.status === 'active').length > 0 && (
+          {/* {MOCK_POLLS.filter(p => p.status === 'active').length > 0 && (
             <TouchableOpacity
               style={styles.darkPoll}
               activeOpacity={0.85}
@@ -364,7 +374,7 @@ export const CitizenHomeScreen: React.FC = () => {
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color="#6B819B" />
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
       </Animated.ScrollView>
       <CitizenCreateFab />
@@ -535,7 +545,7 @@ const createStyles = (Colors: AppColors) => ({
   actionsTopRow: {
     flexDirection: 'row',
     gap: Spacing[3],
-    minHeight: 238,
+    minHeight: 190,
   },
   actionsSideColumn: {
     flex: 0.95,
@@ -555,14 +565,15 @@ const createStyles = (Colors: AppColors) => ({
   },
   actionCardFeature: {
     flex: 1.15,
-    minHeight: 238,
-    justifyContent: 'space-between',
-    padding: Spacing[5],
+    minHeight: 190,
+    // alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing[4],
     borderColor: Colors.accentOrange,
   },
   actionCardCompact: {
     flex: 1,
-    minHeight: 112,
+    minHeight: 89,
     justifyContent: 'space-between',
     padding: Spacing[3],
   },
@@ -575,8 +586,8 @@ const createStyles = (Colors: AppColors) => ({
     borderColor: Colors.secondarySoft,
   },
   actionIconWrap: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     borderRadius: BorderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -587,19 +598,20 @@ const createStyles = (Colors: AppColors) => ({
     elevation: 2,
   },
   actionIconFeature: {
-    width: 60,
-    height: 60,
+    width: 52,
+    height: 52,
   },
   actionIconCompact: {
-    width: 46,
-    height: 46,
+    width: 40,
+    height: 40,
   },
   actionIconWide: {
     width: 62,
     height: 62,
   },
   actionCopy: {flex: 1, paddingRight: Spacing[4]},
-  actionCopyCompact: {paddingRight: Spacing[8]},
+  actionCopyCompact: {paddingRight: Spacing[5]},
+  actionCopyFeature: {flex: 0, marginTop: Spacing[3]},
   actionLabel: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
@@ -609,6 +621,7 @@ const createStyles = (Colors: AppColors) => ({
   actionLabelFeature: {
     fontSize: FontSize.lg,
     marginBottom: Spacing[2],
+    // textAlign: 'center',
   },
   actionSubtitle: {
     fontSize: FontSize.xs,
@@ -618,6 +631,7 @@ const createStyles = (Colors: AppColors) => ({
   actionSubtitleFeature: {
     fontSize: FontSize.sm,
     lineHeight: 20,
+    // textAlign: 'center',
   },
   actionArrow: {
     position: 'absolute',
@@ -650,7 +664,7 @@ const createStyles = (Colors: AppColors) => ({
     borderTopLeftRadius: BorderRadius['2xl'],
     borderTopRightRadius: BorderRadius['2xl'],
     overflow: 'hidden',
-    backgroundColor: '#0A1626',
+    backgroundColor: Navy.base,
   },
   darkHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing[4]},
   darkHeaderTitle: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
@@ -660,30 +674,32 @@ const createStyles = (Colors: AppColors) => ({
   darkCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#13294A',
+    backgroundColor: Navy.surface,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: '#1E3A5F',
     padding: Spacing[4],
     marginBottom: Spacing[3],
   },
-  darkCardBody: {flex: 1, paddingRight: Spacing[3]},
+  darkCardBody: {flex: 1, paddingHorizontal: Spacing[3]},
+  darkIconBubble: {width: 40, height: 40, borderRadius: BorderRadius.full, alignItems: 'center', justifyContent: 'center'},
   darkId: {fontSize: FontSize.xs, color: '#8FC0FF', fontWeight: FontWeight.semiBold, marginBottom: 2},
   darkDesc: {fontSize: FontSize.base, color: '#EAF1FB', fontWeight: FontWeight.semiBold, lineHeight: 20},
+  darkAnnouncementBody: {fontSize: FontSize.sm, color: '#B7C7DC', lineHeight: 18, marginTop: 2},
   darkDate: {fontSize: FontSize.xs, color: '#90A4BD', marginTop: 4},
   darkCardRight: {alignItems: 'flex-end', gap: Spacing[2]},
   darkPoll: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing[3],
-    backgroundColor: '#13294A',
+    backgroundColor: Navy.surface,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: '#1E3A5F',
     padding: Spacing[4],
     marginTop: Spacing[1],
   },
-  darkPollIcon: {width: 44, height: 44, borderRadius: BorderRadius.full, backgroundColor: '#0A1626', alignItems: 'center', justifyContent: 'center'},
+  darkPollIcon: {width: 44, height: 44, borderRadius: BorderRadius.full, backgroundColor: Navy.base, alignItems: 'center', justifyContent: 'center'},
   darkPollText: {flex: 1},
   darkPollTitle: {fontSize: FontSize.base, fontWeight: FontWeight.bold, color: '#EAF1FB'},
   darkPollSub: {fontSize: FontSize.sm, color: '#90A4BD', marginTop: 2},

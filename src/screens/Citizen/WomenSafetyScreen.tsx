@@ -168,7 +168,14 @@ export const WomenSafetyScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       <View style={styles.topBar}>
-        <Text style={styles.brand}>{t('womenSafetyHub')}</Text>
+        <View style={styles.topLeft}>
+          {navigation.canGoBack() && (
+            <TouchableOpacity style={styles.topIcon} onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+            </TouchableOpacity>
+          )}
+          <Text style={styles.brand}>{t('womenSafetyHub')}</Text>
+        </View>
         <View style={styles.topActions}>
           <TouchableOpacity style={styles.topIcon} onPress={() => navigation.navigate('Notifications')}>
             <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.text} />
@@ -299,6 +306,7 @@ export const WomenSafetyScreen: React.FC = () => {
 const createStyles = (Colors: AppColors) => ({
   container: {flex: 1, backgroundColor: Colors.background},
   topBar: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing[4], paddingVertical: Spacing[2]},
+  topLeft: {flexDirection: 'row', alignItems: 'center', gap: Spacing[1]},
   brand: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
   topActions: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
   topIcon: {width: 40, height: 40, borderRadius: BorderRadius.full, alignItems: 'center', justifyContent: 'center'},
@@ -321,12 +329,12 @@ const createStyles = (Colors: AppColors) => ({
   heroSub: {fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: Spacing[1]},
   heroShield: {position: 'absolute', right: Spacing[5], top: '50%', marginTop: -42, width: 84, height: 84, borderRadius: BorderRadius.full, backgroundColor: 'rgba(124,58,237,0.12)', alignItems: 'center', justifyContent: 'center'},
   heroImage: {position: 'absolute', right: 0, bottom: 0, width: 154, height: 188},
-  sosSection: {alignItems: 'center', marginTop: Spacing[2], marginBottom: Spacing[6]},
-  sosBigWrap: {width: 320, height: 300, alignItems: 'center', justifyContent: 'center'},
+  sosSection: {alignItems: 'center', marginTop: Spacing[1], marginBottom: Spacing[3]},
+  sosBigWrap: {width: 320, height: 220, alignItems: 'center', justifyContent: 'center'},
   sosBigCircle: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 190,
+    height: 190,
+    borderRadius: 95,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

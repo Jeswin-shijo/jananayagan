@@ -7,14 +7,21 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Animated, {FadeInDown, FadeOutDown, useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
 import {FontSize, FontWeight} from '@constants/typography';
 
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 // Tabs shown in the bar (4 + center FAB). Other registered tabs stay reachable via navigation.
-const VISIBLE_TABS = ['CommunityFeed', 'MyComplaints', 'Safety', 'Petition', 'Profile'];
+const VISIBLE_TABS = ['CommunityFeed', 'MyComplaints', 'Petition', 'Profile'];
+
+// Dark navy tab-bar theme (matches the approved design, independent of light/dark mode).
+const TAB_BAR_BG = Navy.surface;
+const TAB_BAR_BORDER = Navy.border;
+const TAB_ACTIVE = '#3FA2FF';
+const TAB_INACTIVE = '#8AA0C2';
+const FAB_GRADIENT = ['#27D3EE', '#2563EB']; // cyan → blue
 
 type CreateAction = {
   key: string;
@@ -30,10 +37,9 @@ const TabButton: React.FC<{
   onPress: () => void;
   onLongPress: () => void;
   label: string;
-  colors: AppColors;
   styles: ReturnType<typeof createStyles>;
-}> = ({options, isFocused, onPress, onLongPress, label, colors, styles}) => {
-  const color = isFocused ? colors.primary : colors.textSecondary;
+}> = ({options, isFocused, onPress, onLongPress, label, styles}) => {
+  const color = isFocused ? TAB_ACTIVE : TAB_INACTIVE;
   const icon = options.tabBarIcon?.({focused: isFocused, color, size: 24});
   const badge = options.tabBarBadge;
 
@@ -135,7 +141,6 @@ export const FloatingTabBar: React.FC<BottomTabBarProps> = ({state, descriptors,
         onPress={onPress}
         onLongPress={onLongPress}
         label={label as string}
-        colors={Colors}
         styles={styles}
       />
     );
@@ -188,7 +193,7 @@ export const FloatingTabBar: React.FC<BottomTabBarProps> = ({state, descriptors,
             scale.value = withSpring(1, {damping: 14, stiffness: 220});
           }}>
           <LinearGradient
-            colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
+            colors={FAB_GRADIENT}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
             style={StyleSheet.absoluteFill}
@@ -218,12 +223,12 @@ const createStyles = (Colors: AppColors) => ({
     alignItems: 'center',
     height: 64,
     borderRadius: BorderRadius['2xl'],
-    backgroundColor: Colors.surface,
+    backgroundColor: TAB_BAR_BG,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: TAB_BAR_BORDER,
     shadowColor: Colors.black,
     shadowOffset: {width: 0, height: 14},
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.3,
     shadowRadius: 24,
     elevation: 12,
   },
@@ -252,7 +257,7 @@ const createStyles = (Colors: AppColors) => ({
     justifyContent: 'center',
     paddingHorizontal: 4,
     borderWidth: 1.5,
-    borderColor: Colors.surface,
+    borderColor: TAB_BAR_BG,
   },
   tabBadgeText: {color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold},
   fabWrap: {
@@ -270,8 +275,8 @@ const createStyles = (Colors: AppColors) => ({
     justifyContent: 'center',
     overflow: 'hidden',
     borderWidth: 3,
-    borderColor: Colors.background,
-    shadowColor: Colors.primary,
+    borderColor: TAB_BAR_BG,
+    shadowColor: FAB_GRADIENT[0],
     shadowOffset: {width: 0, height: 12},
     shadowOpacity: 0.32,
     shadowRadius: 18,

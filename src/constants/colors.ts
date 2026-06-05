@@ -144,3 +144,12 @@ export type AppColors = typeof LightColors;
 export type ThemeMode = 'light' | 'dark';
 
 export const Colors = LightColors;
+
+// Brand navy — the single source of truth for every dark surface across the app.
+// Theme-independent (navy is always navy). Change `base` here to retint the whole app.
+export const Navy = {
+  base: '#0A1B38', // primary dark background
+  deep: '#06122A', // deeper shade (gradient bottoms)
+  surface: '#0F2247', // elevated surface on navy (tab bar, header sheen, cards)
+  border: 'rgba(95,178,255,0.16)',
+};

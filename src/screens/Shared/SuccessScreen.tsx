@@ -31,8 +31,7 @@ export const SuccessScreen: React.FC = () => {
     } else {
       navigation.popToTop?.();
       navigation.navigate('CitizenTabs', {
-        screen: 'MyComplaints',
-        params: {initial: 'petitions'},
+        screen: 'Petition',
       });
     }
   };

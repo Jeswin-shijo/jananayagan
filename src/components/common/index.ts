@@ -15,6 +15,6 @@ export * from './DrawerHeader';
 export * from './ConstituencyHeatMap';
 export * from './FormModal';
 export * from './VoiceNoteRecorder';
-export * from './SosButton';
+export * from './WomenSafetyButton';
 export * from './SosEmergencyModal';
 export * from './EmergencyContactsSheet';
