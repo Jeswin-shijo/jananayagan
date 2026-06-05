@@ -22,7 +22,7 @@ import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
 import {formatRelativeTime, getCategoryIcon, getCategoryLabel} from '@utils/formatters';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 import {TranslationKey} from '@constants/i18n';
@@ -81,15 +81,8 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
 
   const Container: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
-  return (
-    <Container style={styles.container}>
-      {!embedded && <OfflineBanner />}
-      {!embedded && (
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('myComplaints')}</Text>
-        </View>
-      )}
-
+  const body = (
+    <View style={styles.panel}>
       {/* Search */}
       <View style={styles.searchRow}>
         <MaterialCommunityIcons name="magnify" size={20} color={Colors.textDisabled} />
@@ -131,15 +124,34 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
           />
         }
       />
+    </View>
+  );
+
+  return (
+    <Container style={styles.container} edges={['top']}>
+      {!embedded && <OfflineBanner />}
+      {!embedded && (
+        <View style={styles.headerBand}>
+          <Text style={styles.title}>{t('myComplaints')}</Text>
+        </View>
+      )}
+      {body}
       {!embedded && <CitizenCreateFab />}
     </Container>
   );
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
-  header: {padding: Spacing[4], paddingBottom: Spacing[2]},
-  title: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
+  container: {flex: 1, backgroundColor: Navy.base},
+  headerBand: {paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4], backgroundColor: Navy.base},
+  title: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  panel: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+    paddingTop: Spacing[4],
+  },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',

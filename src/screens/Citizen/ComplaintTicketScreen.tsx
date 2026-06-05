@@ -9,7 +9,6 @@ import {CitizenStackParamList} from '@appTypes/navigation';
 import {AppButton} from '@components/common/AppButton';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppCard} from '@components/common/AppCard';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
 import {ComplaintStatus} from '@appTypes/api';
 import {AppColors} from '@constants/colors';
@@ -122,7 +121,6 @@ export const ComplaintTicketScreen: React.FC<Props> = ({route, navigation}) => {
           <Text style={styles.reportAnotherText}>{t('reportAnotherProblem')}</Text>
         </TouchableOpacity>
       </ScrollView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

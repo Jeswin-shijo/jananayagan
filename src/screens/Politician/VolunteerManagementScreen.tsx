@@ -19,7 +19,6 @@ import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppEmptyState} from '@components/common/AppEmptyState';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {Volunteer} from '@appTypes/api';
 import {toastSuccess} from '@utils/toast';
@@ -137,7 +136,6 @@ export const VolunteerManagementScreen: React.FC = () => {
           fullWidth={false}
         />
       </View>
-      <CitizenCreateFab />
 
       {/* Add Volunteer Modal */}
       <Modal visible={showModal} animationType="slide" presentationStyle="pageSheet">

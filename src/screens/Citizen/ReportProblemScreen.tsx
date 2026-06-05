@@ -22,7 +22,6 @@ import {AppInput} from '@components/common/AppInput';
 import {AppHeader} from '@components/common/AppHeader';
 import {AppChip} from '@components/common/AppChip';
 import {VoiceNoteRecorder} from '@components/common/VoiceNoteRecorder';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppAlert} from '@components/common/AppAlert';
 import {useImagePicker} from '@hooks/useImagePicker';
@@ -268,7 +267,6 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           />
         </ScrollView>
       </KeyboardAvoidingView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

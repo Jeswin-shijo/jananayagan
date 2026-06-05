@@ -1,10 +1,11 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, DrawerActions} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useThemedStyles} from '@hooks/useThemedStyles';
 import {useAuthStore} from '@store/authStore';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
@@ -16,17 +17,17 @@ interface DrawerHeaderProps {
 }
 
 export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, showAvatar = true, right}) => {
-  const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const user = useAuthStore(s => s.user);
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, {marginTop: -insets.top, paddingTop: insets.top + Spacing[3]}]}>
       <TouchableOpacity
         style={styles.menuBtn}
         onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-        <MaterialCommunityIcons name="menu" size={24} color={Colors.text} />
+        <MaterialCommunityIcons name="menu" size={24} color="#FFFFFF" />
       </TouchableOpacity>
       <View style={styles.titleBlock}>
         <Text style={styles.title} numberOfLines={1}>{title}</Text>
@@ -34,9 +35,12 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, show
       </View>
       {right}
       {showAvatar && !right && (
-        <View style={styles.avatar}>
+        <TouchableOpacity
+          style={styles.avatar}
+          activeOpacity={0.8}
+          onPress={() => (navigation as any).navigate('Profile')}>
           <Text style={styles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() ?? 'P'}</Text>
-        </View>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -48,9 +52,9 @@ const createStyles = (Colors: AppColors) => ({
     alignItems: 'center',
     paddingHorizontal: Spacing[4],
     paddingVertical: Spacing[3],
-    backgroundColor: Colors.surface,
+    backgroundColor: Navy.base,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: Navy.border,
   },
   menuBtn: {
     width: 40,
@@ -61,8 +65,8 @@ const createStyles = (Colors: AppColors) => ({
     marginRight: Spacing[2],
   },
   titleBlock: {flex: 1},
-  title: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
-  subtitle: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 1},
+  title: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  subtitle: {fontSize: FontSize.xs, color: 'rgba(255,255,255,0.65)', marginTop: 1},
   avatar: {
     width: 40,
     height: 40,

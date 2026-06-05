@@ -7,7 +7,6 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppButton} from '@components/common/AppButton';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppAlert} from '@components/common/AppAlert';
 import {AppColors} from '@constants/colors';
@@ -129,7 +128,6 @@ export const ElectionModeScreen: React.FC = () => {
           />
         )}
       </ScrollView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

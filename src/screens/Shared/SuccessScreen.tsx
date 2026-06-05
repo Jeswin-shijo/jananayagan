@@ -8,7 +8,7 @@ import Animated, {FadeInDown, ZoomIn} from 'react-native-reanimated';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppButton} from '@components/common/AppButton';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
@@ -43,7 +43,7 @@ export const SuccessScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={[Colors.secondaryLight, Colors.background, Colors.primaryLight]}
+        colors={[Navy.surface, Navy.base, Navy.deep]}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
         style={StyleSheet.absoluteFill}
@@ -72,7 +72,7 @@ export const SuccessScreen: React.FC = () => {
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
+  container: {flex: 1, backgroundColor: Navy.base},
   content: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing[6]},
   badge: {alignItems: 'center', justifyContent: 'center', marginBottom: Spacing[6]},
   badgeGlow: {
@@ -84,8 +84,8 @@ const createStyles = (Colors: AppColors) => ({
     opacity: 0.7,
   },
   copy: {alignItems: 'center'},
-  title: {fontSize: FontSize['4xl'], fontWeight: FontWeight.bold, color: Colors.text, marginBottom: Spacing[2]},
-  message: {fontSize: FontSize.base, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: Spacing[4]},
+  title: {fontSize: FontSize['4xl'], fontWeight: FontWeight.bold, color: '#FFFFFF', marginBottom: Spacing[2]},
+  message: {fontSize: FontSize.base, color: 'rgba(255,255,255,0.75)', textAlign: 'center', lineHeight: 22, marginBottom: Spacing[4]},
   refPill: {
     backgroundColor: Colors.surface,
     borderWidth: 1,

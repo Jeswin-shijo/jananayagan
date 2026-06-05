@@ -7,7 +7,7 @@ import {AppCard} from '@components/common/AppCard';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_HOUSES, FieldHouse, HouseLean} from '@utils/volunteerData';
 import {toastSuccess} from '@utils/toast';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -38,6 +38,7 @@ export const FieldWorkScreen: React.FC = () => {
         <Text style={styles.screenTitle}>{t('fieldWork')}</Text>
         <Text style={styles.progress}>{visited}/{houses.length} {t('visited')}</Text>
       </View>
+      <View style={styles.panel}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {houses.map(h => (
           <AppCard key={h.id}>
@@ -71,15 +72,17 @@ export const FieldWorkScreen: React.FC = () => {
         ))}
         <View style={{height: Spacing[8]}} />
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
-  titleBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing[4], paddingVertical: Spacing[3]},
-  screenTitle: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
-  progress: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: FontWeight.semiBold},
+  container: {flex: 1, backgroundColor: Navy.base},
+  titleBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Navy.base, paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4]},
+  screenTitle: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  progress: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', fontWeight: FontWeight.semiBold},
+  panel: {flex: 1, backgroundColor: Colors.background, borderTopLeftRadius: BorderRadius['2xl'], borderTopRightRadius: BorderRadius['2xl'], paddingTop: Spacing[4]},
   scroll: {paddingHorizontal: Spacing[4]},
   row: {flexDirection: 'row', alignItems: 'center', marginBottom: Spacing[3]},
   info: {flex: 1},

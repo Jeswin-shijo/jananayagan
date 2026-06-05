@@ -11,7 +11,7 @@ import {AppCard} from '@components/common/AppCard';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {MOCK_VOLUNTEER_STATS, MOCK_BROADCASTS} from '@utils/volunteerData';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
@@ -33,15 +33,17 @@ export const VolunteerHomeScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>{t('volunteer')}</Text>
-            <Text style={styles.name}>{user?.name ?? t('volunteer')}</Text>
-          </View>
-          <View style={styles.avatar}><Text style={styles.avatarText}>{user?.name?.charAt(0) ?? 'V'}</Text></View>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.greeting}>{t('volunteer')}</Text>
+          <Text style={styles.name}>{user?.name ?? t('volunteer')}</Text>
         </View>
-
+        <TouchableOpacity style={styles.avatar} activeOpacity={0.8} onPress={() => navigation.navigate('Profile')}>
+          <Text style={styles.avatarText}>{user?.name?.charAt(0) ?? 'V'}</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.panel}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <View style={styles.statsRow}>
           {MOCK_VOLUNTEER_STATS.map(s => {
             const tone = TONES[s.tone];
@@ -85,16 +87,18 @@ export const VolunteerHomeScreen: React.FC = () => {
         ))}
         <View style={{height: Spacing[8]}} />
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
+  container: {flex: 1, backgroundColor: Navy.base},
+  panel: {flex: 1, backgroundColor: Colors.background, borderTopLeftRadius: BorderRadius['2xl'], borderTopRightRadius: BorderRadius['2xl']},
   scroll: {padding: Spacing[4]},
-  header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing[4]},
-  greeting: {fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: FontWeight.medium},
-  name: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: Colors.text},
+  header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Navy.base, paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4]},
+  greeting: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', fontWeight: FontWeight.medium},
+  name: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: '#FFFFFF'},
   avatar: {width: 46, height: 46, borderRadius: BorderRadius.full, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center'},
   avatarText: {color: Colors.textOnPrimary, fontWeight: FontWeight.bold, fontSize: FontSize.md},
   statsRow: {flexDirection: 'row', gap: Spacing[2], marginBottom: Spacing[4]},

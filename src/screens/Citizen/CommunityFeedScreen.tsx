@@ -27,81 +27,14 @@ import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useAuthStore} from '@store/authStore';
 import {useNotificationStore} from '@store/notificationStore';
+import {MOCK_COMMUNITY_POSTS, CommunityPost, FeedComment, SAMPLE_POST_IMAGE} from '@utils/mockData';
 import {CitizenTabParamList} from '@appTypes/navigation';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
 import {FontSize, FontWeight} from '@constants/typography';
 
 type CommunityRoute = RouteProp<CitizenTabParamList, 'CommunityFeed'>;
 
-type FeedComment = {
-  id: string;
-  author: string;
-  text: string;
-};
-
-type AccentToken = 'tileGreen' | 'tileTeal' | 'tileAmber' | 'tileBlue' | 'tilePurple';
-
-type CommunityPost = {
-  id: string;
-  author: string;
-  role: string;
-  area: string;
-  content: string;
-  createdAt: string;
-  likes: number;
-  isLiked: boolean;
-  accent: AccentToken;
-  imageUris?: string[];
-  comments: FeedComment[];
-};
-
-const SAMPLE_POST_IMAGE = 'https://images.unsplash.com/photo-1541919329513-35f7af297129?w=900&q=80';
-
-const INITIAL_POSTS: CommunityPost[] = [
-  {
-    id: 'post-1',
-    author: 'Meena K',
-    role: 'Resident',
-    area: 'Anna Nagar',
-    content: 'Street lights near 4th Avenue are working again tonight. Thanks to everyone who reported and followed up.',
-    createdAt: '18 min',
-    likes: 42,
-    isLiked: false,
-    accent: 'tileGreen',
-    comments: [
-      {id: 'c1', author: 'Arun', text: 'Great update. This area feels safer now.'},
-      {id: 'c2', author: 'Priya', text: 'We should check the next lane too.'},
-    ],
-  },
-  {
-    id: 'post-2',
-    author: 'Ward Volunteer',
-    role: 'Volunteer',
-    area: 'T. Nagar',
-    content: 'Water tanker schedule for tomorrow: 7:30 AM near the community hall and 8:15 AM near West Street.',
-    createdAt: '1 hr',
-    likes: 87,
-    isLiked: true,
-    accent: 'tileTeal',
-    imageUris: [SAMPLE_POST_IMAGE],
-    comments: [
-      {id: 'c3', author: 'Siva', text: 'Please add South Street if possible.'},
-    ],
-  },
-  {
-    id: 'post-3',
-    author: 'JANANAYAGAN Desk',
-    role: 'Official',
-    area: 'City Updates',
-    content: 'Public poll is open for pedestrian crossing improvements. Share your vote before Friday evening.',
-    createdAt: '3 hr',
-    likes: 126,
-    isLiked: false,
-    accent: 'tileAmber',
-    comments: [],
-  },
-];
 
 const DOUBLE_TAP_DELAY = 280;
 const HEART_CLEAR_DELAY = 720;
@@ -115,7 +48,7 @@ export const CommunityFeedScreen: React.FC = () => {
   const user = useAuthStore(s => s.user);
   const unreadCount = useNotificationStore(s => s.unreadCount);
   const isCitizen = user?.role === 'citizen';
-  const [posts, setPosts] = useState<CommunityPost[]>(INITIAL_POSTS);
+  const [posts, setPosts] = useState<CommunityPost[]>(MOCK_COMMUNITY_POSTS);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [heartPostId, setHeartPostId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -321,7 +254,7 @@ export const CommunityFeedScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       {isCitizen && (
         <Animated.View entering={FadeInUp.duration(420)} style={styles.stickyQuickLinks}>
@@ -355,10 +288,27 @@ export const CommunityFeedScreen: React.FC = () => {
           </View>
         </Animated.View>
       )}
+      {!isCitizen && (
+        <View style={styles.greetingBand}>
+          <View style={styles.greetingTextWrap}>
+            <Text style={styles.greetingHi}>Hello, {user?.name ?? t('user')} 👋</Text>
+            <Text style={styles.greetingSub}>{t('voiceSubtitle')}</Text>
+          </View>
+          <TouchableOpacity style={styles.greetingBell} onPress={() => navigation.navigate('Notifications')}>
+            <MaterialCommunityIcons name="bell-outline" size={22} color="#FFFFFF" />
+            {unreadCount > 0 && (
+              <View style={styles.greetingBadge}>
+                <Text style={styles.greetingBadgeText}>{unreadCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
       <FlatList
         data={posts}
         keyExtractor={item => item.id}
         renderItem={renderPost}
+        style={styles.feedPanel}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.list, isCitizen && styles.listCitizen]}
         ListHeaderComponent={
@@ -439,7 +389,48 @@ export const CommunityFeedScreen: React.FC = () => {
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
+  container: {flex: 1, backgroundColor: Navy.base},
+  feedPanel: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+  },
+  greetingBand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[3],
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[4],
+    backgroundColor: Navy.base,
+  },
+  greetingTextWrap: {flex: 1},
+  greetingHi: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  greetingSub: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', marginTop: 2},
+  greetingBell: {
+    width: 44,
+    height: 44,
+    borderRadius: BorderRadius.full,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  greetingBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+    borderWidth: 1.5,
+    borderColor: Navy.base,
+  },
+  greetingBadgeText: {color: '#FFFFFF', fontSize: 9, fontWeight: FontWeight.bold},
   list: {
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[6],
@@ -449,9 +440,10 @@ const createStyles = (Colors: AppColors) => ({
     paddingTop: Spacing[3],
   },
   stickyQuickLinks: {
-    backgroundColor: Colors.background,
+    backgroundColor: Navy.base,
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[3],
+    paddingBottom: Spacing[2],
     zIndex: 10,
   },
   header: {
@@ -485,7 +477,7 @@ const createStyles = (Colors: AppColors) => ({
     borderRadius: BorderRadius['2xl'],
     overflow: 'hidden',
     padding: Spacing[4],
-    marginBottom: Spacing[4],
+    marginBottom: 0,
     shadowColor: Colors.primary,
     shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.22,

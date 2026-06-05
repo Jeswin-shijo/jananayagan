@@ -24,7 +24,13 @@ import {ReportsScreen} from '@screens/Politician/ReportsScreen';
 import {PoliticianSettingsScreen} from '@screens/Politician/PoliticianSettingsScreen';
 import {SupportScreen} from '@screens/Politician/SupportScreen';
 import {ProfileScreen} from '@screens/Shared/ProfileScreen';
+import {NotificationsScreen} from '@screens/Shared/NotificationsScreen';
 import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
+import {WomenSafetyScreen} from '@screens/Citizen/WomenSafetyScreen';
+import {SafeRouteScreen} from '@screens/Citizen/SafeRouteScreen';
+import {RideTrackerScreen} from '@screens/Citizen/RideTrackerScreen';
+import {SilentReportScreen} from '@screens/Citizen/SilentReportScreen';
+import {NearbyHelpScreen} from '@screens/Citizen/NearbyHelpScreen';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Drawer = createDrawerNavigator<AdminDrawerParamList>();
@@ -132,6 +138,12 @@ export const AdminNavigator: React.FC = () => (
   <Stack.Navigator screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
     <Stack.Screen name="AdminDrawer" component={AdminDrawer} />
     <Stack.Screen name="ComplaintTicket" component={ComplaintTicketScreen as any} />
+    <Stack.Screen name="WomenSafety" component={WomenSafetyScreen} />
+    <Stack.Screen name="SafeRoute" component={SafeRouteScreen} />
+    <Stack.Screen name="RideTracker" component={RideTrackerScreen} />
+    <Stack.Screen name="SilentReport" component={SilentReportScreen} />
+    <Stack.Screen name="NearbyHelp" component={NearbyHelpScreen} />
+    <Stack.Screen name="Notifications" component={NotificationsScreen} />
   </Stack.Navigator>
 );
 

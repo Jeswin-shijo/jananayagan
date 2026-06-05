@@ -37,6 +37,12 @@ import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
 import {SubmitPetitionScreen} from '@screens/Citizen/SubmitPetitionScreen';
 import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
 import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
+import {WomenSafetyScreen} from '@screens/Citizen/WomenSafetyScreen';
+import {SafeRouteScreen} from '@screens/Citizen/SafeRouteScreen';
+import {RideTrackerScreen} from '@screens/Citizen/RideTrackerScreen';
+import {SilentReportScreen} from '@screens/Citizen/SilentReportScreen';
+import {NearbyHelpScreen} from '@screens/Citizen/NearbyHelpScreen';
+import {NotificationsScreen} from '@screens/Shared/NotificationsScreen';
 
 const Stack = createNativeStackNavigator<PoliticianStackParamList>();
 const Drawer = createDrawerNavigator<PoliticianDrawerParamList>();
@@ -184,6 +190,12 @@ export const PoliticianNavigator: React.FC = () => (
     <Stack.Screen name="CommunityFeed" component={CommunityFeedScreen} />
     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
     <Stack.Screen name="Success" component={SuccessScreen} />
+    <Stack.Screen name="WomenSafety" component={WomenSafetyScreen} />
+    <Stack.Screen name="SafeRoute" component={SafeRouteScreen} />
+    <Stack.Screen name="RideTracker" component={RideTrackerScreen} />
+    <Stack.Screen name="SilentReport" component={SilentReportScreen} />
+    <Stack.Screen name="NearbyHelp" component={NearbyHelpScreen} />
+    <Stack.Screen name="Notifications" component={NotificationsScreen} />
   </Stack.Navigator>
 );
 

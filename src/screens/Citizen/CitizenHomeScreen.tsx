@@ -21,7 +21,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import {CitizenStackParamList, CitizenTabParamList} from '@appTypes/navigation';
 import {AppHeader} from '@components/common/AppHeader';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {useNotificationStore} from '@store/notificationStore';
@@ -377,7 +376,6 @@ export const CitizenHomeScreen: React.FC = () => {
           )} */}
         </View>
       </Animated.ScrollView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

@@ -194,3 +194,28 @@ export const MOCK_REPORTS: ReportItem[] = [
   {id: 'r3', title: 'Volunteer activity report', periodKey: 'thisMonth', icon: 'account-group-outline'},
   {id: 'r4', title: 'Resolution time analysis', periodKey: 'thisYear', icon: 'timer-outline'},
 ];
+
+// Politician dashboard summary stats + category breakdown (shown on PoliticianDashboardScreen).
+export type DashboardStat = {
+  labelKey: TranslationKey;
+  value: string;
+  sub?: string;
+  icon: string;
+  tone: 'primary' | 'success' | 'warning' | 'danger';
+};
+
+export const MOCK_DASHBOARD_STATS: DashboardStat[] = [
+  {labelKey: 'totalComplaints', value: '156', icon: 'clipboard-text-outline', tone: 'primary'},
+  {labelKey: 'resolved', value: '98', sub: '63%', icon: 'check-circle-outline', tone: 'success'},
+  {labelKey: 'inProgress', value: '34', icon: 'progress-wrench', tone: 'warning'},
+  {labelKey: 'pending', value: '24', icon: 'clock-outline', tone: 'danger'},
+];
+
+export type DashboardCategory = {categoryKey: TranslationKey; count: number; pct: number};
+
+export const MOCK_DASHBOARD_CATEGORIES: DashboardCategory[] = [
+  {categoryKey: 'road', count: 54, pct: 35},
+  {categoryKey: 'water', count: 38, pct: 24},
+  {categoryKey: 'electricity', count: 31, pct: 20},
+  {categoryKey: 'sanitation', count: 33, pct: 21},
+];

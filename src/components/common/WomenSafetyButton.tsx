@@ -1,13 +1,22 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useThemedStyles} from '@hooks/useThemedStyles';
 import {useAuthStore} from '@store/authStore';
-import {navigate} from '@navigation/navigationRef';
+import {navigate, navigationRef} from '@navigation/navigationRef';
 import {AppColors} from '@constants/colors';
 import {FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
+
+// Walk the navigation state tree to detect whether any drawer is currently open.
+const isAnyDrawerOpen = (state: any): boolean => {
+  if (!state) return false;
+  if (state.type === 'drawer' && Array.isArray(state.history) && state.history.some((h: any) => h.type === 'drawer')) {
+    return true;
+  }
+  return Array.isArray(state.routes) && state.routes.some((r: any) => (r.state ? isAnyDrawerOpen(r.state) : false));
+};
 
 // Floating entry point to the Women Safety hub. Replaces the old SOS button —
 // the hub itself still holds the SOS press-and-hold affordance.
@@ -15,10 +24,25 @@ export const WomenSafetyButton: React.FC = () => {
   const styles = useThemedStyles(createStyles);
   const insets = useSafeAreaInsets();
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
-  const role = useAuthStore(s => s.role);
+  // Hide the FAB while on the Women Safety hub itself or while a drawer is open
+  // (it would otherwise overlap those screens).
+  const [obstructed, setObstructed] = useState(false);
 
-  // Women Safety hub lives in the citizen navigator, so only surface it there.
-  if (!isAuthenticated || role !== 'citizen') {
+  useEffect(() => {
+    const update = () => {
+      if (!navigationRef.isReady()) {
+        return;
+      }
+      const current = (navigationRef.getCurrentRoute() as {name?: string} | undefined)?.name;
+      setObstructed(current === 'WomenSafety' || isAnyDrawerOpen(navigationRef.getRootState()));
+    };
+    update();
+    const unsubscribe = navigationRef.addListener('state', update);
+    return unsubscribe;
+  }, []);
+
+  // Women Safety hub is registered in every role's navigator, so show it to all logins.
+  if (!isAuthenticated || obstructed) {
     return null;
   }
 

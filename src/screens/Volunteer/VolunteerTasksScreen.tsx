@@ -8,7 +8,7 @@ import {AppCard} from '@components/common/AppCard';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_TASKS, VolunteerTask, TaskStatus} from '@utils/volunteerData';
 import {toastSuccess, toastInfo} from '@utils/toast';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {ComplaintPriority} from '@appTypes/api';
 import {TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -44,6 +44,7 @@ export const VolunteerTasksScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       <View style={styles.titleBar}><Text style={styles.screenTitle}>{t('myTasks')}</Text></View>
+      <View style={styles.panel}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {tasks.map(task => {
           const meta = STATUS_META[task.status];
@@ -83,14 +84,16 @@ export const VolunteerTasksScreen: React.FC = () => {
         })}
         <View style={{height: Spacing[8]}} />
       </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
-  titleBar: {paddingHorizontal: Spacing[4], paddingVertical: Spacing[3]},
-  screenTitle: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: Colors.text},
+  container: {flex: 1, backgroundColor: Navy.base},
+  titleBar: {backgroundColor: Navy.base, paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4]},
+  screenTitle: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  panel: {flex: 1, backgroundColor: Colors.background, borderTopLeftRadius: BorderRadius['2xl'], borderTopRightRadius: BorderRadius['2xl'], paddingTop: Spacing[4]},
   scroll: {paddingHorizontal: Spacing[4]},
   row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing[2]},
   ticket: {fontSize: FontSize.xs, color: Colors.textSecondary, fontWeight: FontWeight.semiBold},

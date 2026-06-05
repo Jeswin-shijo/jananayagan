@@ -204,3 +204,68 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
   {id: '2', title: 'New Poll Available', body: 'Vote on the new road development poll in your area', type: 'poll_new', isRead: false, createdAt: new Date(Date.now() - 7200000).toISOString()},
   {id: '3', title: 'Petition Milestone', body: 'Your petition reached 300 signatures!', type: 'petition_update', isRead: true, createdAt: new Date(Date.now() - 86400000).toISOString()},
 ];
+
+// Community feed posts shown on the citizen/volunteer Home feed.
+export type FeedComment = {id: string; author: string; text: string};
+export type FeedAccent = 'tileGreen' | 'tileTeal' | 'tileAmber' | 'tileBlue' | 'tilePurple';
+
+export interface CommunityPost {
+  id: string;
+  author: string;
+  role: string;
+  area: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+  isLiked: boolean;
+  accent: FeedAccent;
+  imageUris?: string[];
+  comments: FeedComment[];
+}
+
+export const SAMPLE_POST_IMAGE = 'https://images.unsplash.com/photo-1541919329513-35f7af297129?w=900&q=80';
+
+export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
+  {
+    id: 'post-1',
+    author: 'Meena K',
+    role: 'Resident',
+    area: 'Anna Nagar',
+    content: 'Street lights near 4th Avenue are working again tonight. Thanks to everyone who reported and followed up.',
+    createdAt: '18 min',
+    likes: 42,
+    isLiked: false,
+    accent: 'tileGreen',
+    comments: [
+      {id: 'c1', author: 'Arun', text: 'Great update. This area feels safer now.'},
+      {id: 'c2', author: 'Priya', text: 'We should check the next lane too.'},
+    ],
+  },
+  {
+    id: 'post-2',
+    author: 'Ward Volunteer',
+    role: 'Volunteer',
+    area: 'T. Nagar',
+    content: 'Water tanker schedule for tomorrow: 7:30 AM near the community hall and 8:15 AM near West Street.',
+    createdAt: '1 hr',
+    likes: 87,
+    isLiked: true,
+    accent: 'tileTeal',
+    imageUris: [SAMPLE_POST_IMAGE],
+    comments: [
+      {id: 'c3', author: 'Siva', text: 'Please add South Street if possible.'},
+    ],
+  },
+  {
+    id: 'post-3',
+    author: 'JANANAYAGAN Desk',
+    role: 'Official',
+    area: 'City Updates',
+    content: 'Public poll is open for pedestrian crossing improvements. Share your vote before Friday evening.',
+    createdAt: '3 hr',
+    likes: 126,
+    isLiked: false,
+    accent: 'tileAmber',
+    comments: [],
+  },
+];

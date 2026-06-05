@@ -10,11 +10,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {PoliticianDrawerParamList} from '@appTypes/navigation';
 import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
 import {MOCK_COMPLAINTS} from '@utils/mockData';
+import {MOCK_DASHBOARD_STATS, MOCK_DASHBOARD_CATEGORIES, DashboardStat} from '@utils/politicianData';
 import {formatRelativeTime} from '@utils/formatters';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -37,12 +37,12 @@ export const PoliticianDashboardScreen: React.FC = () => {
   const navigation = useNavigation<Nav>();
   const user = useAuthStore(s => s.user);
   const [refreshing, setRefreshing] = useState(false);
-  const statCards = [
-    {icon: 'clipboard-text-outline' as MaterialCommunityIconName, label: t('totalComplaints'), value: '156', color: Colors.primaryLight},
-    {icon: 'check-circle-outline' as MaterialCommunityIconName, label: t('resolved'), value: '98', sub: '63%', color: Colors.successLight},
-    {icon: 'progress-wrench' as MaterialCommunityIconName, label: t('inProgress'), value: '34', color: Colors.warningLight},
-    {icon: 'clock-outline' as MaterialCommunityIconName, label: t('pending'), value: '24', color: Colors.dangerLight},
-  ];
+  const statTone: Record<DashboardStat['tone'], string> = {
+    primary: Colors.primaryLight,
+    success: Colors.successLight,
+    warning: Colors.warningLight,
+    danger: Colors.dangerLight,
+  };
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -74,14 +74,14 @@ export const PoliticianDashboardScreen: React.FC = () => {
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          {statCards.map(stat => (
-            <View key={stat.label} style={[styles.statCard, {backgroundColor: stat.color}]}>
+          {MOCK_DASHBOARD_STATS.map(stat => (
+            <View key={stat.labelKey} style={[styles.statCard, {backgroundColor: statTone[stat.tone]}]}>
               <View style={styles.statIconBubble}>
-                <MaterialCommunityIcons name={stat.icon} size={22} color={Colors.primary} />
+                <MaterialCommunityIcons name={stat.icon as MaterialCommunityIconName} size={22} color={Colors.primary} />
               </View>
               <Text style={styles.statValue}>{stat.value}</Text>
               {stat.sub && <Text style={styles.statSub}>{stat.sub}</Text>}
-              <Text style={styles.statLabel}>{stat.label}</Text>
+              <Text style={styles.statLabel}>{t(stat.labelKey)}</Text>
             </View>
           ))}
         </View>
@@ -104,14 +104,9 @@ export const PoliticianDashboardScreen: React.FC = () => {
         {/* Category Breakdown */}
         <Text style={styles.sectionTitle}>{t('complaintsByCategory')}</Text>
         <AppCard>
-          {[
-            {cat: t('road'), count: 54, pct: 35},
-            {cat: t('water'), count: 38, pct: 24},
-            {cat: t('electricity'), count: 31, pct: 20},
-            {cat: t('sanitation'), count: 33, pct: 21},
-          ].map(row => (
-            <View key={row.cat} style={styles.catRow}>
-              <Text style={styles.catLabel}>{row.cat}</Text>
+          {MOCK_DASHBOARD_CATEGORIES.map(row => (
+            <View key={row.categoryKey} style={styles.catRow}>
+              <Text style={styles.catLabel}>{t(row.categoryKey)}</Text>
               <View style={styles.catBarWrapper}>
                 <View style={[styles.catBar, {width: `${row.pct}%`}]} />
               </View>
@@ -144,7 +139,6 @@ export const PoliticianDashboardScreen: React.FC = () => {
 
         <View style={{height: Spacing[8]}} />
       </ScrollView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

@@ -1,10 +1,11 @@
 import React from 'react';
-import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
+import {useThemedStyles} from '@hooks/useThemedStyles';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {LinearGradient} from 'react-native-linear-gradient';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing} from '@constants/spacing';
 import {HEADER_HEIGHT} from '@constants/dimensions';
@@ -17,8 +18,8 @@ interface AppHeaderProps {
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, rightAction, onBackPress}) => {
-  const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const handleBack = () => {
@@ -30,9 +31,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, ri
   };
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, {marginTop: -insets.top, paddingTop: insets.top, height: HEADER_HEIGHT + insets.top}]}>
       <LinearGradient
-        colors={[Colors.primaryLight, Colors.surface, Colors.secondaryLight]}
+        colors={[Navy.surface, Navy.base]}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
         style={StyleSheet.absoluteFill}
@@ -40,7 +41,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, ri
       <View style={styles.left}>
         {showBack && (
           <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-            <MaterialCommunityIcons name="chevron-left" size={26} color={Colors.text} />
+            <MaterialCommunityIcons name="chevron-left" size={26} color="#FFFFFF" />
           </TouchableOpacity>
         )}
       </View>
@@ -57,7 +58,7 @@ const createStyles = (Colors: AppColors) => ({
     alignItems: 'center',
     paddingHorizontal: Spacing[4],
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: Navy.border,
     overflow: 'hidden',
   },
   left: {width: 44},
@@ -66,7 +67,7 @@ const createStyles = (Colors: AppColors) => ({
     flex: 1,
     fontSize: FontSize.md,
     fontWeight: FontWeight.semiBold,
-    color: Colors.text,
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   backBtn: {
@@ -75,8 +76,8 @@ const createStyles = (Colors: AppColors) => ({
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(255,255,255,0.18)',
   },
 } as const);

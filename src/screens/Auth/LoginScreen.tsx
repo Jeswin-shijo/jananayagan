@@ -18,7 +18,7 @@ import {AuthStackParamList, UserRole, Gender} from '@appTypes/navigation';
 import {loginSchema, LoginFormData} from '@utils/validators';
 import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
@@ -66,7 +66,7 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}>
@@ -160,10 +160,10 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
+  container: {flex: 1, backgroundColor: Navy.base},
   flex: {flex: 1},
-  scroll: {flexGrow: 1, padding: Spacing[6]},
-  header: {alignItems: 'center', marginTop: Spacing[8], marginBottom: Spacing[8]},
+  scroll: {flexGrow: 1},
+  header: {alignItems: 'center', paddingHorizontal: Spacing[6], paddingTop: Spacing[8], paddingBottom: Spacing[6], backgroundColor: Navy.base},
   logoBubble: {
     width: 84,
     height: 84,
@@ -178,15 +178,21 @@ const createStyles = (Colors: AppColors) => ({
   appName: {
     fontSize: FontSize['3xl'],
     fontWeight: FontWeight.bold,
-    color: Colors.primary,
+    color: '#FFFFFF',
     letterSpacing: 2,
   },
   tagline: {
     fontSize: FontSize.base,
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.7)',
     marginTop: Spacing[1],
   },
-  form: {flex: 1},
+  form: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+    padding: Spacing[6],
+  },
   sectionTitle: {
     fontSize: FontSize.base,
     fontWeight: FontWeight.semiBold,

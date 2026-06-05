@@ -82,6 +82,12 @@ export type PoliticianStackParamList = {
   SubmitPetition: {mode?: 'browse' | 'create'} | undefined;
   CommunityFeed: {newPost?: CommunityPostParam} | undefined;
   CreatePost: undefined;
+  WomenSafety: undefined;
+  SafeRoute: undefined;
+  RideTracker: undefined;
+  SilentReport: undefined;
+  NearbyHelp: undefined;
+  Notifications: undefined;
 };
 
 export type VolunteerTabParamList = {
@@ -100,6 +106,12 @@ export type VolunteerStackParamList = {
   Success: { kind: 'complaint' | 'petition'; refId: string };
   SubmitPetition: {mode?: 'browse' | 'create'} | undefined;
   CreatePost: undefined;
+  WomenSafety: undefined;
+  SafeRoute: undefined;
+  RideTracker: undefined;
+  SilentReport: undefined;
+  NearbyHelp: undefined;
+  Notifications: undefined;
 };
 
 export type AdminDrawerParamList = {
@@ -119,4 +131,10 @@ export type AdminStackParamList = {
   AdminDrawer: NavigatorScreenParams<AdminDrawerParamList> | undefined;
   ComplaintTicket: { ticketId: string };
   Success: { kind: 'complaint' | 'petition'; refId: string };
+  WomenSafety: undefined;
+  SafeRoute: undefined;
+  RideTracker: undefined;
+  SilentReport: undefined;
+  NearbyHelp: undefined;
+  Notifications: undefined;
 };

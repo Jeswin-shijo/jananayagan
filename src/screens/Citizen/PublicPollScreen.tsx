@@ -8,7 +8,6 @@ import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Poll} from '@appTypes/api';
 import {AppEmptyState} from '@components/common/AppEmptyState';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppAlert} from '@components/common/AppAlert';
 import {MOCK_POLLS} from '@utils/mockData';
@@ -211,7 +210,6 @@ export const PublicPollScreen: React.FC = () => {
           <AppEmptyState icon="poll" title={t('noPollsAvailable')} subtitle={t('noPollsSubtitle')} />
         }
       />
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };

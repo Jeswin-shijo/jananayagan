@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {VolunteerTabParamList, VolunteerStackParamList} from '@appTypes/navigation';
 import {VolunteerHomeScreen} from '@screens/Volunteer/VolunteerHomeScreen';
@@ -13,30 +14,36 @@ import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
 import {SubmitPetitionScreen} from '@screens/Citizen/SubmitPetitionScreen';
 import {ProfileScreen} from '@screens/Shared/ProfileScreen';
 import {SuccessScreen} from '@screens/Shared/SuccessScreen';
-import {useAppColors} from '@hooks/useThemedStyles';
+import {NotificationsScreen} from '@screens/Shared/NotificationsScreen';
+import {WomenSafetyScreen} from '@screens/Citizen/WomenSafetyScreen';
+import {SafeRouteScreen} from '@screens/Citizen/SafeRouteScreen';
+import {RideTrackerScreen} from '@screens/Citizen/RideTrackerScreen';
+import {SilentReportScreen} from '@screens/Citizen/SilentReportScreen';
+import {NearbyHelpScreen} from '@screens/Citizen/NearbyHelpScreen';
 import {useTranslation} from '@hooks/useTranslation';
+import {Navy} from '@constants/colors';
 
 const Tab = createBottomTabNavigator<VolunteerTabParamList>();
 const Stack = createNativeStackNavigator<VolunteerStackParamList>();
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 const VolunteerTabs: React.FC = () => {
-  const Colors = useAppColors();
   const {t} = useTranslation();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
       initialRouteName="CommunityFeed"
       screenOptions={({route}) => ({
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textSecondary,
+        tabBarActiveTintColor: '#3FA2FF',
+        tabBarInactiveTintColor: '#8AA0C2',
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopColor: Colors.borderLight,
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 6,
+          backgroundColor: Navy.surface,
+          borderTopColor: Navy.border,
+          height: 64 + insets.bottom,
+          paddingBottom: insets.bottom + 12,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {fontSize: 11, fontWeight: '600'},
         tabBarIcon: ({color, focused, size}) => {
@@ -68,5 +75,11 @@ export const VolunteerNavigator: React.FC = () => (
     <Stack.Screen name="SubmitPetition" component={SubmitPetitionScreen} />
     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
     <Stack.Screen name="Success" component={SuccessScreen} />
+    <Stack.Screen name="WomenSafety" component={WomenSafetyScreen} />
+    <Stack.Screen name="SafeRoute" component={SafeRouteScreen} />
+    <Stack.Screen name="RideTracker" component={RideTrackerScreen} />
+    <Stack.Screen name="SilentReport" component={SilentReportScreen} />
+    <Stack.Screen name="NearbyHelp" component={NearbyHelpScreen} />
+    <Stack.Screen name="Notifications" component={NotificationsScreen} />
   </Stack.Navigator>
 );

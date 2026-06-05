@@ -2,16 +2,16 @@ import React, {useMemo, useState} from 'react';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {View, Text, ScrollView, Switch, TouchableOpacity, Modal, Pressable} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppAlert} from '@components/common/AppAlert';
 import {useAuthStore} from '@store/authStore';
 import {useThemeStore} from '@store/themeStore';
 import {useLanguageStore} from '@store/languageStore';
 import {useTranslation} from '@hooks/useTranslation';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {SUPPORTED_LANGUAGES, TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -21,8 +21,11 @@ type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIc
 export const ProfileScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
+  const navigation = useNavigation<any>();
   const {t, language} = useTranslation();
   const {showAlert} = useAppAlert();
+  const canGoBack = navigation.canGoBack();
+  const canOpenDrawer = typeof navigation.openDrawer === 'function';
   const {user, logout} = useAuthStore();
   const {isDark, toggleMode} = useThemeStore();
   const setLanguage = useLanguageStore(state => state.setLanguage);
@@ -57,9 +60,17 @@ export const ProfileScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       <View style={styles.headerBar}>
+        {(canGoBack || canOpenDrawer) && (
+          <TouchableOpacity
+            style={styles.headerBtn}
+            activeOpacity={0.8}
+            onPress={() => (canGoBack ? navigation.goBack() : navigation.openDrawer())}>
+            <MaterialCommunityIcons name={canGoBack ? 'arrow-left' : 'menu'} size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        )}
         <Text style={styles.headerTitle}>{t('myProfile')}</Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+      <ScrollView style={styles.panel} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {/* Profile */}
         <View style={styles.profileRow}>
           <View style={styles.avatar}>
@@ -157,16 +168,22 @@ export const ProfileScreen: React.FC = () => {
           </Pressable>
         </Pressable>
       </Modal>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
-  headerBar: {alignItems: 'center', paddingVertical: Spacing[3]},
-  headerTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
-  scroll: {paddingHorizontal: Spacing[4], paddingTop: Spacing[2]},
+  container: {flex: 1, backgroundColor: Navy.base},
+  headerBar: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2], paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4], backgroundColor: Navy.base},
+  headerBtn: {width: 36, height: 36, borderRadius: BorderRadius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.12)'},
+  headerTitle: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  panel: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+  },
+  scroll: {paddingHorizontal: Spacing[4], paddingTop: Spacing[4]},
   profileRow: {flexDirection: 'row', alignItems: 'center', marginBottom: Spacing[5], gap: Spacing[4]},
   avatar: {
     width: 72,

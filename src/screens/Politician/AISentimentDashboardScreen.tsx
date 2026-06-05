@@ -8,7 +8,6 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {AppChip} from '@components/common/AppChip';
-import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {MOCK_SENTIMENT_DATA} from '@utils/mockData';
 import {AppColors} from '@constants/colors';
@@ -154,7 +153,6 @@ export const AISentimentDashboardScreen: React.FC = () => {
           ))}
         </AppCard>
       </ScrollView>
-      <CitizenCreateFab />
     </SafeAreaView>
   );
 };
