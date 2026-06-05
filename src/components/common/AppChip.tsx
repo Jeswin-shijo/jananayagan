@@ -11,6 +11,8 @@ interface AppChipProps {
   isActive?: boolean;
   onPress?: () => void;
   style?: ViewStyle;
+  // Override the active colour with a custom accent.
+  accent?: string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -20,8 +22,10 @@ export const AppChip: React.FC<AppChipProps> = ({
   isActive = false,
   onPress,
   style,
+  accent,
 }) => {
   const styles = useThemedStyles(createStyles);
+  const accentActive = accent && isActive ? {backgroundColor: accent, borderColor: accent} : null;
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
@@ -36,7 +40,7 @@ export const AppChip: React.FC<AppChipProps> = ({
       onPressOut={() => {
         scale.value = withSpring(1, {damping: 14, stiffness: 220});
       }}
-      style={[styles.chip, isActive ? styles.active : styles.inactive, style, animatedStyle]}>
+      style={[styles.chip, isActive ? styles.active : styles.inactive, accentActive, style, animatedStyle]}>
       <Text style={[styles.text, isActive ? styles.activeText : styles.inactiveText]}>
         {label}
       </Text>

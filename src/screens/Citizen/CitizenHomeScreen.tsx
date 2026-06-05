@@ -20,7 +20,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {CitizenStackParamList, CitizenTabParamList} from '@appTypes/navigation';
-import {AppCard} from '@components/common/AppCard';
 import {AppBadge} from '@components/common/AppBadge';
 import {AppHeader} from '@components/common/AppHeader';
 import {CitizenCreateFab} from '@components/common/CitizenCreateFab';
@@ -36,8 +35,8 @@ import {formatRelativeTime} from '@utils/formatters';
 type Nav = NativeStackNavigationProp<CitizenStackParamList>;
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-type TileToken = 'tileBlue' | 'tileGreen' | 'tilePurple' | 'tileAmber';
-type IconToken = 'primary' | 'secondary' | 'statusInProgress' | 'warning';
+type TileToken = 'tileBlue' | 'tileGreen' | 'tilePurple' | 'tileAmber' | 'accentOrangeSoft';
+type IconToken = 'primary' | 'secondary' | 'statusInProgress' | 'warning' | 'accentOrange';
 
 type QuickAction = {
   id: string;
@@ -57,8 +56,8 @@ const QUICK_ACTIONS: QuickAction[] = [
     icon: 'alert-outline',
     labelKey: 'reportProblem',
     subtitle: 'Raise an issue in your area',
-    tile: 'tileAmber',
-    iconColor: 'warning',
+    tile: 'accentOrangeSoft',
+    iconColor: 'accentOrange',
     route: {type: 'stack', screen: 'ReportProblem'},
   },
   {
@@ -91,6 +90,9 @@ const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+// Decorative skyline silhouette heights for the hero banner.
+const BANNER_SKYLINE = [16, 26, 20, 34, 22, 30, 18, 28, 24, 36, 20, 30, 16];
 
 const getTimeGreetingKey = () => {
   const hour = new Date().getHours();
@@ -144,18 +146,22 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
         style={[
           styles.actionIconWrap,
           variant === 'feature' && styles.actionIconFeature,
+          variant === 'compact' && styles.actionIconCompact,
           variant === 'wide' && styles.actionIconWide,
           {backgroundColor: colors[action.iconColor]},
         ]}>
         <MaterialCommunityIcons
           name={action.icon}
-          size={variant === 'compact' ? 24 : 30}
+          size={variant === 'compact' ? 22 : 30}
           color={colors.textOnPrimary}
         />
       </View>
-      <View style={styles.actionCopy}>
-        <Text style={styles.actionLabel}>{label}</Text>
-        <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+      <View style={[styles.actionCopy, variant === 'compact' && styles.actionCopyCompact]}>
+        <Text style={[styles.actionLabel, variant === 'feature' && styles.actionLabelFeature]}>{label}</Text>
+        <Text
+          style={[styles.actionSubtitle, variant === 'feature' && styles.actionSubtitleFeature]}>
+          {action.subtitle}
+        </Text>
       </View>
       <View style={[styles.actionArrow, variant === 'feature' && styles.actionArrowFeature]}>
         <MaterialCommunityIcons name="chevron-right" size={24} color={colors[action.iconColor]} />
@@ -226,16 +232,30 @@ export const CitizenHomeScreen: React.FC = () => {
             end={{x: 1, y: 1}}
             style={StyleSheet.absoluteFill}
           />
+          {/* Skyline silhouette */}
+          <View pointerEvents="none" style={styles.bannerSkyline}>
+            {BANNER_SKYLINE.map((h, i) => (
+              <View key={i} style={[styles.bannerBuilding, {height: h}]} />
+            ))}
+          </View>
+
           <View style={styles.bannerContent}>
             <View style={styles.bannerIconWrap}>
-              <MaterialCommunityIcons name="bullhorn-outline" size={30} color={Colors.white} />
+              <MaterialCommunityIcons name="bullhorn-outline" size={28} color={Colors.white} />
             </View>
             <View style={styles.bannerCopy}>
               <Text style={styles.bannerTitle}>{t('tagline')}</Text>
-              <Text style={styles.bannerSub}>{t('quickActions')}</Text>
+              <Text style={styles.bannerSub}>{t('voiceSubtitle')}</Text>
             </View>
           </View>
-          <View style={styles.bannerGlow} />
+
+          <TouchableOpacity
+            style={styles.reportNowBtn}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('ReportProblem')}>
+            <Text style={styles.reportNowText}>{t('reportNow')}</Text>
+            <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.primary} />
+          </TouchableOpacity>
         </View>
 
         {/* Quick Actions */}
@@ -288,46 +308,64 @@ export const CitizenHomeScreen: React.FC = () => {
           />
         </View>
 
-        {/* Recent Complaints */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionHeaderTitle}>{t('recentComplaints')}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('CitizenTabs', {screen: 'MyComplaints'})}>
-            <Text style={styles.seeAll}>{t('seeAll')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        {MOCK_COMPLAINTS.slice(0, 3).map(complaint => (
-          <View key={complaint.id} style={{paddingHorizontal: Spacing[4]}}>
-            <AppCard
-              onPress={() => navigation.navigate('ComplaintTicket', {ticketId: complaint.ticketId})}>
-              <View style={styles.complaintRow}>
-                <View style={styles.complaintInfo}>
-                  <Text style={styles.complaintId}>{complaint.ticketId}</Text>
-                  <Text style={styles.complaintDesc} numberOfLines={1}>
-                    {complaint.description}
-                  </Text>
-                  <Text style={styles.complaintDate}>{formatRelativeTime(complaint.createdAt)}</Text>
-                </View>
-                <AppBadge status={complaint.status} />
-              </View>
-            </AppCard>
+        {/* Recent Complaints — dark navy section (two-tone) */}
+        <View style={styles.darkSection}>
+          <LinearGradient
+            colors={['#102A47', '#0A1626']}
+            start={{x: 0, y: 0}}
+            end={{x: 0, y: 1}}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.darkHeader}>
+            <View style={styles.darkHeaderTitle}>
+              <MaterialCommunityIcons name="file-document-outline" size={18} color="#8FC0FF" />
+              <Text style={styles.darkSectionTitle}>{t('recentComplaints')}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.darkSeeAllBtn}
+              onPress={() => navigation.navigate('CitizenTabs', {screen: 'MyComplaints'})}>
+              <Text style={styles.darkSeeAll}>{t('viewAll')}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={18} color="#8FC0FF" />
+            </TouchableOpacity>
           </View>
-        ))}
 
-        {/* Active Poll Banner */}
-        {MOCK_POLLS.filter(p => p.status === 'active').length > 0 && (
-          <AppCard
-            style={styles.pollBanner}
-            onPress={() => navigation.navigate('PublicPoll')}>
-            <MaterialCommunityIcons name="poll" size={34} color={Colors.secondary} />
-            <Text style={styles.pollBannerTitle}>{t('newPoll')}</Text>
-            <Text style={styles.pollBannerSub} numberOfLines={1}>
-              {MOCK_POLLS.find(p => p.status === 'active')?.question}
-            </Text>
-          </AppCard>
-        )}
+          {MOCK_COMPLAINTS.slice(0, 3).map(complaint => (
+            <TouchableOpacity
+              key={complaint.id}
+              style={styles.darkCard}
+              activeOpacity={0.85}
+              onPress={() => navigation.navigate('ComplaintTicket', {ticketId: complaint.ticketId})}>
+              <View style={styles.darkCardBody}>
+                <Text style={styles.darkId}>{complaint.ticketId}</Text>
+                <Text style={styles.darkDesc} numberOfLines={2}>{complaint.description}</Text>
+                <Text style={styles.darkDate}>{formatRelativeTime(complaint.createdAt)}</Text>
+              </View>
+              <View style={styles.darkCardRight}>
+                <AppBadge status={complaint.status} />
+                <MaterialCommunityIcons name="chevron-right" size={20} color="#6B819B" />
+              </View>
+            </TouchableOpacity>
+          ))}
 
-        <View style={{height: Spacing[8]}} />
+          {/* Active Poll Banner */}
+          {MOCK_POLLS.filter(p => p.status === 'active').length > 0 && (
+            <TouchableOpacity
+              style={styles.darkPoll}
+              activeOpacity={0.85}
+              onPress={() => navigation.navigate('PublicPoll')}>
+              <View style={styles.darkPollIcon}>
+                <MaterialCommunityIcons name="poll" size={22} color="#8FC0FF" />
+              </View>
+              <View style={styles.darkPollText}>
+                <Text style={styles.darkPollTitle}>{t('newPoll')}</Text>
+                <Text style={styles.darkPollSub} numberOfLines={1}>
+                  {MOCK_POLLS.find(p => p.status === 'active')?.question}
+                </Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#6B819B" />
+            </TouchableOpacity>
+          )}
+        </View>
       </Animated.ScrollView>
       <CitizenCreateFab />
     </SafeAreaView>
@@ -382,10 +420,12 @@ const createStyles = (Colors: AppColors) => ({
     marginHorizontal: Spacing[4],
     marginTop: Spacing[2],
     marginBottom: Spacing[4],
-    padding: Spacing[4],
+    padding: Spacing[5],
+    minHeight: 150,
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius['2xl'],
     overflow: 'hidden',
+    justifyContent: 'space-between',
     shadowColor: Colors.primary,
     shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.22,
@@ -396,6 +436,7 @@ const createStyles = (Colors: AppColors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 1,
+    paddingRight: 120,
   },
   bannerIconWrap: {
     width: 56,
@@ -407,15 +448,45 @@ const createStyles = (Colors: AppColors) => ({
     marginRight: Spacing[3],
   },
   bannerCopy: {flex: 1},
-  bannerGlow: {
+  bannerSkyline: {
     position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    right: -36,
-    top: -46,
+    right: 0,
+    bottom: 0,
+    left: '42%',
+    height: 64,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    gap: 4,
+    paddingRight: Spacing[4],
+    opacity: 0.9,
+  },
+  bannerBuilding: {
+    width: 12,
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.16)',
   },
+  reportNowBtn: {
+    position: 'absolute',
+    right: Spacing[5],
+    bottom: Spacing[5],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.full,
+    paddingLeft: Spacing[4],
+    paddingRight: Spacing[3],
+    paddingVertical: Spacing[2],
+    zIndex: 2,
+    shadowColor: Colors.black,
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  reportNowText: {fontSize: FontSize.sm, fontWeight: FontWeight.bold, color: Colors.primary},
   bannerTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textOnPrimary},
   bannerSub: {
     fontSize: FontSize.sm,
@@ -487,7 +558,7 @@ const createStyles = (Colors: AppColors) => ({
     minHeight: 238,
     justifyContent: 'space-between',
     padding: Spacing[5],
-    borderColor: Colors.warning,
+    borderColor: Colors.accentOrange,
   },
   actionCardCompact: {
     flex: 1,
@@ -516,24 +587,37 @@ const createStyles = (Colors: AppColors) => ({
     elevation: 2,
   },
   actionIconFeature: {
-    width: 68,
-    height: 68,
+    width: 60,
+    height: 60,
+  },
+  actionIconCompact: {
+    width: 46,
+    height: 46,
   },
   actionIconWide: {
     width: 62,
     height: 62,
   },
   actionCopy: {flex: 1, paddingRight: Spacing[4]},
+  actionCopyCompact: {paddingRight: Spacing[8]},
   actionLabel: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
     color: Colors.text,
     marginBottom: Spacing[1],
   },
+  actionLabelFeature: {
+    fontSize: FontSize.lg,
+    marginBottom: Spacing[2],
+  },
   actionSubtitle: {
     fontSize: FontSize.xs,
     lineHeight: 17,
     color: Colors.textSecondary,
+  },
+  actionSubtitleFeature: {
+    fontSize: FontSize.sm,
+    lineHeight: 20,
   },
   actionArrow: {
     position: 'absolute',
@@ -556,8 +640,53 @@ const createStyles = (Colors: AppColors) => ({
     height: 36,
     backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.warning,
+    borderColor: Colors.accentOrange,
   },
+  darkSection: {
+    marginTop: Spacing[6],
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[5],
+    paddingBottom: Spacing[12],
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+    overflow: 'hidden',
+    backgroundColor: '#0A1626',
+  },
+  darkHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing[4]},
+  darkHeaderTitle: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
+  darkSectionTitle: {fontSize: FontSize.md, fontWeight: FontWeight.bold, color: '#EAF1FB'},
+  darkSeeAllBtn: {flexDirection: 'row', alignItems: 'center', gap: 2},
+  darkSeeAll: {fontSize: FontSize.sm, color: '#8FC0FF', fontWeight: FontWeight.semiBold},
+  darkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#13294A',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: '#1E3A5F',
+    padding: Spacing[4],
+    marginBottom: Spacing[3],
+  },
+  darkCardBody: {flex: 1, paddingRight: Spacing[3]},
+  darkId: {fontSize: FontSize.xs, color: '#8FC0FF', fontWeight: FontWeight.semiBold, marginBottom: 2},
+  darkDesc: {fontSize: FontSize.base, color: '#EAF1FB', fontWeight: FontWeight.semiBold, lineHeight: 20},
+  darkDate: {fontSize: FontSize.xs, color: '#90A4BD', marginTop: 4},
+  darkCardRight: {alignItems: 'flex-end', gap: Spacing[2]},
+  darkPoll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[3],
+    backgroundColor: '#13294A',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: '#1E3A5F',
+    padding: Spacing[4],
+    marginTop: Spacing[1],
+  },
+  darkPollIcon: {width: 44, height: 44, borderRadius: BorderRadius.full, backgroundColor: '#0A1626', alignItems: 'center', justifyContent: 'center'},
+  darkPollText: {flex: 1},
+  darkPollTitle: {fontSize: FontSize.base, fontWeight: FontWeight.bold, color: '#EAF1FB'},
+  darkPollSub: {fontSize: FontSize.sm, color: '#90A4BD', marginTop: 2},
   complaintRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

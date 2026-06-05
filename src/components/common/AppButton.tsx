@@ -27,6 +27,8 @@ interface AppButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   fullWidth?: boolean;
+  // Override the brand colour with a custom accent (solid, no gradient).
+  accent?: string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -41,11 +43,24 @@ export const AppButton: React.FC<AppButtonProps> = ({
   style,
   textStyle,
   fullWidth = true,
+  accent,
 }) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const isDisabled = disabled || loading;
-  const isGradient = variant === 'primary' || variant === 'secondary';
+  const isGradient = (variant === 'primary' || variant === 'secondary') && !accent;
+  const accentContainer: ViewStyle | undefined = accent
+    ? variant === 'outline'
+      ? {borderColor: accent}
+      : variant === 'ghost'
+      ? {backgroundColor: `${accent}1A`}
+      : {backgroundColor: accent, shadowColor: accent}
+    : undefined;
+  const accentTextColor = accent
+    ? variant === 'outline' || variant === 'ghost'
+      ? accent
+      : '#FFFFFF'
+    : undefined;
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
@@ -69,6 +84,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
         fullWidth && styles.fullWidth,
         isDisabled && styles.disabled,
         isGradient && styles.primaryShadow,
+        accentContainer,
         style,
         animatedStyle,
       ]}>
@@ -90,7 +106,14 @@ export const AppButton: React.FC<AppButtonProps> = ({
           />
         )
         : (
-          <Text style={[styles.text, styles[`text_${variant}`], styles[`textSize_${size}`], textStyle]}>
+          <Text
+            style={[
+              styles.text,
+              styles[`text_${variant}`],
+              styles[`textSize_${size}`],
+              accentTextColor ? {color: accentTextColor} : null,
+              textStyle,
+            ]}>
             {title}
           </Text>
         )}

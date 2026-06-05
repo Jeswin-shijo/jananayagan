@@ -1,135 +1,143 @@
 export const LightColors = {
-  primary: '#5586B5',
-  primaryLight: '#EAF2FA',
-  primaryDark: '#2F5C86',
-  primarySoft: '#D6E6F4',
+  primary: '#2563EB',
+  primaryLight: '#E8F0FF',
+  primaryDark: '#1746C4',
+  primarySoft: '#CFE0FF',
 
-  secondary: '#6FC298',
-  secondaryLight: '#E6F6EE',
-  secondaryDark: '#48A075',
-  secondarySoft: '#D5EFDF',
+  secondary: '#06B6D4',
+  secondaryLight: '#E2F7FB',
+  secondaryDark: '#0E8FA8',
+  secondarySoft: '#C2ECF4',
 
-  danger: '#D9695E',
-  dangerLight: '#FBEAE8',
+  danger: '#EF4444',
+  dangerLight: '#FDECEC',
 
-  warning: '#D6A24E',
-  warningLight: '#FBF1DC',
+  warning: '#F59E0B',
+  warningLight: '#FEF3D9',
 
-  success: '#5BB587',
-  successLight: '#E2F4EA',
+  success: '#16A34A',
+  successLight: '#E3F6EA',
 
-  info: '#5586B5',
-  infoLight: '#EAF2FA',
+  info: '#2563EB',
+  infoLight: '#E8F0FF',
+
+  // Accent (report / alert)
+  accentOrange: '#F97316',
+  accentOrangeSoft: '#FFF1E8',
 
   // Neutrals
   white: '#FFFFFF',
   black: '#000000',
-  background: '#EEF3F9',
+  background: '#F2F6FC',
   surface: '#FFFFFF',
-  surfaceSoft: '#F6F9FC',
-  border: '#E2E9F1',
-  borderLight: '#EFF3F8',
+  surfaceSoft: '#F4F8FD',
+  border: '#E1E8F2',
+  borderLight: '#EEF3F9',
 
-  text: '#1E3A5F',
-  textSecondary: '#5E7088',
-  textDisabled: '#9AA8B8',
+  text: '#0F2547',
+  textSecondary: '#5A6B85',
+  textDisabled: '#97A6BA',
   textOnPrimary: '#FFFFFF',
 
   // Pastel tiles (quick actions / category accents)
-  tileBlue: '#E8F0FA',
+  tileBlue: '#E8F0FF',
   tileGreen: '#E3F6EC',
-  tilePurple: '#EEEAFB',
-  tileAmber: '#FBF1DC',
-  tilePink: '#FBE7EF',
-  tileTeal: '#E2F4F4',
+  tilePurple: '#F1ECFE',
+  tileAmber: '#FEF3D9',
+  tilePink: '#FCE8F0',
+  tileTeal: '#E0F7FB',
 
   // Status
-  statusSubmitted: '#5586B5',
-  statusUnderReview: '#D6A24E',
-  statusInProgress: '#7C77C9',
-  statusResolved: '#5BB587',
-  statusRejected: '#D9695E',
+  statusSubmitted: '#2563EB',
+  statusUnderReview: '#F59E0B',
+  statusInProgress: '#7C3AED',
+  statusResolved: '#16A34A',
+  statusRejected: '#EF4444',
 
   // Sentiment
-  sentimentPositive: '#5BB587',
-  sentimentNeutral: '#D6A24E',
-  sentimentNegative: '#D9695E',
+  sentimentPositive: '#16A34A',
+  sentimentNeutral: '#F59E0B',
+  sentimentNegative: '#EF4444',
 
   // Overlay
-  overlay: 'rgba(30,58,95,0.45)',
+  overlay: 'rgba(10,20,40,0.5)',
   overlayLight: 'rgba(255,255,255,0.34)',
 
   // Priority
-  priorityLow: '#5BB587',
-  priorityMedium: '#D6A24E',
-  priorityHigh: '#D9695E',
+  priorityLow: '#16A34A',
+  priorityMedium: '#F59E0B',
+  priorityHigh: '#EF4444',
 };
 
 export const DarkColors: typeof LightColors = {
-  primary: '#8FBBDD',
-  primaryLight: '#173249',
-  primaryDark: '#BBDDF1',
-  primarySoft: '#1E4058',
+  primary: '#4F8DFF',
+  primaryLight: '#16233F',
+  primaryDark: '#1E50C8',
+  primarySoft: '#1B2C4E',
 
-  secondary: '#7FD3AC',
-  secondaryLight: '#123D2F',
-  secondaryDark: '#BCF1D6',
-  secondarySoft: '#164A38',
+  secondary: '#22D3EE',
+  secondaryLight: '#0C3038',
+  secondaryDark: '#15A8C2',
+  secondarySoft: '#103642',
 
-  danger: '#EE8A80',
-  dangerLight: '#4E211E',
+  danger: '#F87171',
+  dangerLight: '#3A1B1B',
 
-  warning: '#EBC06A',
-  warningLight: '#4A3718',
+  warning: '#FBBF24',
+  warningLight: '#3A2E12',
 
-  success: '#7FD3AC',
-  successLight: '#123D2F',
+  success: '#34D399',
+  successLight: '#0E2E22',
 
-  info: '#8FBBDD',
-  infoLight: '#173249',
+  info: '#4F8DFF',
+  infoLight: '#16233F',
+
+  // Accent (report / alert)
+  accentOrange: '#FB923C',
+  accentOrangeSoft: '#3A2614',
 
   // Neutrals
-  white: '#101B29',
-  black: '#EEF3F9',
-  background: '#0A121C',
-  surface: '#101B29',
-  surfaceSoft: '#15212F',
-  border: '#243443',
-  borderLight: '#1A2737',
+  white: '#0B0F1A',
+  black: '#EAF1FB',
+  background: '#080C18',
+  surface: '#111A2C',
+  surfaceSoft: '#0E1626',
+  border: '#23314C',
+  borderLight: '#1A2740',
 
-  text: '#EEF3F9',
-  textSecondary: '#AEBDCB',
-  textDisabled: '#788A9C',
-  textOnPrimary: '#0A121C',
+  text: '#EAF1FB',
+  textSecondary: '#9FB2CC',
+  textDisabled: '#6B7E99',
+  textOnPrimary: '#FFFFFF',
 
   // Pastel tiles (quick actions / category accents)
-  tileBlue: '#173249',
-  tileGreen: '#123D2F',
-  tilePurple: '#221F3D',
-  tileAmber: '#3A2D14',
-  tilePink: '#3D1E2A',
-  tileTeal: '#0F3535',
+  tileBlue: '#16233F',
+  tileGreen: '#0E2E22',
+  tilePurple: '#221A3D',
+  tileAmber: '#3A2E12',
+  tilePink: '#3A1B28',
+  tileTeal: '#0C3038',
 
   // Status
-  statusSubmitted: '#8FBBDD',
-  statusUnderReview: '#EBC06A',
-  statusInProgress: '#AAA4EE',
-  statusResolved: '#7FD3AC',
-  statusRejected: '#EE8A80',
+  statusSubmitted: '#4F8DFF',
+  statusUnderReview: '#FBBF24',
+  statusInProgress: '#A78BFA',
+  statusResolved: '#34D399',
+  statusRejected: '#F87171',
 
   // Sentiment
-  sentimentPositive: '#7FD3AC',
-  sentimentNeutral: '#EBC06A',
-  sentimentNegative: '#EE8A80',
+  sentimentPositive: '#34D399',
+  sentimentNeutral: '#FBBF24',
+  sentimentNegative: '#F87171',
 
   // Overlay
-  overlay: 'rgba(0,0,0,0.65)',
-  overlayLight: 'rgba(255,255,255,0.16)',
+  overlay: 'rgba(0,0,0,0.6)',
+  overlayLight: 'rgba(255,255,255,0.14)',
 
   // Priority
-  priorityLow: '#7FD3AC',
-  priorityMedium: '#EBC06A',
-  priorityHigh: '#EE8A80',
+  priorityLow: '#34D399',
+  priorityMedium: '#FBBF24',
+  priorityHigh: '#F87171',
 };
 
 export type AppColors = typeof LightColors;

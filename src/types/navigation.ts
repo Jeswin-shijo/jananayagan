@@ -40,6 +40,10 @@ export type CitizenStackParamList = {
   PublicPoll: undefined;
   Notifications: undefined;
   ReportProblem: undefined;
+  SilentReport: undefined;
+  NearbyHelp: undefined;
+  RideTracker: undefined;
+  SafeRoute: undefined;
   ComplaintTicket: { ticketId: string };
   PetitionDetail: { petitionId: string };
   Success: { kind: 'complaint' | 'petition'; refId: string };

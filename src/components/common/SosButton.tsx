@@ -6,18 +6,18 @@ import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useAuthStore} from '@store/authStore';
 import {SosEmergencyModal} from '@components/common/SosEmergencyModal';
 import {AppColors} from '@constants/colors';
-import {FontSize, FontWeight} from '@constants/typography';
+import {FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
 export const SosButton: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const insets = useSafeAreaInsets();
-  const {isAuthenticated, user} = useAuthStore();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const [visible, setVisible] = useState(false);
 
-  // Only authenticated female users get the always-on floating SOS affordance.
-  if (!isAuthenticated || user?.gender !== 'female') {
+  // Every authenticated user (any role / gender) gets the always-on SOS affordance.
+  if (!isAuthenticated) {
     return null;
   }
 
@@ -35,12 +35,11 @@ export const SosButton: React.FC = () => {
 const createStyles = (_Colors: AppColors) => ({
   host: {position: 'absolute', left: Spacing[4], zIndex: 60},
   fab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: Spacing[3],
-    height: 44,
+    width: 60,
+    height: 60,
     borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#E0322A',
     shadowColor: '#E0322A',
     shadowOffset: {width: 0, height: 6},
@@ -48,5 +47,5 @@ const createStyles = (_Colors: AppColors) => ({
     shadowRadius: 12,
     elevation: 8,
   },
-  fabText: {color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: FontSize.sm, letterSpacing: 1},
+  fabText: {color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1, marginTop: 1},
 } as const);

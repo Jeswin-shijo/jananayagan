@@ -15,6 +15,7 @@ import {SosButton} from './src/components/common/SosButton';
 import {AppAlertProvider} from './src/components/common/AppAlert';
 import {useThemeStore} from './src/store/themeStore';
 import {useLanguageStore} from './src/store/languageStore';
+import {useEmergencyContactsStore} from './src/store/emergencyContactsStore';
 import {useStartupPermissions} from './src/hooks/useStartupPermissions';
 
 const queryClient = new QueryClient({
@@ -29,13 +30,15 @@ const queryClient = new QueryClient({
 function App(): React.JSX.Element {
   const {colors, isDark, restoreTheme} = useThemeStore();
   const restoreLanguage = useLanguageStore(state => state.restoreLanguage);
+  const restoreEmergencyContacts = useEmergencyContactsStore(state => state.restore);
 
   useStartupPermissions();
 
   useEffect(() => {
     restoreTheme();
     restoreLanguage();
-  }, [restoreTheme, restoreLanguage]);
+    restoreEmergencyContacts();
+  }, [restoreTheme, restoreLanguage, restoreEmergencyContacts]);
 
   const navigationTheme = {
     ...(isDark ? NavigationDarkTheme : NavigationLightTheme),

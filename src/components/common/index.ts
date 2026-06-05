@@ -17,3 +17,4 @@ export * from './FormModal';
 export * from './VoiceNoteRecorder';
 export * from './SosButton';
 export * from './SosEmergencyModal';
+export * from './EmergencyContactsSheet';

@@ -1,11 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, TouchableOpacity, Linking} from 'react-native';
+import {View, Text, TouchableOpacity, Linking, Platform} from 'react-native';
 import Modal from 'react-native-modal';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useLocationStore} from '@store/locationStore';
 import {useCurrentLocation} from '@hooks/useCurrentLocation';
+import {useEmergencyContactsStore, EmergencyContact} from '@store/emergencyContactsStore';
 import {toastSuccess} from '@utils/toast';
 import {AppColors} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -36,6 +37,7 @@ export const SosEmergencyModal: React.FC<SosEmergencyModalProps> = ({visible, on
   const {t} = useTranslation();
   const {coords, address} = useLocationStore();
   const {fetchLocation} = useCurrentLocation();
+  const contacts = useEmergencyContactsStore(s => s.contacts);
 
   const [stage, setStage] = useState<Stage>('idle');
   const [count, setCount] = useState(COUNTDOWN_FROM);
@@ -93,13 +95,24 @@ export const SosEmergencyModal: React.FC<SosEmergencyModalProps> = ({visible, on
     setCount(COUNTDOWN_FROM);
   };
 
-  const call = (num: string) => Linking.openURL(`tel:${num}`);
+  const call = (num: string) => Linking.openURL(`tel:${num}`).catch(() => {});
 
   const locationText = address
     ? address
     : coords
     ? `${coords.latitude.toFixed(5)}, ${coords.longitude.toFixed(5)}`
     : t('detecting');
+
+  const mapsLink = coords
+    ? `https://maps.google.com/?q=${coords.latitude},${coords.longitude}`
+    : '';
+
+  // Open the SMS composer to the contact, pre-filled with a live-location link.
+  const shareWith = (c: EmergencyContact) => {
+    const body = `${t('sosSmsBody')} ${mapsLink || locationText}`;
+    const sep = Platform.OS === 'ios' ? '&' : '?';
+    Linking.openURL(`sms:${c.phone}${sep}body=${encodeURIComponent(body)}`).catch(() => {});
+  };
 
   const Helplines = () => (
     <View style={styles.helplineRow}>
@@ -111,6 +124,31 @@ export const SosEmergencyModal: React.FC<SosEmergencyModalProps> = ({visible, on
       ))}
     </View>
   );
+
+  // Sent stage — list saved family contacts and let the user push their live location.
+  const ShareSection = () =>
+    contacts.length ? (
+      <View style={styles.shareWrap}>
+        <Text style={styles.shareTitle}>{t('shareLiveLocationWith')}</Text>
+        {contacts.map((c, i) => (
+          <View key={`${c.phone}-${i}`} style={styles.shareRow}>
+            <View style={styles.shareInfo}>
+              <Text style={styles.shareName} numberOfLines={1}>
+                {c.name || `${t('contact')} ${i + 1}`}
+              </Text>
+              <Text style={styles.sharePhone} numberOfLines={1}>{c.phone}</Text>
+            </View>
+            <TouchableOpacity style={styles.shareCall} onPress={() => call(c.phone)}>
+              <MaterialCommunityIcons name="phone" size={18} color={Colors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.shareBtn} onPress={() => shareWith(c)}>
+              <MaterialCommunityIcons name="map-marker-radius" size={15} color="#FFFFFF" />
+              <Text style={styles.shareBtnText}>{t('shareLiveLocation')}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+    ) : null;
 
   return (
     <Modal
@@ -164,6 +202,7 @@ export const SosEmergencyModal: React.FC<SosEmergencyModalProps> = ({visible, on
               <MaterialCommunityIcons name="map-marker-outline" size={16} color={Colors.primary} />
               <Text style={styles.locText}>{locationText}</Text>
             </View>
+            <ShareSection />
             <Helplines />
             <TouchableOpacity onPress={onClose} style={styles.doneBtn}>
               <Text style={styles.doneText}>{t('done')}</Text>
@@ -202,6 +241,15 @@ const createStyles = (Colors: AppColors) => ({
   sentRing: {width: 72, height: 72, borderRadius: BorderRadius.full, backgroundColor: Colors.successLight, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing[3]},
   locBox: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2], backgroundColor: Colors.surfaceSoft, borderWidth: 1, borderColor: Colors.border, borderRadius: BorderRadius.lg, paddingHorizontal: Spacing[3], paddingVertical: Spacing[2], marginBottom: Spacing[4], alignSelf: 'stretch'},
   locText: {flex: 1, fontSize: FontSize.sm, color: Colors.text},
+  shareWrap: {alignSelf: 'stretch', marginBottom: Spacing[4]},
+  shareTitle: {fontSize: FontSize.xs, color: Colors.textDisabled, fontWeight: FontWeight.semiBold, marginBottom: Spacing[2]},
+  shareRow: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2], paddingVertical: Spacing[2], borderTopWidth: 1, borderTopColor: Colors.borderLight},
+  shareInfo: {flex: 1},
+  shareName: {fontSize: FontSize.sm, fontWeight: FontWeight.semiBold, color: Colors.text},
+  sharePhone: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: 1},
+  shareCall: {width: 38, height: 38, borderRadius: BorderRadius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.primaryLight, borderWidth: 1, borderColor: Colors.border},
+  shareBtn: {flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: Spacing[3], height: 38, borderRadius: BorderRadius.full, backgroundColor: '#E0322A'},
+  shareBtnText: {color: '#FFFFFF', fontSize: FontSize.xs, fontWeight: FontWeight.bold},
   doneBtn: {width: '100%', height: 52, borderRadius: BorderRadius.xl, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', marginTop: Spacing[4]},
   doneText: {color: Colors.textOnPrimary, fontWeight: FontWeight.bold, fontSize: FontSize.md},
 } as const);

@@ -12,6 +12,10 @@ import {PublicPollScreen} from '@screens/Citizen/PublicPollScreen';
 import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
 import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
 import {ReportProblemScreen} from '@screens/Citizen/ReportProblemScreen';
+import {SilentReportScreen} from '@screens/Citizen/SilentReportScreen';
+import {NearbyHelpScreen} from '@screens/Citizen/NearbyHelpScreen';
+import {RideTrackerScreen} from '@screens/Citizen/RideTrackerScreen';
+import {SafeRouteScreen} from '@screens/Citizen/SafeRouteScreen';
 import {ComplaintTicketScreen} from '@screens/Citizen/ComplaintTicketScreen';
 import {PetitionDetailScreen} from '@screens/Citizen/PetitionDetailScreen';
 import {ProfileScreen} from '@screens/Shared/ProfileScreen';
@@ -20,7 +24,6 @@ import {SuccessScreen} from '@screens/Shared/SuccessScreen';
 import {FloatingTabBar} from '@components/common/FloatingTabBar';
 import {useAppColors} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
-import {useAuthStore} from '@store/authStore';
 
 const Tab = createBottomTabNavigator<CitizenTabParamList>();
 const Stack = createNativeStackNavigator<CitizenStackParamList>();
@@ -39,8 +42,8 @@ const PetitionTabScreen: React.FC = () => {
 const CitizenTabs: React.FC = () => {
   const Colors = useAppColors();
   const {t} = useTranslation();
-  const gender = useAuthStore(state => state.user?.gender);
-  const showSafetyTab = gender === 'female';
+  // Women Safety hub is available to every citizen login (not gender-gated).
+  const showSafetyTab = true;
 
   return (
     <Tab.Navigator
@@ -88,6 +91,10 @@ export const CitizenNavigator: React.FC = () => (
     <Stack.Screen name="PublicPoll" component={PublicPollScreen} />
     <Stack.Screen name="Notifications" component={NotificationsScreen} />
     <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
+    <Stack.Screen name="SilentReport" component={SilentReportScreen} />
+    <Stack.Screen name="NearbyHelp" component={NearbyHelpScreen} />
+    <Stack.Screen name="RideTracker" component={RideTrackerScreen} />
+    <Stack.Screen name="SafeRoute" component={SafeRouteScreen} />
     <Stack.Screen name="ComplaintTicket" component={ComplaintTicketScreen} />
     <Stack.Screen name="PetitionDetail" component={PetitionDetailScreen} />
     <Stack.Screen name="ComplaintDetail" component={ComplaintTicketScreen as any} />
