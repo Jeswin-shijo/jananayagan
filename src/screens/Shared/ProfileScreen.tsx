@@ -17,6 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppCard} from '@components/common/AppCard';
 import {AppButton} from '@components/common/AppButton';
+import {NotificationBell} from '@components/common/NotificationBell';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAppAlert} from '@components/common/AppAlert';
 import {useAuthStore} from '@store/authStore';
@@ -150,6 +151,7 @@ export const ProfileScreen: React.FC = () => {
           </TouchableOpacity>
         )}
         <Text style={styles.headerTitle}>{t('myProfile')}</Text>
+        <NotificationBell />
       </View>
 
       <ScrollView style={styles.panel} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>

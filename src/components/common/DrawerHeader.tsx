@@ -5,6 +5,7 @@ import {useNavigation, DrawerActions} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useThemedStyles} from '@hooks/useThemedStyles';
 import {useAuthStore} from '@store/authStore';
+import {NotificationBell} from '@components/common/NotificationBell';
 import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
@@ -13,10 +14,11 @@ interface DrawerHeaderProps {
   title: string;
   subtitle?: string;
   showAvatar?: boolean;
+  showBell?: boolean;
   right?: React.ReactNode;
 }
 
-export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, showAvatar = true, right}) => {
+export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, showAvatar = true, showBell = true, right}) => {
   const styles = useThemedStyles(createStyles);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -33,14 +35,18 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, show
         <Text style={styles.title} numberOfLines={1}>{title}</Text>
         {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
       </View>
-      {right}
-      {showAvatar && !right && (
-        <TouchableOpacity
-          style={styles.avatar}
-          activeOpacity={0.8}
-          onPress={() => (navigation as any).navigate('Profile')}>
-          <Text style={styles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() ?? 'P'}</Text>
-        </TouchableOpacity>
+      {right ?? (
+        <View style={styles.rightGroup}>
+          {showBell && <NotificationBell />}
+          {showAvatar && (
+            <TouchableOpacity
+              style={styles.avatar}
+              activeOpacity={0.8}
+              onPress={() => (navigation as any).navigate('Profile')}>
+              <Text style={styles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() ?? 'P'}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     </View>
   );
@@ -65,6 +71,7 @@ const createStyles = (Colors: AppColors) => ({
     marginRight: Spacing[2],
   },
   titleBlock: {flex: 1},
+  rightGroup: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
   title: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: '#FFFFFF'},
   subtitle: {fontSize: FontSize.xs, color: 'rgba(255,255,255,0.65)', marginTop: 1},
   avatar: {

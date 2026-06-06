@@ -43,17 +43,17 @@ const CitizenTabs: React.FC = () => {
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
-        tabBarIcon: ({color, focused, size}) => {
+        tabBarIcon: ({color, size}) => {
           const icons: Record<string, {active: MaterialCommunityIconName; inactive: MaterialCommunityIconName}> = {
             CommunityFeed: {active: 'home-variant', inactive: 'home-variant-outline'},
+            Dashboard: {active: 'view-dashboard', inactive: 'view-dashboard-outline'},
             MyComplaints: {active: 'file-document', inactive: 'file-document-outline'},
             Petition: {active: 'file-sign', inactive: 'file-sign'},
-            Profile: {active: 'account', inactive: 'account-outline'},
           };
           const icon = icons[route.name];
           return (
             <MaterialCommunityIcons
-              name={focused ? icon.active : icon.inactive}
+              name={icon.active}
               size={size}
               color={color}
             />
@@ -61,9 +61,9 @@ const CitizenTabs: React.FC = () => {
         },
       })}>
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
+      <Tab.Screen name="Dashboard" component={CitizenHomeScreen} options={{title: t('dashboard')}} />
       <Tab.Screen name="MyComplaints" component={MyComplaintsScreen} options={{title: t('complaints')}} />
       <Tab.Screen name="Petition" component={PetitionTabScreen} options={{title: t('petition')}} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>
   );
 };
@@ -71,7 +71,7 @@ const CitizenTabs: React.FC = () => {
 export const CitizenNavigator: React.FC = () => (
   <Stack.Navigator screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
     <Stack.Screen name="CitizenTabs" component={CitizenTabs} />
-    <Stack.Screen name="Dashboard" component={CitizenHomeScreen} />
+    <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="SubmitPetition" component={SubmitPetitionScreen} />
     <Stack.Screen name="PublicPoll" component={PublicPollScreen} />
     <Stack.Screen name="Announcements" component={AnnouncementsScreen} />

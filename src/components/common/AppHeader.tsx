@@ -5,6 +5,7 @@ import {LinearGradient} from 'react-native-linear-gradient';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import {NotificationBell} from '@components/common/NotificationBell';
 import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing} from '@constants/spacing';
@@ -13,11 +14,19 @@ import {HEADER_HEIGHT} from '@constants/dimensions';
 interface AppHeaderProps {
   title: string;
   showBack?: boolean;
+  /** Show the notification bell in the right slot. Defaults to true. Pass false on screens where it's not needed (e.g. Notifications screen itself). */
+  showBell?: boolean;
   rightAction?: React.ReactNode;
   onBackPress?: () => void;
 }
 
-export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, rightAction, onBackPress}) => {
+export const AppHeader: React.FC<AppHeaderProps> = ({
+  title,
+  showBack = false,
+  showBell = true,
+  rightAction,
+  onBackPress,
+}) => {
   const styles = useThemedStyles(createStyles);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -46,7 +55,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({title, showBack = false, ri
         )}
       </View>
       <Text style={styles.title} numberOfLines={1}>{title}</Text>
-      <View style={styles.right}>{rightAction}</View>
+      <View style={styles.right}>
+        {rightAction ?? (showBell ? <NotificationBell /> : null)}
+      </View>
     </View>
   );
 };

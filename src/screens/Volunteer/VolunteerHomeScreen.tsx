@@ -5,6 +5,7 @@ import {LinearGradient} from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {StyleSheet} from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import {NotificationBell} from '@components/common/NotificationBell';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppCard} from '@components/common/AppCard';
@@ -34,13 +35,16 @@ export const VolunteerHomeScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       <View style={styles.header}>
-        <View>
+        <View style={styles.headerGreeting}>
           <Text style={styles.greeting}>{t('volunteer')}</Text>
           <Text style={styles.name}>{user?.name ?? t('volunteer')}</Text>
         </View>
-        <TouchableOpacity style={styles.avatar} activeOpacity={0.8} onPress={() => navigation.navigate('Profile')}>
-          <Text style={styles.avatarText}>{user?.name?.charAt(0) ?? 'V'}</Text>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <NotificationBell />
+          <TouchableOpacity style={styles.avatar} activeOpacity={0.8} onPress={() => navigation.navigate('Profile')}>
+            <Text style={styles.avatarText}>{user?.name?.charAt(0) ?? 'V'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.panel}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
@@ -97,6 +101,8 @@ const createStyles = (Colors: AppColors) => ({
   panel: {flex: 1, backgroundColor: Colors.background, borderTopLeftRadius: BorderRadius['2xl'], borderTopRightRadius: BorderRadius['2xl']},
   scroll: {padding: Spacing[4]},
   header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Navy.base, paddingHorizontal: Spacing[4], paddingTop: Spacing[2], paddingBottom: Spacing[4]},
+  headerGreeting: {flex: 1},
+  headerRight: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
   greeting: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', fontWeight: FontWeight.medium},
   name: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: '#FFFFFF'},
   avatar: {width: 46, height: 46, borderRadius: BorderRadius.full, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center'},

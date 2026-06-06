@@ -39,6 +39,7 @@ export const NotificationsScreen: React.FC = () => {
       <AppHeader
         title={t('notifications')}
         showBack
+        showBell={false}
         rightAction={
           hasUnread ? (
             <TouchableOpacity onPress={() => markAllRead?.()} accessibilityLabel={t('markAllRead')}>

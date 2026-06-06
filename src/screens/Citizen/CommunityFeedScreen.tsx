@@ -48,6 +48,14 @@ export const CommunityFeedScreen: React.FC = () => {
   const user = useAuthStore(s => s.user);
   const unreadCount = useNotificationStore(s => s.unreadCount);
   const isCitizen = user?.role === 'citizen';
+
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 12) return t('goodMorning');
+    if (h >= 12 && h < 17) return t('goodAfternoon');
+    if (h >= 17 && h < 21) return t('goodEvening');
+    return t('goodNight');
+  }, [t]);
   const [posts, setPosts] = useState<CommunityPost[]>(MOCK_COMMUNITY_POSTS);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [heartPostId, setHeartPostId] = useState<string | null>(null);
@@ -256,54 +264,40 @@ export const CommunityFeedScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
-      {isCitizen && (
-        <Animated.View entering={FadeInUp.duration(420)} style={styles.stickyQuickLinks}>
-          <View style={styles.quickBanner}>
-            <LinearGradient
-              colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 1}}
-              style={StyleSheet.absoluteFill}
-            />
-            <Text style={styles.quickTitle}>{t('quickLinks')}</Text>
-            <View style={styles.quickRow}>
-              <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Dashboard')}>
-                <View style={styles.quickIcon}>
-                  <MaterialCommunityIcons name="view-dashboard-outline" size={22} color={Colors.primary} />
-                </View>
-                <Text style={styles.quickLabel}>{t('dashboard')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate('Notifications')}>
-                <View style={styles.quickIcon}>
-                  <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.primary} />
-                  {unreadCount > 0 && (
-                    <View style={styles.quickBadge}>
-                      <Text style={styles.quickBadgeText}>{unreadCount}</Text>
-                    </View>
-                  )}
-                </View>
-                <Text style={styles.quickLabel}>{t('notifications')}</Text>
-              </TouchableOpacity>
+      {/* Unified top bar — citizen gets avatar+greeting+bell, others get text greeting+bell */}
+      <View style={styles.topBar}>
+        {isCitizen ? (
+          <TouchableOpacity
+            style={styles.profilePill}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Profile')}>
+            <View style={styles.miniAvatar}>
+              <Text style={styles.miniAvatarText}>{user?.name?.charAt(0)?.toUpperCase() ?? '?'}</Text>
             </View>
-          </View>
-        </Animated.View>
-      )}
-      {!isCitizen && (
-        <View style={styles.greetingBand}>
+            <View>
+              <Text style={styles.greetingLine}>{greeting}</Text>
+              <Text style={styles.greetingName}>{user?.name ?? t('user')}</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
           <View style={styles.greetingTextWrap}>
             <Text style={styles.greetingHi}>Hello, {user?.name ?? t('user')} 👋</Text>
             <Text style={styles.greetingSub}>{t('voiceSubtitle')}</Text>
           </View>
-          <TouchableOpacity style={styles.greetingBell} onPress={() => navigation.navigate('Notifications')}>
-            <MaterialCommunityIcons name="bell-outline" size={22} color="#FFFFFF" />
-            {unreadCount > 0 && (
-              <View style={styles.greetingBadge}>
-                <Text style={styles.greetingBadgeText}>{unreadCount}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
+        )}
+
+        <TouchableOpacity
+          style={styles.notifBell}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Notifications')}>
+          <MaterialCommunityIcons name="bell-outline" size={22} color="#FFFFFF" />
+          {unreadCount > 0 && (
+            <View style={styles.notifBadge}>
+              <Text style={styles.notifBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={posts}
         keyExtractor={item => item.id}
@@ -396,19 +390,35 @@ const createStyles = (Colors: AppColors) => ({
     borderTopLeftRadius: BorderRadius['2xl'],
     borderTopRightRadius: BorderRadius['2xl'],
   },
-  greetingBand: {
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing[3],
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[2],
     paddingBottom: Spacing[4],
     backgroundColor: Navy.base,
+    gap: Spacing[3],
   },
-  greetingTextWrap: {flex: 1},
-  greetingHi: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: '#FFFFFF'},
-  greetingSub: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', marginTop: 2},
-  greetingBell: {
+  profilePill: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[3],
+  },
+  miniAvatar: {
+    width: 42,
+    height: 42,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  miniAvatarText: {fontSize: FontSize.base, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  greetingLine: {fontSize: FontSize.xs, color: 'rgba(255,255,255,0.65)'},
+  greetingName: {fontSize: FontSize.base, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  notifBell: {
     width: 44,
     height: 44,
     borderRadius: BorderRadius.full,
@@ -416,7 +426,7 @@ const createStyles = (Colors: AppColors) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  greetingBadge: {
+  notifBadge: {
     position: 'absolute',
     top: 6,
     right: 6,
@@ -430,7 +440,10 @@ const createStyles = (Colors: AppColors) => ({
     borderWidth: 1.5,
     borderColor: Navy.base,
   },
-  greetingBadgeText: {color: '#FFFFFF', fontSize: 9, fontWeight: FontWeight.bold},
+  notifBadgeText: {color: '#FFFFFF', fontSize: 9, fontWeight: FontWeight.bold},
+  greetingTextWrap: {flex: 1},
+  greetingHi: {fontSize: FontSize.xl, fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  greetingSub: {fontSize: FontSize.sm, color: 'rgba(255,255,255,0.7)', marginTop: 2},
   list: {
     paddingHorizontal: Spacing[4],
     paddingTop: Spacing[6],
@@ -438,13 +451,6 @@ const createStyles = (Colors: AppColors) => ({
   },
   listCitizen: {
     paddingTop: Spacing[3],
-  },
-  stickyQuickLinks: {
-    backgroundColor: Navy.base,
-    paddingHorizontal: Spacing[4],
-    paddingTop: Spacing[3],
-    paddingBottom: Spacing[2],
-    zIndex: 10,
   },
   header: {
     minHeight: 142,
@@ -473,50 +479,6 @@ const createStyles = (Colors: AppColors) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  quickBanner: {
-    borderRadius: BorderRadius['2xl'],
-    overflow: 'hidden',
-    padding: Spacing[4],
-    marginBottom: 0,
-    shadowColor: Colors.primary,
-    shadowOffset: {width: 0, height: 10},
-    shadowOpacity: 0.22,
-    shadowRadius: 24,
-    elevation: 6,
-  },
-  quickTitle: {fontSize: FontSize.md, fontWeight: FontWeight.bold, color: Colors.textOnPrimary, marginBottom: Spacing[3]},
-  quickRow: {flexDirection: 'row', gap: Spacing[3]},
-  quickLink: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing[2],
-    backgroundColor: 'rgba(255,255,255,0.16)',
-    borderRadius: BorderRadius.xl,
-    padding: Spacing[3],
-  },
-  quickIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: Colors.danger,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 3,
-  },
-  quickBadgeText: {color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold},
-  quickLabel: {color: Colors.textOnPrimary, fontWeight: FontWeight.semiBold, fontSize: FontSize.sm},
   postCard: {marginHorizontal: 0},
   postHeader: {flexDirection: 'row', alignItems: 'center', marginBottom: Spacing[3]},
   avatar: {

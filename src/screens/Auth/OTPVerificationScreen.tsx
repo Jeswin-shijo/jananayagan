@@ -109,7 +109,7 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppHeader title={t('verifyOTP')} showBack />
+      <AppHeader title={t('verifyOTP')} showBack showBell={false} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}>

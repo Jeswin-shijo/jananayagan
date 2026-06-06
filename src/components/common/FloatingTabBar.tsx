@@ -14,7 +14,7 @@ import {FontSize, FontWeight} from '@constants/typography';
 type MaterialCommunityIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 // Tabs shown in the bar (4 + center FAB). Other registered tabs stay reachable via navigation.
-const VISIBLE_TABS = ['CommunityFeed', 'MyComplaints', 'Petition', 'Profile'];
+const VISIBLE_TABS = ['CommunityFeed', 'Dashboard', 'MyComplaints', 'Petition'];
 
 // Dark navy tab-bar theme (matches the approved design, independent of light/dark mode).
 const TAB_BAR_BG = Navy.surface;
