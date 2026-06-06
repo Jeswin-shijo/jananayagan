@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
+  Share,
   TouchableOpacity,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -133,6 +134,28 @@ export const SubmitPetitionScreen: React.FC<{
     });
   };
 
+  const handleSharePetition = async (petition: Petition) => {
+    const message = [
+      petition.title,
+      petition.description,
+      '',
+      `Signatures: ${formatNum(petition.currentSignatures)} / ${formatNum(petition.targetSignatures)}`,
+      `Constituency: ${petition.constituency}`,
+      'Shared from JANANAYAGAN',
+    ].join('\n');
+
+    try {
+      await Share.share({message, title: petition.title});
+    } catch {
+      showAlert({
+        title: 'Unable to share',
+        message: 'Please try again.',
+        variant: 'danger',
+        icon: 'share-off',
+      });
+    }
+  };
+
   const currentFilterLabel = (() => {
     const f = FILTERS.find(x => x.id === activeFilter)!;
     return f.labelKey ? t(f.labelKey) : f.label!;
@@ -207,7 +230,10 @@ export const SubmitPetitionScreen: React.FC<{
               {isSigned ? 'Signed' : t('signPetition')}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.shareBtn, {borderColor: meta.soft}]} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={[styles.shareBtn, {borderColor: meta.soft}]}
+            activeOpacity={0.8}
+            onPress={() => handleSharePetition(item)}>
             <MaterialCommunityIcons name="share-variant" size={20} color={meta.accent} />
           </TouchableOpacity>
         </View>
@@ -270,22 +296,18 @@ export const SubmitPetitionScreen: React.FC<{
         </View>
 
         <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={styles.headerIconBtn}
-            activeOpacity={0.85}
-            onPress={() => {
-              if (!embedded && navigation.canGoBack()) {
-                navigation.goBack();
-              } else {
-                navigation.navigate('Dashboard');
-              }
-            }}>
-            <MaterialCommunityIcons
-              name={!embedded && navigation.canGoBack() ? 'arrow-left' : 'menu'}
-              size={22}
-              color="#FFFFFF"
-            />
-          </TouchableOpacity>
+          {!embedded && (
+            <TouchableOpacity
+              style={styles.headerIconBtn}
+              activeOpacity={0.85}
+              onPress={() => {
+                if (navigation.canGoBack()) {
+                  navigation.goBack();
+                }
+              }}>
+              <MaterialCommunityIcons name="arrow-left" size={22} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
           <View style={styles.headerCopy}>
             <Text style={styles.headerGreeting}>Hello, {user?.name ?? t('citizen')} 👋</Text>
             <Text style={styles.headerSubtitle}>Make your voice heard</Text>

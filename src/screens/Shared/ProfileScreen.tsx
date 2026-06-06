@@ -26,6 +26,8 @@ export const ProfileScreen: React.FC = () => {
   const {showAlert} = useAppAlert();
   const canGoBack = navigation.canGoBack();
   const canOpenDrawer = typeof navigation.openDrawer === 'function';
+  const routeNames = navigation.getState?.()?.routeNames ?? [];
+  const isTabProfile = routeNames.includes('CommunityFeed') && routeNames.includes('Profile');
   const {user, logout} = useAuthStore();
   const {isDark, toggleMode} = useThemeStore();
   const setLanguage = useLanguageStore(state => state.setLanguage);
@@ -60,7 +62,7 @@ export const ProfileScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <OfflineBanner />
       <View style={styles.headerBar}>
-        {(canGoBack || canOpenDrawer) && (
+        {!isTabProfile && (canGoBack || canOpenDrawer) && (
           <TouchableOpacity
             style={styles.headerBtn}
             activeOpacity={0.8}
