@@ -10,7 +10,13 @@ export type RootStackParamList = {
 
 export type AuthStackParamList = {
   Login: undefined;
-  OTPVerification: { phone: string; role: UserRole; gender: Gender };
+  Register: undefined;
+  OTPVerification: {
+    phone: string;
+    role: UserRole;
+    gender?: Gender;
+    registrationData?: {name: string; dob: string; wardNumber: string};
+  };
 };
 
 export type CitizenTabParamList = {

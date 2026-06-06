@@ -25,6 +25,8 @@ export interface User {
   gender?: import('./navigation').Gender;
   constituency?: string;
   avatarUrl?: string;
+  dob?: string;
+  wardNumber?: string;
 }
 
 export interface Complaint {

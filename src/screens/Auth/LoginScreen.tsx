@@ -14,7 +14,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {AuthStackParamList, UserRole, Gender} from '@appTypes/navigation';
+import {AuthStackParamList, UserRole} from '@appTypes/navigation';
 import {loginSchema, LoginFormData} from '@utils/validators';
 import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
@@ -32,19 +32,11 @@ const ROLES: {id: UserRole; icon: MaterialCommunityIconName}[] = [
   {id: 'volunteer', icon: 'hand-heart-outline'},
 ];
 
-const GENDERS: {id: Gender; icon: MaterialCommunityIconName; labelKey: 'male' | 'female' | 'other'}[] = [
-  {id: 'male', icon: 'gender-male', labelKey: 'male'},
-  {id: 'female', icon: 'gender-female', labelKey: 'female'},
-  {id: 'other', icon: 'gender-male-female', labelKey: 'other'},
-];
-
 export const LoginScreen: React.FC<Props> = ({navigation}) => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const [selectedRole, setSelectedRole] = useState<UserRole>('citizen');
-  const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
-  const [genderError, setGenderError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const {control, handleSubmit, formState: {errors}} = useForm<LoginFormData>({
@@ -53,15 +45,11 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    if (!selectedGender) {
-      setGenderError(true);
-      return;
-    }
     setIsLoading(true);
     // TODO: call sendOTP API
     setTimeout(() => {
       setIsLoading(false);
-      navigation.navigate('OTPVerification', {phone: data.phone, role: selectedRole, gender: selectedGender});
+      navigation.navigate('OTPVerification', {phone: data.phone, role: selectedRole});
     }, 1000);
   };
 
@@ -109,26 +97,6 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>{t('selectGender')}</Text>
-            <View style={styles.genderRow}>
-              {GENDERS.map(g => (
-                <TouchableOpacity
-                  key={g.id}
-                  onPress={() => {setSelectedGender(g.id); setGenderError(false);}}
-                  style={[styles.genderCard, selectedGender === g.id && styles.genderCardActive]}>
-                  <MaterialCommunityIcons
-                    name={g.icon}
-                    size={22}
-                    color={selectedGender === g.id ? Colors.primary : Colors.textSecondary}
-                  />
-                  <Text style={[styles.genderLabel, selectedGender === g.id && styles.genderLabelActive]}>
-                    {t(g.labelKey)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {genderError && <Text style={styles.genderError}>{t('genderRequired')}</Text>}
-
             <Controller
               control={control}
               name="phone"
@@ -139,7 +107,7 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
                   keyboardType="phone-pad"
                   maxLength={10}
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={v => onChange(v.replace(/\D/g, ''))}
                   onBlur={onBlur}
                   error={errors.phone?.message}
                 />
@@ -152,6 +120,13 @@ export const LoginScreen: React.FC<Props> = ({navigation}) => {
               loading={isLoading}
               style={styles.submitBtn}
             />
+
+            <View style={styles.registerRow}>
+              <Text style={styles.registerHint}>{t('dontHaveAccount')}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerLink}> {t('registerHere')}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -236,22 +211,14 @@ const createStyles = (Colors: AppColors) => ({
   roleIconBubbleActive: {backgroundColor: Colors.surface},
   roleLabel: {fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: '500'},
   roleLabelActive: {color: Colors.primary, fontWeight: FontWeight.semiBold},
-  genderRow: {flexDirection: 'row', gap: Spacing[2], marginBottom: Spacing[4]},
-  genderCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing[1],
-    paddingVertical: Spacing[3],
-    borderRadius: BorderRadius.xl,
-    borderWidth: 1,
-    borderColor: Colors.borderLight,
-    backgroundColor: Colors.surface,
-  },
-  genderCardActive: {borderColor: Colors.primary, backgroundColor: Colors.primaryLight},
-  genderLabel: {fontSize: FontSize.sm, color: Colors.textSecondary, fontWeight: '500'},
-  genderLabelActive: {color: Colors.primary, fontWeight: FontWeight.semiBold},
-  genderError: {fontSize: FontSize.xs, color: Colors.danger, marginTop: -Spacing[2], marginBottom: Spacing[3]},
   submitBtn: {marginTop: Spacing[4]},
+  registerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: Spacing[4],
+    paddingBottom: Spacing[4],
+  },
+  registerHint: {fontSize: FontSize.sm, color: Colors.textSecondary},
+  registerLink: {fontSize: FontSize.sm, color: Colors.primary, fontWeight: FontWeight.semiBold},
 } as const);

@@ -27,7 +27,7 @@ const OTP_LENGTH = 6;
 export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
-  const {phone, role, gender} = route.params;
+  const {phone, role, gender, registrationData} = route.params;
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -85,10 +85,12 @@ export const OTPVerificationScreen: React.FC<Props> = ({route}) => {
       await login(
         {
           id: '1',
-          name: 'Demo User',
+          name: registrationData?.name ?? 'Demo User',
           phone,
           role,
           gender,
+          dob: registrationData?.dob,
+          wardNumber: registrationData?.wardNumber,
           constituency: role === 'politician' || role === 'admin' ? 'Coimbatore South' : undefined,
         },
         'mock_token_12345',

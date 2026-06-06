@@ -13,6 +13,8 @@ interface AuthState {
   logout: () => Promise<void>;
   restoreSession: () => Promise<void>;
   setLoading: (loading: boolean) => void;
+  updateProfile: (updates: Partial<Omit<User, 'id' | 'phone' | 'role'>>) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>(set => ({
@@ -50,4 +52,18 @@ export const useAuthStore = create<AuthState>(set => ({
   },
 
   setLoading: loading => set({isLoading: loading}),
+
+  updateProfile: async updates => {
+    const current = useAuthStore.getState().user;
+    if (!current) return;
+    const updated = {...current, ...updates};
+    await AsyncStorage.setItem('auth_user', JSON.stringify(updated));
+    set({user: updated});
+  },
+
+  deleteAccount: async () => {
+    await AsyncStorage.removeItem('auth_token');
+    await AsyncStorage.removeItem('auth_user');
+    set({user: null, token: null, role: null, isAuthenticated: false});
+  },
 }));

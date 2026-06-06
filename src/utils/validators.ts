@@ -56,8 +56,40 @@ export const volunteerSchema = z.object({
   email: z.string().email('Enter a valid email').optional().or(z.literal('')),
 });
 
+export const registerSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name cannot exceed 50 characters'),
+  phone: z
+    .string()
+    .min(10, 'Enter a valid 10-digit phone number')
+    .max(10, 'Enter a valid 10-digit phone number')
+    .regex(/^[6-9]\d{9}$/, 'Enter a valid Indian mobile number'),
+  dob: z
+    .string()
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Enter date in DD/MM/YYYY format'),
+  wardNumber: z.string().min(1, 'Ward number is required'),
+});
+
+export const editProfileSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name cannot exceed 50 characters'),
+  dob: z
+    .string()
+    .regex(/^\d{2}\/\d{2}\/\d{4}$/, 'Enter date in DD/MM/YYYY format')
+    .optional()
+    .or(z.literal('')),
+  wardNumber: z.string().optional(),
+  constituency: z.string().optional(),
+});
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type OTPFormData = z.infer<typeof otpSchema>;
 export type ReportProblemFormData = z.infer<typeof reportProblemSchema>;
 export type PetitionFormData = z.infer<typeof petitionSchema>;
 export type VolunteerFormData = z.infer<typeof volunteerSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
+export type EditProfileFormData = z.infer<typeof editProfileSchema>;
