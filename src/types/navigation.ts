@@ -61,6 +61,7 @@ export type PoliticianDrawerParamList = {
   PoliticianDashboard: undefined;
   HeatMap: undefined;
   Complaints: undefined;
+  PetitionManagement: undefined;
   Announcements: undefined;
   PublicPolls: undefined;
   VolunteerManagement: undefined;
@@ -99,6 +100,7 @@ export type VolunteerTabParamList = {
   CommunityFeed: {newPost?: CommunityPostParam} | undefined;
   Dashboard: undefined;
   VolunteerTasks: undefined;
+  MyTeam: undefined;
   FieldWork: undefined;
   Profile: undefined;
 };

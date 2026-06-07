@@ -9,12 +9,14 @@ import {PoliticianStackParamList, PoliticianDrawerParamList} from '@appTypes/nav
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useAuthStore} from '@store/authStore';
+import {useAppAlert} from '@components/common/AppAlert';
 import {AppColors} from '@constants/colors';
 import {TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
 import {PoliticianDashboardScreen} from '@screens/Politician/PoliticianDashboardScreen';
+import {PoliticianPetitionsScreen} from '@screens/Politician/PoliticianPetitionsScreen';
 import {HeatMapScreen} from '@screens/Politician/HeatMapScreen';
 import {PoliticianComplaintsScreen} from '@screens/Politician/PoliticianComplaintsScreen';
 import {AnnouncementsScreen} from '@screens/Politician/AnnouncementsScreen';
@@ -96,6 +98,7 @@ const PoliticianDrawerContent: React.FC<DrawerContentComponentProps> = ({state, 
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const {user, logout} = useAuthStore();
+  const {showAlert} = useAppAlert();
   const activeRoute = state.routeNames[state.index];
 
   return (
@@ -140,7 +143,19 @@ const PoliticianDrawerContent: React.FC<DrawerContentComponentProps> = ({state, 
           ))}
         </ScrollView>
 
-        <TouchableOpacity style={styles.logout} onPress={logout}>
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() =>
+            showAlert({
+              title: t('logout'),
+              message: t('logoutMessage'),
+              variant: 'danger',
+              actions: [
+                {text: t('cancel'), style: 'cancel'},
+                {text: t('logout'), style: 'destructive', onPress: logout},
+              ],
+            })
+          }>
           <MaterialCommunityIcons name="logout" size={20} color={Colors.danger} />
           <Text style={styles.logoutText}>{t('logout')}</Text>
         </TouchableOpacity>
@@ -163,6 +178,7 @@ const PoliticianDrawer: React.FC = () => {
       <Drawer.Screen name="PoliticianDashboard" component={PoliticianDashboardScreen} />
       <Drawer.Screen name="HeatMap" component={HeatMapScreen} />
       <Drawer.Screen name="Complaints" component={PoliticianComplaintsScreen} />
+      <Drawer.Screen name="PetitionManagement" component={PoliticianPetitionsScreen} />
       <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
       <Drawer.Screen name="PublicPolls" component={PoliticianPollsScreen} />
       <Drawer.Screen name="VolunteerManagement" component={VolunteerManagementScreen} />

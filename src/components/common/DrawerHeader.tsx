@@ -33,7 +33,12 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({title, subtitle, show
       </TouchableOpacity>
       <View style={styles.titleBlock}>
         <Text style={styles.title} numberOfLines={1}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+        {subtitle && (
+          <View style={styles.subtitleRow}>
+            <MaterialCommunityIcons name="map-marker-outline" size={12} color="rgba(255,255,255,0.65)" />
+            <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
+          </View>
+        )}
       </View>
       {right ?? (
         <View style={styles.rightGroup}>
@@ -71,6 +76,7 @@ const createStyles = (Colors: AppColors) => ({
     marginRight: Spacing[2],
   },
   titleBlock: {flex: 1},
+  subtitleRow: {flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2},
   rightGroup: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2]},
   title: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: '#FFFFFF'},
   subtitle: {fontSize: FontSize.xs, color: 'rgba(255,255,255,0.65)', marginTop: 1},

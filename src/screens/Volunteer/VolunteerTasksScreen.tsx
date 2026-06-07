@@ -57,6 +57,10 @@ export const VolunteerTasksScreen: React.FC = () => {
                 </View>
               </View>
               <Text style={styles.title} numberOfLines={2}>{task.title}</Text>
+              <View style={styles.teamRow}>
+                <MaterialCommunityIcons name="account-group-outline" size={12} color={Colors.primary} />
+                <Text style={styles.teamLabel}>{task.teamName}</Text>
+              </View>
               <View style={styles.metaRow}>
                 <View style={[styles.priorityDot, {backgroundColor: priorityColor(task.priority)}]} />
                 <Text style={styles.meta}>{t(PRIORITY_KEY[task.priority])} · {task.ward}, {task.area} · {t('agoShort', {time: task.ago})}</Text>
@@ -100,6 +104,8 @@ const createStyles = (Colors: AppColors) => ({
   statusPill: {paddingHorizontal: Spacing[2], paddingVertical: 2, borderRadius: BorderRadius.full},
   statusText: {fontSize: FontSize.xs, fontWeight: FontWeight.semiBold},
   title: {fontSize: FontSize.base, fontWeight: FontWeight.medium, color: Colors.text, marginBottom: Spacing[2]},
+  teamRow: {flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: Spacing[2]},
+  teamLabel: {fontSize: FontSize.xs, color: Colors.primary, fontWeight: FontWeight.semiBold},
   metaRow: {flexDirection: 'row', alignItems: 'center', gap: Spacing[2], marginBottom: Spacing[3]},
   priorityDot: {width: 8, height: 8, borderRadius: 4},
   meta: {flex: 1, fontSize: FontSize.xs, color: Colors.textSecondary},

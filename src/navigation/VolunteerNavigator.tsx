@@ -7,6 +7,7 @@ import {VolunteerTabParamList, VolunteerStackParamList} from '@appTypes/navigati
 import {VolunteerHomeScreen} from '@screens/Volunteer/VolunteerHomeScreen';
 import {VolunteerTasksScreen} from '@screens/Volunteer/VolunteerTasksScreen';
 import {FieldWorkScreen} from '@screens/Volunteer/FieldWorkScreen';
+import {VolunteerTeamScreen} from '@screens/Volunteer/VolunteerTeamScreen';
 import {CommunityFeedScreen} from '@screens/Citizen/CommunityFeedScreen';
 import {CreatePostScreen} from '@screens/Citizen/CreatePostScreen';
 import {ReportProblemScreen} from '@screens/Citizen/ReportProblemScreen';
@@ -51,6 +52,7 @@ const VolunteerTabs: React.FC = () => {
             CommunityFeed: {active: 'home', inactive: 'home-outline'},
             Dashboard: {active: 'view-dashboard', inactive: 'view-dashboard-outline'},
             VolunteerTasks: {active: 'clipboard-check', inactive: 'clipboard-check-outline'},
+            MyTeam: {active: 'account-group', inactive: 'account-group-outline'},
             FieldWork: {active: 'map-marker-radius', inactive: 'map-marker-radius-outline'},
             Profile: {active: 'account', inactive: 'account-outline'},
           };
@@ -61,6 +63,7 @@ const VolunteerTabs: React.FC = () => {
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
       <Tab.Screen name="Dashboard" component={VolunteerHomeScreen} options={{title: t('dashboard')}} />
       <Tab.Screen name="VolunteerTasks" component={VolunteerTasksScreen} options={{title: t('myTasks')}} />
+      <Tab.Screen name="MyTeam" component={VolunteerTeamScreen} options={{title: 'My Team'}} />
       <Tab.Screen name="FieldWork" component={FieldWorkScreen} options={{title: t('fieldWork')}} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>

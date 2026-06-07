@@ -16,28 +16,30 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {AppButton} from '@components/common/AppButton';
 import {AppInput} from '@components/common/AppInput';
-import {DrawerHeader} from '@components/common/DrawerHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
+import {NotificationBell} from '@components/common/NotificationBell';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {Team, Volunteer} from '@appTypes/api';
 import {toastSuccess} from '@utils/toast';
 import {volunteerSchema, VolunteerFormData} from '@utils/validators';
 import {MOCK_TEAMS, MOCK_VOLUNTEERS} from '@utils/mockData';
-import {AppColors} from '@constants/colors';
+import {AppColors, Navy} from '@constants/colors';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
 const AVATAR_COLORS = ['#2563EB', '#7C3AED', '#16A34A', '#DC2626', '#0891B2', '#D97706'];
 const avatarColor = (name: string) => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
 
-export const TeamScreen: React.FC = () => {
+export const VolunteerTeamScreen: React.FC = () => {
   const Colors = useAppColors();
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
 
   const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
   const [volunteers, setVolunteers] = useState<Volunteer[]>(MOCK_VOLUNTEERS);
+
+  // Add member modal
   const [addMemberTeamId, setAddMemberTeamId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,7 +73,7 @@ export const TeamScreen: React.FC = () => {
       setIsSubmitting(false);
       setAddMemberTeamId(null);
       reset();
-      toastSuccess(t('memberAdded'), data.name);
+      toastSuccess(t('volunteerAdded'), data.name);
     }, 900);
   };
 
@@ -79,81 +81,101 @@ export const TeamScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <DrawerHeader title={t('team')} />
       <OfflineBanner />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Team</Text>
+        <View style={styles.headerRight}>
+          <NotificationBell />
+          <View style={styles.avatarCircle}>
+            <Text style={styles.avatarInitial}>D</Text>
+          </View>
+        </View>
+      </View>
 
-        {/* Add Member button */}
-        <TouchableOpacity
-          onPress={() => setAddMemberTeamId(teams[0]?.id ?? null)}
-          activeOpacity={0.85}
-          style={styles.addBtn}>
-          <LinearGradient
-            colors={['#2563EB', '#06B6D4']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.addBtnGradient}>
-            <Text style={styles.addBtnText}>{t('addMember')}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+      <View style={styles.panel}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
-        {/* Teams */}
-        {teams.map(team => {
-          const members = membersOf(team);
-          return (
-            <View key={team.id} style={styles.teamSection}>
-              <View style={styles.teamLabelRow}>
-                <MaterialCommunityIcons name="account-group-outline" size={14} color={Colors.primary} />
-                <Text style={styles.teamLabelText}>{team.name}</Text>
-                <Text style={styles.teamAreaText}>· {team.area}</Text>
-                <TouchableOpacity
-                  style={styles.addToTeamBtn}
-                  onPress={() => setAddMemberTeamId(team.id)}
-                  activeOpacity={0.7}>
-                  <MaterialCommunityIcons name="account-plus-outline" size={14} color={Colors.primary} />
-                </TouchableOpacity>
+          {/* Add Member button */}
+          <TouchableOpacity
+            onPress={() => setAddMemberTeamId(teams[0]?.id ?? null)}
+            activeOpacity={0.85}
+            style={styles.addBtn}>
+            <LinearGradient
+              colors={['#2563EB', '#06B6D4']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              style={styles.addBtnGradient}>
+              <Text style={styles.addBtnText}>Add Member</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Teams */}
+          {teams.map(team => {
+            const members = membersOf(team);
+            return (
+              <View key={team.id} style={styles.teamSection}>
+                {/* Team label */}
+                <View style={styles.teamLabelRow}>
+                  <MaterialCommunityIcons name="account-group-outline" size={14} color={Colors.primary} />
+                  <Text style={styles.teamLabelText}>{team.name}</Text>
+                  <Text style={styles.teamAreaText}>· {team.area}</Text>
+                  <TouchableOpacity
+                    style={styles.addToTeamBtn}
+                    onPress={() => setAddMemberTeamId(team.id)}
+                    activeOpacity={0.7}>
+                    <MaterialCommunityIcons name="account-plus-outline" size={14} color={Colors.primary} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Members */}
+                {members.map(m => {
+                  const bg = avatarColor(m.name);
+                  return (
+                    <View key={m.id} style={styles.memberCard}>
+                      <View style={[styles.memberAvatar, {backgroundColor: bg}]}>
+                        <Text style={styles.memberAvatarText}>{m.name.charAt(0)}</Text>
+                        {m.isAvailable && <View style={styles.onlineDot} />}
+                      </View>
+                      <View style={styles.memberInfo}>
+                        <Text style={styles.memberName}>{m.name}</Text>
+                        <Text style={styles.memberRole}>
+                          {m.teamRole ?? 'Member'} · {m.area}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.callBtn}
+                        onPress={() => Linking.openURL(`tel:${m.phone}`)}
+                        activeOpacity={0.7}>
+                        <MaterialCommunityIcons name="phone-outline" size={18} color={Colors.primary} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+
+                {members.length === 0 && (
+                  <Text style={styles.emptyTeam}>No members yet</Text>
+                )}
               </View>
+            );
+          })}
 
-              {members.map(m => {
-                const bg = avatarColor(m.name);
-                return (
-                  <View key={m.id} style={styles.memberCard}>
-                    <View style={[styles.memberAvatar, {backgroundColor: bg}]}>
-                      <Text style={styles.memberAvatarText}>{m.name.charAt(0)}</Text>
-                      {m.isAvailable && <View style={styles.onlineDot} />}
-                    </View>
-                    <View style={styles.memberInfo}>
-                      <Text style={styles.memberName}>{m.name}</Text>
-                      <Text style={styles.memberRole}>
-                        {m.teamRole ?? 'Member'} · {m.area}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.callBtn}
-                      onPress={() => Linking.openURL(`tel:${m.phone}`)}
-                      activeOpacity={0.7}>
-                      <MaterialCommunityIcons name="phone-outline" size={18} color={Colors.primary} />
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
+          <View style={{height: 96}} />
+        </ScrollView>
+      </View>
 
-              {members.length === 0 && (
-                <Text style={styles.emptyTeam}>No members yet</Text>
-              )}
-            </View>
-          );
-        })}
-
-        <View style={{height: Spacing[8]}} />
-      </ScrollView>
+      {/* Safety FAB */}
+      <TouchableOpacity style={styles.safetyFab} activeOpacity={0.85}>
+        <MaterialCommunityIcons name="shield-account" size={20} color="#FFFFFF" />
+        <Text style={styles.safetyText}>SAFETY</Text>
+      </TouchableOpacity>
 
       {/* Add Member modal */}
       <Modal visible={!!addMemberTeamId} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={styles.modal}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{t('addMember')}</Text>
+            <Text style={styles.modalTitle}>Add Member</Text>
             <AppButton
               title={t('cancel')}
               onPress={() => { setAddMemberTeamId(null); reset(); }}
@@ -185,7 +207,7 @@ export const TeamScreen: React.FC = () => {
                 <AppInput label={t('emailOptional')} placeholder="email@example.com" keyboardType="email-address" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email?.message} />
               )} />
               <AppButton
-                title={isSubmitting ? t('adding') : t('addMember')}
+                title={isSubmitting ? t('adding') : 'Add to Team'}
                 onPress={handleSubmit(handleAddMember)}
                 loading={isSubmitting}
               />
@@ -198,18 +220,48 @@ export const TeamScreen: React.FC = () => {
 };
 
 const createStyles = (Colors: AppColors) => ({
-  container: {flex: 1, backgroundColor: Colors.background},
+  container: {flex: 1, backgroundColor: Navy.base},
   flex: {flex: 1},
+
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing[4],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[4],
+    backgroundColor: Navy.base,
+  },
+  headerTitle: {fontSize: FontSize['2xl'], fontWeight: FontWeight.bold, color: '#FFFFFF'},
+  headerRight: {flexDirection: 'row', alignItems: 'center', gap: Spacing[3]},
+  avatarCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarInitial: {color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: FontSize.base},
+
+  panel: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: BorderRadius['2xl'],
+    borderTopRightRadius: BorderRadius['2xl'],
+  },
   scroll: {padding: Spacing[4]},
 
+  // Add Member button
   addBtn: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', marginBottom: Spacing[5]},
-  addBtnGradient: {paddingVertical: Spacing[4], alignItems: 'center' as const},
+  addBtnGradient: {paddingVertical: Spacing[4], alignItems: 'center'},
   addBtnText: {color: '#FFFFFF', fontSize: FontSize.base, fontWeight: FontWeight.bold, letterSpacing: 0.3},
 
+  // Team section
   teamSection: {marginBottom: Spacing[5]},
   teamLabelRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing[2],
     marginBottom: Spacing[3],
   },
@@ -220,14 +272,15 @@ const createStyles = (Colors: AppColors) => ({
     height: 26,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primaryLight,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyTeam: {fontSize: FontSize.sm, color: Colors.textDisabled, paddingLeft: Spacing[2], marginBottom: Spacing[2]},
 
+  // Member card
   memberCard: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius['2xl'],
     padding: Spacing[4],
@@ -243,8 +296,8 @@ const createStyles = (Colors: AppColors) => ({
     width: 46,
     height: 46,
     borderRadius: BorderRadius.full,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   memberAvatarText: {color: '#FFFFFF', fontWeight: FontWeight.bold, fontSize: FontSize.lg},
   onlineDot: {
@@ -266,15 +319,35 @@ const createStyles = (Colors: AppColors) => ({
     height: 38,
     borderRadius: BorderRadius.full,
     backgroundColor: Colors.primaryLight,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
+  // Safety FAB
+  safetyFab: {
+    position: 'absolute' as const,
+    bottom: 32,
+    left: Spacing[4],
+    alignItems: 'center',
+    backgroundColor: '#7C3AED',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    shadowColor: '#7C3AED',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  safetyText: {color: '#FFFFFF', fontSize: 8, fontWeight: FontWeight.bold, marginTop: 2, letterSpacing: 0.5},
+
+  // Modal
   modal: {flex: 1, backgroundColor: Colors.background},
   modalHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: Spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLight,
@@ -283,8 +356,8 @@ const createStyles = (Colors: AppColors) => ({
   modalTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.text},
   modalScroll: {padding: Spacing[4]},
   teamTagRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing[2],
     backgroundColor: Colors.primaryLight,
     paddingHorizontal: Spacing[3],

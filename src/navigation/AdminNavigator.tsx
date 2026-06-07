@@ -9,6 +9,7 @@ import {AdminStackParamList, AdminDrawerParamList} from '@appTypes/navigation';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useAuthStore} from '@store/authStore';
+import {useAppAlert} from '@components/common/AppAlert';
 import {AppColors} from '@constants/colors';
 import {TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -72,6 +73,7 @@ const AdminDrawerContent: React.FC<DrawerContentComponentProps> = ({state, navig
   const styles = useThemedStyles(createStyles);
   const {t} = useTranslation();
   const {user, logout} = useAuthStore();
+  const {showAlert} = useAppAlert();
   const activeRoute = state.routeNames[state.index];
 
   return (
@@ -104,7 +106,19 @@ const AdminDrawerContent: React.FC<DrawerContentComponentProps> = ({state, navig
           ))}
         </ScrollView>
 
-        <TouchableOpacity style={styles.logout} onPress={logout}>
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() =>
+            showAlert({
+              title: t('logout'),
+              message: t('logoutMessage'),
+              variant: 'danger',
+              actions: [
+                {text: t('cancel'), style: 'cancel'},
+                {text: t('logout'), style: 'destructive', onPress: logout},
+              ],
+            })
+          }>
           <MaterialCommunityIcons name="logout" size={20} color={Colors.danger} />
           <Text style={styles.logoutText}>{t('logout')}</Text>
         </TouchableOpacity>

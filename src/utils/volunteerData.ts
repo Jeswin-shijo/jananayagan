@@ -12,13 +12,16 @@ export type VolunteerTask = {
   priority: ComplaintPriority;
   status: TaskStatus;
   ago: string;
+  teamId: string;
+  teamName: string;
 };
 
 export const MOCK_TASKS: VolunteerTask[] = [
-  {id: 'vt1', ticketId: 'JAN-002301', title: 'Overflowing garbage near market', ward: 'Ward 5', area: 'Ganapathy', priority: 'high', status: 'assigned', ago: '1h'},
-  {id: 'vt2', ticketId: 'JAN-002298', title: 'Broken street light pole', ward: 'Ward 5', area: 'East Street', priority: 'medium', status: 'in_progress', ago: '4h'},
-  {id: 'vt3', ticketId: 'JAN-002284', title: 'Water stagnation after rain', ward: 'Ward 8', area: 'Bus Stand Rd', priority: 'high', status: 'assigned', ago: '1d'},
-  {id: 'vt4', ticketId: 'JAN-002270', title: 'Park bench repair', ward: 'Ward 5', area: 'VOC Park', priority: 'low', status: 'done', ago: '2d'},
+  {id: 'vt1', ticketId: 'JAN-002301', title: 'Overflowing garbage near market',  ward: 'Ward 5', area: 'Ganapathy',    priority: 'high',   status: 'assigned',   ago: '1h', teamId: 't1', teamName: 'Team Alpha'},
+  {id: 'vt2', ticketId: 'JAN-002298', title: 'Broken street light pole',          ward: 'Ward 5', area: 'East Street',  priority: 'medium', status: 'in_progress',ago: '4h', teamId: 't1', teamName: 'Team Alpha'},
+  {id: 'vt3', ticketId: 'JAN-002284', title: 'Water stagnation after rain',       ward: 'Ward 8', area: 'Bus Stand Rd', priority: 'high',   status: 'assigned',   ago: '1d', teamId: 't2', teamName: 'Team Bravo'},
+  {id: 'vt4', ticketId: 'JAN-002270', title: 'Park bench repair',                 ward: 'Ward 5', area: 'VOC Park',     priority: 'low',    status: 'done',       ago: '2d', teamId: 't1', teamName: 'Team Alpha'},
+  {id: 'vt5', ticketId: 'JAN-002265', title: 'Pothole on main road near school',  ward: 'Ward 3', area: 'Anna Nagar',   priority: 'high',   status: 'assigned',   ago: '6h', teamId: 't3', teamName: 'Team Charlie'},
 ];
 
 export type HouseLean = 'supporter' | 'neutral' | 'opposition' | null;

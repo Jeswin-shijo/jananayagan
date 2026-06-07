@@ -79,12 +79,23 @@ export interface PollOption {
   percentage: number;
 }
 
+export interface Team {
+  id: string;
+  name: string;
+  area: string;
+  volunteerIds: string[];
+  activeTasks: number;
+  completedTasks: number;
+}
+
 export interface Volunteer {
   id: string;
   name: string;
   area: string;
   phone: string;
   email: string;
+  teamId?: string;
+  teamRole?: string;
   activeComplaints: number;
   totalResolved: number;
   isAvailable: boolean;

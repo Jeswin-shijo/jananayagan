@@ -1,4 +1,4 @@
-import {Complaint, Poll, Petition, Volunteer, SentimentData, Notification} from '@appTypes/api';
+import {Complaint, Poll, Petition, Volunteer, Team, SentimentData, Notification} from '@appTypes/api';
 
 // Civic announcements shown to citizens (power cuts, water supply, roadwork, etc.).
 export type AnnouncementCategory =
@@ -148,7 +148,7 @@ export const MOCK_PETITIONS: Petition[] = [
   {
     id: '1',
     title: 'Install speed breakers near Government School',
-    description: 'Multiple accidents have occurred near the school. Requesting immediate installation of speed breakers.',
+    description: 'Multiple accidents have occurred near the school. Requesting immediate installation of speed breakers for student safety.',
     category: 'Road Safety',
     targetSignatures: 500,
     currentSignatures: 342,
@@ -169,12 +169,68 @@ export const MOCK_PETITIONS: Petition[] = [
     createdAt: new Date(Date.now() - 86400000 * 20).toISOString(),
     createdBy: 'Citizens Forum',
   },
+  {
+    id: '3',
+    title: 'Street light installation in Gandhipuram back roads',
+    description: 'Dark streets are causing safety concerns especially for women and elderly residents walking at night.',
+    category: 'Electricity',
+    targetSignatures: 300,
+    currentSignatures: 298,
+    constituency: 'Gandhipuram',
+    status: 'active',
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+    createdBy: 'Residents Welfare Assoc.',
+  },
+  {
+    id: '4',
+    title: 'Convert vacant land to public park in Ward 8',
+    description: 'A long-abandoned vacant lot near Ward 8 should be converted into a green park for children and families.',
+    category: 'Public Spaces',
+    targetSignatures: 800,
+    currentSignatures: 800,
+    constituency: 'Coimbatore South',
+    status: 'approved',
+    createdAt: new Date(Date.now() - 86400000 * 45).toISOString(),
+    createdBy: 'Ward 8 Citizens',
+  },
+  {
+    id: '5',
+    title: 'Relocate weekly market to reduce traffic congestion',
+    description: 'The current weekly market location causes heavy traffic jams affecting schools and hospitals in the area.',
+    category: 'Traffic',
+    targetSignatures: 600,
+    currentSignatures: 210,
+    constituency: 'Peelamedu',
+    status: 'active',
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+    createdBy: 'Traders & Residents Forum',
+  },
+  {
+    id: '6',
+    title: 'Ban plastic usage in local markets',
+    description: 'Petitioning for a complete ban on single-use plastics in all local markets and street vendors.',
+    category: 'Environment',
+    targetSignatures: 1500,
+    currentSignatures: 450,
+    constituency: 'Anna Nagar',
+    status: 'closed',
+    createdAt: new Date(Date.now() - 86400000 * 60).toISOString(),
+    createdBy: 'Green Earth Group',
+  },
 ];
 
 export const MOCK_VOLUNTEERS: Volunteer[] = [
-  {id: '1', name: 'Arjun Rajan', area: 'Anna Nagar', phone: '9876543210', email: 'arjun@example.com', activeComplaints: 3, totalResolved: 45, isAvailable: true, performanceScore: 4.5},
-  {id: '2', name: 'Priya Sundaram', area: 'T. Nagar', phone: '9876543211', email: 'priya@example.com', activeComplaints: 1, totalResolved: 32, isAvailable: true, performanceScore: 4.8},
-  {id: '3', name: 'Karthik Kumar', area: 'Adyar', phone: '9876543212', email: 'karthik@example.com', activeComplaints: 5, totalResolved: 67, isAvailable: false, performanceScore: 4.2},
+  {id: '1', name: 'Arjun Rajan',      area: 'Ward 5', phone: '9876543210', email: 'arjun@example.com',   teamId: 't1', teamRole: 'Ward Leader',   activeComplaints: 3, totalResolved: 45, isAvailable: true,  performanceScore: 4.5},
+  {id: '2', name: 'Priya Sundaram',   area: 'Ward 5', phone: '9876543211', email: 'priya@example.com',   teamId: 't1', teamRole: 'Coordinator',   activeComplaints: 1, totalResolved: 32, isAvailable: true,  performanceScore: 4.8},
+  {id: '3', name: 'Karthik Kumar',    area: 'Ward 8', phone: '9876543212', email: 'karthik@example.com', teamId: 't2', teamRole: 'Booth Agent',   activeComplaints: 5, totalResolved: 67, isAvailable: false, performanceScore: 4.2},
+  {id: '4', name: 'Meena Krishnan',   area: 'Ward 8', phone: '9876543213', email: 'meena@example.com',   teamId: 't2', teamRole: 'Coordinator',   activeComplaints: 2, totalResolved: 28, isAvailable: true,  performanceScore: 4.6},
+  {id: '5', name: 'Suresh Raj',       area: 'Ward 3', phone: '9876543214', email: 'suresh@example.com',  teamId: 't3', teamRole: 'Media Manager', activeComplaints: 1, totalResolved: 19, isAvailable: true,  performanceScore: 4.0},
+];
+
+export const MOCK_TEAMS: Team[] = [
+  {id: 't1', name: 'Team Alpha', area: 'Ward 5', volunteerIds: ['1', '2'], activeTasks: 2, completedTasks: 7},
+  {id: 't2', name: 'Team Bravo', area: 'Ward 8', volunteerIds: ['3', '4'], activeTasks: 1, completedTasks: 4},
+  {id: 't3', name: 'Team Charlie', area: 'Ward 3', volunteerIds: ['5'],    activeTasks: 1, completedTasks: 2},
 ];
 
 export const MOCK_SENTIMENT_DATA: SentimentData = {
