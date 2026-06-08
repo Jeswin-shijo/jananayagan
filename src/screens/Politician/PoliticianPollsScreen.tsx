@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppCard} from '@components/common/AppCard';
-import {AppButton} from '@components/common/AppButton';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {FormModal} from '@components/common/FormModal';
@@ -46,8 +46,11 @@ export const PoliticianPollsScreen: React.FC = () => {
       <DrawerHeader title={t('publicPolls')} />
       <OfflineBanner />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        <AppButton title={t('createPoll')} onPress={() => setFormVisible(true)} />
-        <View style={{height: Spacing[4]}} />
+        <TouchableOpacity onPress={() => setFormVisible(true)} activeOpacity={0.85} style={styles.createBtn}>
+          <LinearGradient colors={['#2563EB', '#06B6D4']} start={{x: 0, y: 0}} end={{x: 1, y: 0}} style={styles.createBtnGradient}>
+            <Text style={styles.createBtnText}>{t('createPoll')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
         {polls.map(poll => (
           <AppCard key={poll.id}>
             <View style={styles.head}>
@@ -106,4 +109,7 @@ const createStyles = (Colors: AppColors) => ({
   track: {height: 6, backgroundColor: Colors.borderLight, borderRadius: BorderRadius.full, overflow: 'hidden'},
   fill: {height: '100%', backgroundColor: Colors.primary, borderRadius: BorderRadius.full},
   total: {fontSize: FontSize.xs, color: Colors.textSecondary, marginTop: Spacing[2], fontWeight: FontWeight.medium},
+  createBtn: {marginBottom: Spacing[5]},
+  createBtnGradient: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', paddingVertical: Spacing[4], alignItems: 'center' as const},
+  createBtnText: {color: '#FFFFFF', fontSize: FontSize.base, fontWeight: FontWeight.bold, letterSpacing: 0.3},
 } as const);

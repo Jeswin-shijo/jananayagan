@@ -253,8 +253,8 @@ const createStyles = (Colors: AppColors) => ({
   scroll: {padding: Spacing[4]},
 
   // Add Member button
-  addBtn: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', marginBottom: Spacing[5]},
-  addBtnGradient: {paddingVertical: Spacing[4], alignItems: 'center'},
+  addBtn: {marginBottom: Spacing[5]},
+  addBtnGradient: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', paddingVertical: Spacing[4], alignItems: 'center' as const},
   addBtnText: {color: '#FFFFFF', fontSize: FontSize.base, fontWeight: FontWeight.bold, letterSpacing: 0.3},
 
   // Team section

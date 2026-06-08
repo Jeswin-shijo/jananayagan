@@ -202,8 +202,8 @@ const createStyles = (Colors: AppColors) => ({
   flex: {flex: 1},
   scroll: {padding: Spacing[4]},
 
-  addBtn: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', marginBottom: Spacing[5]},
-  addBtnGradient: {paddingVertical: Spacing[4], alignItems: 'center' as const},
+  addBtn: {marginBottom: Spacing[5]},
+  addBtnGradient: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', paddingVertical: Spacing[4], alignItems: 'center' as const},
   addBtnText: {color: '#FFFFFF', fontSize: FontSize.base, fontWeight: FontWeight.bold, letterSpacing: 0.3},
 
   teamSection: {marginBottom: Spacing[5]},

@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {AppCard} from '@components/common/AppCard';
-import {AppButton} from '@components/common/AppButton';
 import {DrawerHeader} from '@components/common/DrawerHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {FormModal} from '@components/common/FormModal';
@@ -44,8 +44,11 @@ export const AnnouncementsScreen: React.FC = () => {
       <DrawerHeader title={t('announcements')} />
       <OfflineBanner />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        <AppButton title={t('createAnnouncement')} onPress={() => setFormVisible(true)} />
-        <View style={{height: Spacing[4]}} />
+        <TouchableOpacity onPress={() => setFormVisible(true)} activeOpacity={0.85} style={styles.createBtn}>
+          <LinearGradient colors={['#2563EB', '#06B6D4']} start={{x: 0, y: 0}} end={{x: 1, y: 0}} style={styles.createBtnGradient}>
+            <Text style={styles.createBtnText}>{t('createAnnouncement')}</Text>
+          </LinearGradient>
+        </TouchableOpacity>
         {items.map(a => (
           <AppCard key={a.id} onPress={() => togglePin(a.id)}>
             <View style={styles.row}>
@@ -100,4 +103,7 @@ const createStyles = (Colors: AppColors) => ({
   tag: {backgroundColor: Colors.surfaceSoft, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: Spacing[2], paddingVertical: 2, borderRadius: BorderRadius.full},
   tagText: {fontSize: FontSize.xs, color: Colors.textSecondary, fontWeight: FontWeight.medium},
   ago: {fontSize: FontSize.xs, color: Colors.textDisabled},
+  createBtn: {marginBottom: Spacing[5]},
+  createBtnGradient: {borderRadius: BorderRadius['2xl'], overflow: 'hidden', paddingVertical: Spacing[4], alignItems: 'center' as const},
+  createBtnText: {color: '#FFFFFF', fontSize: FontSize.base, fontWeight: FontWeight.bold, letterSpacing: 0.3},
 } as const);
