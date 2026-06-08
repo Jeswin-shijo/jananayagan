@@ -4,10 +4,12 @@ import {useTranslation} from '@hooks/useTranslation';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   RefreshControl,
   TouchableOpacity,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {LinearGradient} from 'react-native-linear-gradient';
@@ -90,8 +92,11 @@ const QUICK_ACTIONS: QuickAction[] = [
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-// Decorative skyline silhouette heights for the hero banner.
-const BANNER_SKYLINE = [16, 26, 20, 34, 22, 30, 18, 28, 24, 36, 20, 30, 16];
+// Full hero banner artwork (gradient + megaphone + photo + "Report Now" baked in).
+// Swap the file at src/assets/voice-of-the-people.png to update the design.
+const HERO_BANNER = require('@assets/voice-of-the-people.png');
+// Native pixel size is 1600x711 — used to size the banner from screen width.
+const HERO_BANNER_RATIO = 1600 / 711;
 
 const getTimeGreetingKey = () => {
   const hour = new Date().getHours();
@@ -183,6 +188,10 @@ export const CitizenHomeScreen: React.FC = () => {
   const user = useAuthStore(s => s.user);
   const unreadCount = useNotificationStore(s => s.unreadCount);
   const [refreshing, setRefreshing] = useState(false);
+  // Size the hero banner from the screen width (card spans width minus its margins).
+  const {width: screenWidth} = useWindowDimensions();
+  const bannerWidth = screenWidth - Spacing[4] * 2;
+  const bannerHeight = bannerWidth / HERO_BANNER_RATIO;
   const reportAction = QUICK_ACTIONS[0];
   const complaintsAction = QUICK_ACTIONS[1];
   const petitionAction = QUICK_ACTIONS[2];
@@ -229,39 +238,19 @@ export const CitizenHomeScreen: React.FC = () => {
           </TouchableOpacity> */}
         </View>
 
-        {/* Banner */}
-        <View style={styles.banner}>
-          <LinearGradient
-            colors={[Colors.primaryDark, Colors.primary, Colors.secondary]}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={StyleSheet.absoluteFill}
+        {/* Banner — full pre-designed artwork; whole card taps through to Report. */}
+        <TouchableOpacity
+          style={styles.banner}
+          activeOpacity={0.9}
+          accessibilityRole="button"
+          accessibilityLabel={t('reportNow')}
+          onPress={() => navigation.navigate('ReportProblem')}>
+          <Image
+            source={HERO_BANNER}
+            style={{width: bannerWidth, height: bannerHeight}}
+            resizeMode="cover"
           />
-          {/* Skyline silhouette */}
-          <View pointerEvents="none" style={styles.bannerSkyline}>
-            {BANNER_SKYLINE.map((h, i) => (
-              <View key={i} style={[styles.bannerBuilding, {height: h}]} />
-            ))}
-          </View>
-
-          <View style={styles.bannerContent}>
-            <View style={styles.bannerIconWrap}>
-              <MaterialCommunityIcons name="bullhorn-outline" size={28} color={Colors.white} />
-            </View>
-            <View style={styles.bannerCopy}>
-              <Text style={styles.bannerTitle}>{t('tagline')}</Text>
-              <Text style={styles.bannerSub}>{t('voiceSubtitle')}</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.reportNowBtn}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('ReportProblem')}>
-            <Text style={styles.reportNowText}>{t('reportNow')}</Text>
-            <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
 
         {/* Quick Actions */}
         <View style={styles.quickHeader}>
@@ -427,80 +416,15 @@ const createStyles = (Colors: AppColors) => ({
   banner: {
     marginHorizontal: Spacing[4],
     marginTop: Spacing[2],
-    marginBottom: Spacing[4],
-    padding: Spacing[5],
-    minHeight: 150,
-    backgroundColor: Colors.primary,
+    // marginBottom: Spacing[4],
     borderRadius: BorderRadius['2xl'],
     overflow: 'hidden',
-    justifyContent: 'space-between',
+    backgroundColor: Colors.primary,
     shadowColor: Colors.primary,
     shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.22,
     shadowRadius: 24,
     elevation: 6,
-  },
-  bannerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    zIndex: 1,
-    paddingRight: 120,
-  },
-  bannerIconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing[3],
-  },
-  bannerCopy: {flex: 1},
-  bannerSkyline: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    left: '42%',
-    height: 64,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    gap: 4,
-    paddingRight: Spacing[4],
-    opacity: 0.9,
-  },
-  bannerBuilding: {
-    width: 12,
-    borderTopLeftRadius: 2,
-    borderTopRightRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.16)',
-  },
-  reportNowBtn: {
-    position: 'absolute',
-    right: Spacing[5],
-    bottom: Spacing[5],
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.full,
-    paddingLeft: Spacing[4],
-    paddingRight: Spacing[3],
-    paddingVertical: Spacing[2],
-    zIndex: 2,
-    shadowColor: Colors.black,
-    shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.16,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  reportNowText: {fontSize: FontSize.sm, fontWeight: FontWeight.bold, color: Colors.primary},
-  bannerTitle: {fontSize: FontSize.lg, fontWeight: FontWeight.bold, color: Colors.textOnPrimary},
-  bannerSub: {
-    fontSize: FontSize.sm,
-    color: 'rgba(255,255,255,0.82)',
-    marginTop: Spacing[1],
-    lineHeight: 20,
   },
   quickHeader: {
     flexDirection: 'row',
