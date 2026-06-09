@@ -96,7 +96,7 @@ export const PublicPollScreen: React.FC = () => {
               </Text>
               <Text style={styles.metaDot}>·</Text>
               <MaterialCommunityIcons name="calendar-blank-outline" size={13} color="#7C8BA5" />
-              <Text style={styles.metaEnds}>Ends {formatDate(item.endDate)}</Text>
+              <Text style={styles.metaEnds}>{t('ppEnds')} {formatDate(item.endDate)}</Text>
             </View>
           </View>
         </View>

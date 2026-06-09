@@ -25,6 +25,7 @@ type Props = NativeStackScreenProps<CitizenStackParamList, 'RideTracker'>;
 
 const PURPLE = '#7C3AED';
 const LOCATION_REFRESH_MS = 30000;
+const DEFAULT_ETA_MIN = 15;
 
 interface Trip {
   startedAt: number;
@@ -57,8 +58,6 @@ export const RideTrackerScreen: React.FC<Props> = () => {
 
   const [vehicle, setVehicle] = useState('');
   const [destination, setDestination] = useState('');
-  const [eta, setEta] = useState('');
-  const [etaError, setEtaError] = useState('');
   const [trip, setTrip] = useState<Trip | null>(null);
   const [now, setNow] = useState(Date.now());
   const [sosVisible, setSosVisible] = useState(false);
@@ -81,14 +80,13 @@ export const RideTrackerScreen: React.FC<Props> = () => {
   }, [trip, fetchLocation]);
 
   const startTrip = () => {
-    const minutes = parseInt(eta, 10);
-    if (!minutes || minutes <= 0) {
-      setEtaError(t('invalidEta'));
-      return;
-    }
-    setEtaError('');
     fetchLocation().catch(() => {});
-    setTrip({startedAt: Date.now(), etaMs: minutes * 60000, vehicle: vehicle.trim(), destination: destination.trim()});
+    setTrip({
+      startedAt: Date.now(),
+      etaMs: DEFAULT_ETA_MIN * 60000,
+      vehicle: vehicle.trim(),
+      destination: destination.trim(),
+    });
     toastSuccess(t('tripStarted'));
   };
 
@@ -150,18 +148,6 @@ export const RideTrackerScreen: React.FC<Props> = () => {
                 placeholder={t('destinationPlaceholder')}
                 value={destination}
                 onChangeText={setDestination}
-              />
-              <AppInput
-                label={t('etaMinutes')}
-                placeholder="15"
-                keyboardType="number-pad"
-                maxLength={3}
-                value={eta}
-                onChangeText={v => {
-                  setEta(v.replace(/[^0-9]/g, ''));
-                  setEtaError('');
-                }}
-                error={etaError || undefined}
               />
 
               <AppButton title={t('startTrip')} accent={PURPLE} onPress={startTrip} style={styles.startBtn} />

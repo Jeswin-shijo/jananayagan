@@ -36,11 +36,11 @@ import {TranslationKey} from '@constants/i18n';
 type Props = NativeStackScreenProps<CitizenStackParamList, 'ReportProblem'>;
 
 const CATEGORIES = [
-  {id: 'road', labelKey: 'road', subCategories: ['Pothole', 'Damaged Road', 'No Markings']},
-  {id: 'water', labelKey: 'water', subCategories: ['Leakage', 'No Supply', 'Contamination']},
-  {id: 'electricity', labelKey: 'electricity', subCategories: ['Street Light', 'Power Cut', 'Damaged Wire']},
-  {id: 'sanitation', labelKey: 'sanitation', subCategories: ['Garbage', 'Drainage', 'Open Defecation']},
-  {id: 'other', labelKey: 'other', subCategories: ['Noise', 'Encroachment', 'Other']},
+  {id: 'road', labelKey: 'road', subCategories: [{id: 'Pothole', labelKey: 'rpPothole'}, {id: 'Damaged Road', labelKey: 'rpDamagedRoad'}, {id: 'No Markings', labelKey: 'rpNoMarkings'}]},
+  {id: 'water', labelKey: 'water', subCategories: [{id: 'Leakage', labelKey: 'rpLeakage'}, {id: 'No Supply', labelKey: 'rpNoSupply'}, {id: 'Contamination', labelKey: 'rpContamination'}]},
+  {id: 'electricity', labelKey: 'electricity', subCategories: [{id: 'Street Light', labelKey: 'rpStreetLight'}, {id: 'Power Cut', labelKey: 'rpPowerCut'}, {id: 'Damaged Wire', labelKey: 'rpDamagedWire'}]},
+  {id: 'sanitation', labelKey: 'sanitation', subCategories: [{id: 'Garbage', labelKey: 'rpGarbage'}, {id: 'Drainage', labelKey: 'drainage'}, {id: 'Open Defecation', labelKey: 'rpOpenDefecation'}]},
+  {id: 'other', labelKey: 'other', subCategories: [{id: 'Noise', labelKey: 'rpNoise'}, {id: 'Encroachment', labelKey: 'rpEncroachment'}, {id: 'Other', labelKey: 'other'}]},
 ];
 
 const PRIORITIES = [
@@ -125,7 +125,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
     {
       icon: 'camera-outline',
       label: t('uploadPhotoVideo'),
-      subtitle: selectedImages.length ? `${selectedImages.length} selected` : undefined,
+      subtitle: selectedImages.length ? `${selectedImages.length} ${t('rpSelected')}` : undefined,
       done: selectedImages.length > 0,
       onPress: openPicker,
     },
@@ -169,7 +169,7 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
           </View>
 
           <Text style={styles.title}>{t('reportProblem')}</Text>
-          <Text style={styles.subtitle}>Raise a local issue with photos, voice note, priority, and location details.</Text>
+          <Text style={styles.subtitle}>{t('rpSubtitle')}</Text>
 
           <View style={styles.formPanel}>
             {/* Category */}
@@ -193,10 +193,10 @@ export const ReportProblemScreen: React.FC<Props> = ({navigation}) => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
                   {subCategories.map(sub => (
                     <AppChip
-                      key={sub}
-                      label={sub}
-                      isActive={selectedSubCategory === sub}
-                      onPress={() => setSelectedSubCategory(sub)}
+                      key={sub.id}
+                      label={t(sub.labelKey as TranslationKey)}
+                      isActive={selectedSubCategory === sub.id}
+                      onPress={() => setSelectedSubCategory(sub.id)}
                     />
                   ))}
                 </ScrollView>

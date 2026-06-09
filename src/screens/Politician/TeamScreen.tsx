@@ -126,7 +126,7 @@ export const TeamScreen: React.FC = () => {
                     <View style={styles.memberInfo}>
                       <Text style={styles.memberName}>{m.name}</Text>
                       <Text style={styles.memberRole}>
-                        {m.teamRole ?? 'Member'} · {m.area}
+                        {m.teamRole ?? t('member')} · {m.area}
                       </Text>
                     </View>
                     <TouchableOpacity
@@ -140,7 +140,7 @@ export const TeamScreen: React.FC = () => {
               })}
 
               {members.length === 0 && (
-                <Text style={styles.emptyTeam}>No members yet</Text>
+                <Text style={styles.emptyTeam}>{t('teamNoMembers')}</Text>
               )}
             </View>
           );
@@ -168,7 +168,7 @@ export const TeamScreen: React.FC = () => {
                 <View style={styles.teamTagRow}>
                   <MaterialCommunityIcons name="account-group-outline" size={14} color={Colors.primary} />
                   <Text style={styles.teamTagText}>
-                    Adding to: {teams.find(t => t.id === addMemberTeamId)?.name}
+                    {t('teamAddingTo')} {teams.find(t => t.id === addMemberTeamId)?.name}
                   </Text>
                 </View>
               )}

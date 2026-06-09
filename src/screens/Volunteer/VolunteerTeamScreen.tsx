@@ -85,7 +85,7 @@ export const VolunteerTeamScreen: React.FC = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Team</Text>
+        <Text style={styles.headerTitle}>{t('team')}</Text>
         <View style={styles.headerRight}>
           <NotificationBell />
           <View style={styles.avatarCircle}>
@@ -107,7 +107,7 @@ export const VolunteerTeamScreen: React.FC = () => {
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
               style={styles.addBtnGradient}>
-              <Text style={styles.addBtnText}>Add Member</Text>
+              <Text style={styles.addBtnText}>{t('addMember')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -155,7 +155,7 @@ export const VolunteerTeamScreen: React.FC = () => {
                 })}
 
                 {members.length === 0 && (
-                  <Text style={styles.emptyTeam}>No members yet</Text>
+                  <Text style={styles.emptyTeam}>{t('vtNoMembers')}</Text>
                 )}
               </View>
             );
@@ -175,7 +175,7 @@ export const VolunteerTeamScreen: React.FC = () => {
       <Modal visible={!!addMemberTeamId} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={styles.modal}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Member</Text>
+            <Text style={styles.modalTitle}>{t('addMember')}</Text>
             <AppButton
               title={t('cancel')}
               onPress={() => { setAddMemberTeamId(null); reset(); }}
@@ -190,7 +190,7 @@ export const VolunteerTeamScreen: React.FC = () => {
                 <View style={styles.teamTagRow}>
                   <MaterialCommunityIcons name="account-group-outline" size={14} color={Colors.primary} />
                   <Text style={styles.teamTagText}>
-                    Adding to: {teams.find(t => t.id === addMemberTeamId)?.name}
+                    {t('vtAddingTo')} {teams.find(tm => tm.id === addMemberTeamId)?.name}
                   </Text>
                 </View>
               )}
@@ -207,7 +207,7 @@ export const VolunteerTeamScreen: React.FC = () => {
                 <AppInput label={t('emailOptional')} placeholder="email@example.com" keyboardType="email-address" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email?.message} />
               )} />
               <AppButton
-                title={isSubmitting ? t('adding') : 'Add to Team'}
+                title={isSubmitting ? t('adding') : t('vtAddToTeam')}
                 onPress={handleSubmit(handleAddMember)}
                 loading={isSubmitting}
               />

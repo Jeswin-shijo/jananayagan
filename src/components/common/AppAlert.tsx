@@ -3,6 +3,7 @@ import {Modal, Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {LinearGradient} from 'react-native-linear-gradient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {useThemedStyles} from '@hooks/useThemedStyles';
+import {useTranslation} from '@hooks/useTranslation';
 import {AppColors} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
 import {FontSize, FontWeight} from '@constants/typography';
@@ -44,6 +45,7 @@ const inferVariant = (actions?: AppAlertAction[]): AlertVariant =>
 
 export const AppAlertProvider: React.FC<React.PropsWithChildren> = ({children}) => {
   const styles = useThemedStyles(createStyles);
+  const {t} = useTranslation();
   const [config, setConfig] = useState<AppAlertConfig | null>(null);
 
   const hideAlert = useCallback(() => setConfig(null), []);
@@ -52,7 +54,7 @@ export const AppAlertProvider: React.FC<React.PropsWithChildren> = ({children}) 
   const value = useMemo(() => ({showAlert, hideAlert}), [showAlert, hideAlert]);
   const variant = config?.variant ?? inferVariant(config?.actions);
   const token = variantTokens[variant];
-  const actions = config?.actions?.length ? config.actions : [{text: 'OK'}];
+  const actions = config?.actions?.length ? config.actions : [{text: t('ok')}];
   const cancelAction = actions.find(action => action.style === 'cancel');
 
   const runAction = (action: AppAlertAction) => {

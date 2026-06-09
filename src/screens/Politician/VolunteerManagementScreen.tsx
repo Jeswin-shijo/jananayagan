@@ -75,7 +75,7 @@ export const VolunteerManagementScreen: React.FC = () => {
     setNewTeamName('');
     setNewTeamArea('');
     setShowAddTeam(false);
-    toastSuccess('Team created', team.name);
+    toastSuccess(t('vmTeamCreated'), team.name);
   };
 
   const handleAddMember = async (data: VolunteerFormData) => {
@@ -122,9 +122,9 @@ export const VolunteerManagementScreen: React.FC = () => {
         {/* Summary strip */}
         <View style={styles.summaryRow}>
           {[
-            {icon: 'account-group-outline' as MCIcon, value: teams.length, label: 'Teams'},
-            {icon: 'account-outline' as MCIcon, value: totalVolunteers, label: 'Members'},
-            {icon: 'clipboard-list-outline' as MCIcon, value: totalActive, label: 'Active Tasks'},
+            {icon: 'account-group-outline' as MCIcon, value: teams.length, label: t('vmTeams')},
+            {icon: 'account-outline' as MCIcon, value: totalVolunteers, label: t('vmMembers')},
+            {icon: 'clipboard-list-outline' as MCIcon, value: totalActive, label: t('vmActiveTasks')},
           ].map(s => (
             <View key={s.label} style={styles.summaryCard}>
               <MaterialCommunityIcons name={s.icon} size={20} color={Colors.primary} />
@@ -136,7 +136,7 @@ export const VolunteerManagementScreen: React.FC = () => {
 
         {/* Teams */}
         {teams.length === 0 ? (
-          <AppEmptyState icon="account-group-outline" title="No teams yet" subtitle="Create a team and add volunteers to it" ctaLabel="Create Team" onCTAPress={() => setShowAddTeam(true)} />
+          <AppEmptyState icon="account-group-outline" title={t('vmNoTeams')} subtitle={t('vmNoTeamsSubtitle')} ctaLabel={t('vmCreateTeam')} onCTAPress={() => setShowAddTeam(true)} />
         ) : (
           teams.map((team, idx) => {
             const color = teamColor(idx);
@@ -182,9 +182,9 @@ export const VolunteerManagementScreen: React.FC = () => {
                 {isExpanded && (
                   <View style={styles.expandedBody}>
                     {/* Members */}
-                    <Text style={styles.sectionLabel}>MEMBERS</Text>
+                    <Text style={styles.sectionLabel}>{t('vmMembersLabel')}</Text>
                     {members.length === 0 ? (
-                      <Text style={styles.emptyText}>No members yet</Text>
+                      <Text style={styles.emptyText}>{t('vmNoMembers')}</Text>
                     ) : (
                       members.map(v => (
                         <View key={v.id} style={styles.memberRow}>
@@ -213,7 +213,7 @@ export const VolunteerManagementScreen: React.FC = () => {
                     {/* Assigned tasks */}
                     {tasks.length > 0 && (
                       <>
-                        <Text style={[styles.sectionLabel, {marginTop: Spacing[4]}]}>ASSIGNED TASKS</Text>
+                        <Text style={[styles.sectionLabel, {marginTop: Spacing[4]}]}>{t('vmAssignedTasks')}</Text>
                         {tasks.map(tk => (
                           <View key={tk.id} style={styles.taskRow}>
                             <View style={[styles.priorityDot, {backgroundColor: PRIORITY_COLOR[tk.priority]}]} />
@@ -227,7 +227,7 @@ export const VolunteerManagementScreen: React.FC = () => {
                               <Text style={[styles.statusText, {
                                 color: tk.status === 'done' ? Colors.success : tk.status === 'in_progress' ? Colors.warning : Colors.info,
                               }]}>
-                                {tk.status === 'done' ? 'Done' : tk.status === 'in_progress' ? 'In Progress' : 'Assigned'}
+                                {tk.status === 'done' ? t('done') : tk.status === 'in_progress' ? t('inProgress') : t('assigned')}
                               </Text>
                             </View>
                           </View>
@@ -242,14 +242,14 @@ export const VolunteerManagementScreen: React.FC = () => {
                         onPress={() => { setAddMemberTeamId(team.id); }}
                         activeOpacity={0.7}>
                         <MaterialCommunityIcons name="account-plus-outline" size={16} color={Colors.primary} />
-                        <Text style={[styles.actionBtnText, {color: Colors.primary}]}>Add Member</Text>
+                        <Text style={[styles.actionBtnText, {color: Colors.primary}]}>{t('addMember')}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.actionBtn, {backgroundColor: Colors.primary, flex: 1}]}
                         onPress={() => setAssignTeamId(team.id)}
                         activeOpacity={0.7}>
                         <MaterialCommunityIcons name="clipboard-plus-outline" size={16} color="#FFFFFF" />
-                        <Text style={[styles.actionBtnText, {color: '#FFFFFF'}]}>Assign Task</Text>
+                        <Text style={[styles.actionBtnText, {color: '#FFFFFF'}]}>{t('vmAssignTask')}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -268,7 +268,7 @@ export const VolunteerManagementScreen: React.FC = () => {
         onPress={() => setShowAddTeam(true)}
         activeOpacity={0.85}>
         <MaterialCommunityIcons name="plus" size={22} color="#FFFFFF" />
-        <Text style={styles.fabText}>New Team</Text>
+        <Text style={styles.fabText}>{t('vmNewTeam')}</Text>
       </TouchableOpacity>
 
       {/* Add Team Modal */}
@@ -276,26 +276,26 @@ export const VolunteerManagementScreen: React.FC = () => {
         <View style={styles.sheetOverlay}>
           <View style={styles.sheet}>
             <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>Create Team</Text>
-            <Text style={styles.fieldLabel}>Team Name</Text>
+            <Text style={styles.sheetTitle}>{t('vmCreateTeam')}</Text>
+            <Text style={styles.fieldLabel}>{t('vmTeamName')}</Text>
             <TextInput
               style={styles.textInput}
               value={newTeamName}
               onChangeText={setNewTeamName}
-              placeholder="e.g. Team Alpha"
+              placeholder={t('vmTeamNamePlaceholder')}
               placeholderTextColor={Colors.textDisabled}
             />
-            <Text style={styles.fieldLabel}>Area / Ward</Text>
+            <Text style={styles.fieldLabel}>{t('vmAreaWard')}</Text>
             <TextInput
               style={styles.textInput}
               value={newTeamArea}
               onChangeText={setNewTeamArea}
-              placeholder="e.g. Ward 5"
+              placeholder={t('vmAreaWardPlaceholder')}
               placeholderTextColor={Colors.textDisabled}
             />
             <View style={styles.sheetActions}>
-              <AppButton title="Cancel" variant="ghost" onPress={() => setShowAddTeam(false)} fullWidth={false} style={styles.halfBtn} />
-              <AppButton title="Create" onPress={handleAddTeam} fullWidth={false} style={styles.halfBtn} />
+              <AppButton title={t('cancel')} variant="ghost" onPress={() => setShowAddTeam(false)} fullWidth={false} style={styles.halfBtn} />
+              <AppButton title={t('create')} onPress={handleAddTeam} fullWidth={false} style={styles.halfBtn} />
             </View>
           </View>
         </View>
@@ -305,7 +305,7 @@ export const VolunteerManagementScreen: React.FC = () => {
       <Modal visible={!!addMemberTeamId} animationType="slide" presentationStyle="pageSheet">
         <SafeAreaView style={styles.modal}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Add Member</Text>
+            <Text style={styles.modalTitle}>{t('addMember')}</Text>
             <AppButton title={t('cancel')} onPress={() => { setAddMemberTeamId(null); reset(); }} variant="ghost" size="sm" fullWidth={false} />
           </View>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
@@ -314,7 +314,7 @@ export const VolunteerManagementScreen: React.FC = () => {
                 <View style={styles.teamTagRow}>
                   <MaterialCommunityIcons name="account-group-outline" size={14} color={Colors.primary} />
                   <Text style={styles.teamTagText}>
-                    Adding to: {teams.find(t => t.id === addMemberTeamId)?.name}
+                    {t('vmAddingTo')} {teams.find(t => t.id === addMemberTeamId)?.name}
                   </Text>
                 </View>
               )}
@@ -330,7 +330,7 @@ export const VolunteerManagementScreen: React.FC = () => {
               <Controller control={control} name="email" render={({field: {onChange, value, onBlur}}) => (
                 <AppInput label={t('emailOptional')} placeholder="email@example.com" keyboardType="email-address" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.email?.message} />
               )} />
-              <AppButton title={isSubmitting ? t('adding') : 'Add to Team'} onPress={handleSubmit(handleAddMember)} loading={isSubmitting} />
+              <AppButton title={isSubmitting ? t('adding') : t('vmAddToTeam')} onPress={handleSubmit(handleAddMember)} loading={isSubmitting} />
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -342,9 +342,9 @@ export const VolunteerManagementScreen: React.FC = () => {
           <View style={styles.sheet}>
             <View style={styles.sheetHandle} />
             <Text style={styles.sheetTitle}>
-              Assign Task — {teams.find(t => t.id === assignTeamId)?.name}
+              {t('vmAssignTask')} — {teams.find(t => t.id === assignTeamId)?.name}
             </Text>
-            <Text style={styles.assignInfo}>Available complaints to assign:</Text>
+            <Text style={styles.assignInfo}>{t('vmAvailableComplaints')}</Text>
             <ScrollView style={{maxHeight: 280}} showsVerticalScrollIndicator={false}>
               {[
                 {id: 'c1', ticket: 'JAN-002310', title: 'Drainage blockage on Ring Road', ward: 'Ward 5', priority: 'high'},
@@ -359,7 +359,7 @@ export const VolunteerManagementScreen: React.FC = () => {
                       t.id === assignTeamId ? {...t, activeTasks: t.activeTasks + 1} : t,
                     ));
                     setAssignTeamId(null);
-                    toastSuccess('Task assigned', teams.find(t => t.id === assignTeamId)?.name ?? '');
+                    toastSuccess(t('vmTaskAssigned'), teams.find(t => t.id === assignTeamId)?.name ?? '');
                   }}
                   activeOpacity={0.75}>
                   <View style={[styles.priorityDot, {backgroundColor: PRIORITY_COLOR[c.priority]}]} />
@@ -371,7 +371,7 @@ export const VolunteerManagementScreen: React.FC = () => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            <AppButton title="Close" variant="ghost" onPress={() => setAssignTeamId(null)} style={{marginTop: Spacing[3]}} />
+            <AppButton title={t('vmClose')} variant="ghost" onPress={() => setAssignTeamId(null)} style={{marginTop: Spacing[3]}} />
           </View>
         </View>
       </Modal>

@@ -63,7 +63,7 @@ const VolunteerTabs: React.FC = () => {
       <Tab.Screen name="CommunityFeed" component={CommunityFeedScreen} options={{title: t('home')}} />
       <Tab.Screen name="Dashboard" component={VolunteerHomeScreen} options={{title: t('dashboard')}} />
       <Tab.Screen name="VolunteerTasks" component={VolunteerTasksScreen} options={{title: t('myTasks')}} />
-      <Tab.Screen name="MyTeam" component={VolunteerTeamScreen} options={{title: 'My Team'}} />
+      <Tab.Screen name="MyTeam" component={VolunteerTeamScreen} options={{title: t('vtMyTeam')}} />
       <Tab.Screen name="FieldWork" component={FieldWorkScreen} options={{title: t('fieldWork')}} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{title: t('profile')}} />
     </Tab.Navigator>

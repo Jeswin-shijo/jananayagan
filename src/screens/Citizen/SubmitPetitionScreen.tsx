@@ -41,7 +41,7 @@ const FILTERS: {id: PetitionStatusFilter; labelKey?: TranslationKey; label?: str
   {id: 'all', labelKey: 'all'},
   {id: 'active', labelKey: 'active'},
   {id: 'closed', labelKey: 'closed'},
-  {id: 'approved', label: 'Approved'},
+  {id: 'approved', labelKey: 'spApproved'},
 ];
 
 // Exact brand gradients sampled from the approved design.
@@ -125,10 +125,10 @@ export const SubmitPetitionScreen: React.FC<{
       signPetition(petition.id);
     }
     showAlert({
-      title: alreadySigned ? 'Already signed' : 'Petition signed',
+      title: alreadySigned ? t('spAlreadySigned') : t('spPetitionSigned'),
       message: alreadySigned
-        ? 'You have already signed this petition.'
-        : 'Your signature has been added to this petition.',
+        ? t('spAlreadySignedMessage')
+        : t('spSignatureAddedMessage'),
       variant: alreadySigned ? 'info' : 'success',
       icon: alreadySigned ? 'check-circle-outline' : 'file-sign',
     });
@@ -139,17 +139,17 @@ export const SubmitPetitionScreen: React.FC<{
       petition.title,
       petition.description,
       '',
-      `Signatures: ${formatNum(petition.currentSignatures)} / ${formatNum(petition.targetSignatures)}`,
-      `Constituency: ${petition.constituency}`,
-      'Shared from JANANAYAGAN',
+      `${t('signatures')}: ${formatNum(petition.currentSignatures)} / ${formatNum(petition.targetSignatures)}`,
+      `${t('spConstituency')}: ${petition.constituency}`,
+      `${t('spSharedFrom')} JANANAYAGAN`,
     ].join('\n');
 
     try {
       await Share.share({message, title: petition.title});
     } catch {
       showAlert({
-        title: 'Unable to share',
-        message: 'Please try again.',
+        title: t('spUnableToShare'),
+        message: t('spPleaseTryAgain'),
         variant: 'danger',
         icon: 'share-off',
       });
@@ -227,7 +227,7 @@ export const SubmitPetitionScreen: React.FC<{
               color={isSigned ? Colors.textSecondary : '#FFFFFF'}
             />
             <Text style={[styles.signBtnText, isSigned && {color: Colors.textSecondary}]}>
-              {isSigned ? 'Signed' : t('signPetition')}
+              {isSigned ? t('spSigned') : t('signPetition')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -248,7 +248,7 @@ export const SubmitPetitionScreen: React.FC<{
       </View>
       <View style={styles.activeHeaderText}>
         <Text style={styles.activeTitle}>{t('activePetitions')}</Text>
-        <Text style={styles.activeSubtitle}>Track and sign petitions you care about</Text>
+        <Text style={styles.activeSubtitle}>{t('spTrackAndSign')}</Text>
       </View>
       <TouchableOpacity style={styles.filterBtn} activeOpacity={0.8} onPress={() => setFilterOpen(o => !o)}>
         <MaterialCommunityIcons name="filter-variant" size={16} color={Colors.primary} />
@@ -262,9 +262,9 @@ export const SubmitPetitionScreen: React.FC<{
     <View style={styles.statsBar}>
       <LinearGradient colors={[Navy.surface, Navy.deep]} start={{x: 0, y: 0}} end={{x: 1, y: 1}} style={styles.statsFill} />
       {[
-        {icon: 'file-document-outline' as MaterialCommunityIconName, value: formatNum(petitions.length), label: 'Total Petitions', bg: 'rgba(124,58,237,0.22)', color: '#C4B5FD'},
-        {icon: 'account-group' as MaterialCommunityIconName, value: formatNum(totalSignatures), label: 'Total Signatures', bg: 'rgba(217,119,6,0.22)', color: '#FCD34D'},
-        {icon: 'chart-bar' as MaterialCommunityIconName, value: formatNum(signedCount), label: 'Your Signed', bg: 'rgba(236,72,153,0.22)', color: '#F9A8D4'},
+        {icon: 'file-document-outline' as MaterialCommunityIconName, value: formatNum(petitions.length), label: t('spTotalPetitions'), bg: 'rgba(124,58,237,0.22)', color: '#C4B5FD'},
+        {icon: 'account-group' as MaterialCommunityIconName, value: formatNum(totalSignatures), label: t('spTotalSignatures'), bg: 'rgba(217,119,6,0.22)', color: '#FCD34D'},
+        {icon: 'chart-bar' as MaterialCommunityIconName, value: formatNum(signedCount), label: t('spYourSigned'), bg: 'rgba(236,72,153,0.22)', color: '#F9A8D4'},
       ].map((s, i) => (
         <React.Fragment key={s.label}>
           {i > 0 && <View style={styles.statsDivider} />}
@@ -309,8 +309,8 @@ export const SubmitPetitionScreen: React.FC<{
             </TouchableOpacity>
           )}
           <View style={styles.headerCopy}>
-            <Text style={styles.headerGreeting}>Hello, {user?.name ?? t('citizen')} 👋</Text>
-            <Text style={styles.headerSubtitle}>Make your voice heard</Text>
+            <Text style={styles.headerGreeting}>{t('spHello')}, {user?.name ?? t('citizen')} 👋</Text>
+            <Text style={styles.headerSubtitle}>{t('spMakeVoiceHeard')}</Text>
           </View>
           <TouchableOpacity style={styles.headerIconBtn} activeOpacity={0.85} onPress={() => navigation.navigate('Notifications')}>
             <MaterialCommunityIcons name="bell-outline" size={22} color="#FFFFFF" />

@@ -29,15 +29,15 @@ import {TranslationKey} from '@constants/i18n';
 
 type Nav = NativeStackNavigationProp<CitizenStackParamList>;
 
-const FILTERS: {id: ComplaintStatus | 'all'; label: string}[] = [
-  {id: 'all', label: 'All'},
-  {id: 'submitted', label: 'Open'},
-  {id: 'in_progress', label: 'In Progress'},
-  {id: 'resolved', label: 'Resolved'},
+const FILTERS: {id: ComplaintStatus | 'all'; labelKey: TranslationKey}[] = [
+  {id: 'all', labelKey: 'all'},
+  {id: 'submitted', labelKey: 'open'},
+  {id: 'in_progress', labelKey: 'inProgress'},
+  {id: 'resolved', labelKey: 'resolved'},
 ];
 
-const CATEGORY_FILTERS: {id: ComplaintCategory | 'all'; labelKey?: TranslationKey; label?: string}[] = [
-  {id: 'all', label: 'All'},
+const CATEGORY_FILTERS: {id: ComplaintCategory | 'all'; labelKey: TranslationKey}[] = [
+  {id: 'all', labelKey: 'all'},
   {id: 'road', labelKey: 'road'},
   {id: 'water', labelKey: 'water'},
   {id: 'electricity', labelKey: 'electricity'},
@@ -45,8 +45,8 @@ const CATEGORY_FILTERS: {id: ComplaintCategory | 'all'; labelKey?: TranslationKe
   {id: 'other', labelKey: 'other'},
 ];
 
-const PRIORITY_FILTERS: {id: ComplaintPriority | 'all'; labelKey?: TranslationKey; label?: string}[] = [
-  {id: 'all', label: 'All'},
+const PRIORITY_FILTERS: {id: ComplaintPriority | 'all'; labelKey: TranslationKey}[] = [
+  {id: 'all', labelKey: 'all'},
   {id: 'low', labelKey: 'low'},
   {id: 'medium', labelKey: 'medium'},
   {id: 'high', labelKey: 'high'},
@@ -156,7 +156,7 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>{t('myComplaints')}</Text>
-          <Text style={styles.headerSubtitle}>Track and manage your complaints</Text>
+          <Text style={styles.headerSubtitle}>{t('mycSubtitle')}</Text>
         </View>
         <TouchableOpacity
           style={styles.notificationBtn}
@@ -176,7 +176,7 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
           <MaterialCommunityIcons name="magnify" size={20} color={Colors.textDisabled} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by ticket ID or description"
+            placeholder={t('searchComplaints')}
             placeholderTextColor={Colors.textDisabled}
             value={search}
             onChangeText={setSearch}
@@ -193,7 +193,7 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
 
       {filterOpen && (
         <View style={styles.filterPanel}>
-          <Text style={styles.filterPanelTitle}>Category</Text>
+          <Text style={styles.filterPanelTitle}>{t('mycCategory')}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -207,14 +207,14 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
                   onPress={() => setActiveCategory(f.id)}
                   style={[styles.panelChip, active ? styles.panelChipActive : styles.panelChipInactive]}>
                   <Text style={[styles.panelChipText, active ? styles.chipTextActive : styles.chipTextInactive]}>
-                    {f.labelKey ? t(f.labelKey) : f.label}
+                    {t(f.labelKey)}
                   </Text>
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
 
-          <Text style={styles.filterPanelTitle}>Priority</Text>
+          <Text style={styles.filterPanelTitle}>{t('priority')}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -228,7 +228,7 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
                   onPress={() => setActivePriority(f.id)}
                   style={[styles.panelChip, active ? styles.panelChipActive : styles.panelChipInactive]}>
                   <Text style={[styles.panelChipText, active ? styles.chipTextActive : styles.chipTextInactive]}>
-                    {f.labelKey ? t(f.labelKey) : f.label}
+                    {t(f.labelKey)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -255,7 +255,7 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
               styles.chipText,
               activeFilter === f.id ? styles.chipTextActive : styles.chipTextInactive,
             ]}>
-              {f.label}
+              {t(f.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -280,7 +280,10 @@ export const MyComplaintsScreen: React.FC<{embedded?: boolean}> = ({embedded}) =
               activeFilter === 'all'
                 ? t('noComplaintsYet')
                 : t('noFilteredComplaints', {
-                    status: FILTERS.find(f => f.id === activeFilter)?.label ?? '',
+                    status: (() => {
+                      const key = FILTERS.find(f => f.id === activeFilter)?.labelKey;
+                      return key ? t(key) : '';
+                    })(),
                   })
             }
             ctaLabel={t('reportProblem')}

@@ -54,7 +54,8 @@
         {
           "microphonePermission": "JANANAYAGAN needs microphone access to record voice notes for your complaints."
         }
-      ]
+      ],
+      "expo-video"
     ]
   }
 }

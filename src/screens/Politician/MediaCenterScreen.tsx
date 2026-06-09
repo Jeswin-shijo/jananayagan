@@ -36,10 +36,10 @@ const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 const SHEET_HEIGHT = Math.min(SCREEN_HEIGHT * 0.85, 620);
 
 type MediaType = 'photo' | 'video' | 'document';
-const MEDIA_TYPES: {key: MediaType; label: string; icon: MaterialCommunityIconName}[] = [
-  {key: 'photo', label: 'Photo', icon: 'image-outline'},
-  {key: 'video', label: 'Video', icon: 'video-outline'},
-  {key: 'document', label: 'Document', icon: 'file-document-outline'},
+const MEDIA_TYPES: {key: MediaType; icon: MaterialCommunityIconName}[] = [
+  {key: 'photo', icon: 'image-outline'},
+  {key: 'video', icon: 'video-outline'},
+  {key: 'document', icon: 'file-document-outline'},
 ];
 
 export const MediaCenterScreen: React.FC = () => {
@@ -92,7 +92,7 @@ export const MediaCenterScreen: React.FC = () => {
   const handlePickMedia = async () => {
     const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      toastError('Permission denied', 'Allow media access in Settings');
+      toastError(t('mcPermissionDenied'), t('mcAllowMediaAccess'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -198,7 +198,7 @@ export const MediaCenterScreen: React.FC = () => {
               contentContainerStyle={styles.sheetBody}>
 
               {/* Media type selector */}
-              <Text style={styles.label}>Media Type</Text>
+              <Text style={styles.label}>{t('mcMediaType')}</Text>
               <View style={styles.typeRow}>
                 {MEDIA_TYPES.map(mt => (
                   <TouchableOpacity
@@ -212,7 +212,7 @@ export const MediaCenterScreen: React.FC = () => {
                       color={mediaType === mt.key ? '#FFFFFF' : Colors.textSecondary}
                     />
                     <Text style={[styles.typeChipLabel, mediaType === mt.key && styles.typeChipLabelActive]}>
-                      {mt.label}
+                      {t(mt.key as TranslationKey)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -220,24 +220,24 @@ export const MediaCenterScreen: React.FC = () => {
 
               {/* Title */}
               <Text style={styles.label}>
-                Title <Text style={styles.required}>*</Text>
+                {t('title')} <Text style={styles.required}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, touched && !title.trim() && styles.inputError]}
-                placeholder="Enter media title"
+                placeholder={t('mcEnterMediaTitle')}
                 placeholderTextColor={Colors.textDisabled}
                 value={title}
                 onChangeText={setTitle}
               />
               {touched && !title.trim() && (
-                <Text style={styles.errorText}>Title is required</Text>
+                <Text style={styles.errorText}>{t('mcTitleRequired')}</Text>
               )}
 
               {/* File picker */}
               {mediaType !== 'document' && (
                 <>
                   <Text style={[styles.label, {marginTop: Spacing[2]}]}>
-                    {mediaType === 'photo' ? 'Select Photo' : 'Select Video'}
+                    {mediaType === 'photo' ? t('mcSelectPhoto') : t('mcSelectVideo')}
                   </Text>
                   <TouchableOpacity onPress={handlePickMedia} activeOpacity={0.8} style={styles.pickerBtn}>
                     {pickedUri && mediaType === 'photo' ? (
@@ -250,7 +250,11 @@ export const MediaCenterScreen: React.FC = () => {
                           color={Colors.primary}
                         />
                         <Text style={styles.pickerText}>
-                          {pickedUri ? 'Video selected — tap to change' : `Tap to select ${mediaType}`}
+                          {pickedUri
+                            ? t('mcVideoSelectedTapToChange')
+                            : mediaType === 'photo'
+                              ? t('mcTapToSelectPhoto')
+                              : t('mcTapToSelectVideo')}
                         </Text>
                       </View>
                     )}
@@ -270,7 +274,7 @@ export const MediaCenterScreen: React.FC = () => {
                   end={{x: 1, y: 0}}
                   style={styles.submitGradient}>
                   <Text style={styles.submitText}>
-                    {uploading ? 'Uploading…' : t('uploadMedia')}
+                    {uploading ? t('mcUploading') : t('uploadMedia')}
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>

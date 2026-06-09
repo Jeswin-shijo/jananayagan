@@ -228,9 +228,9 @@ export const MOCK_VOLUNTEERS: Volunteer[] = [
 ];
 
 export const MOCK_TEAMS: Team[] = [
-  {id: 't1', name: 'Team Alpha', area: 'Ward 5', volunteerIds: ['1', '2'], activeTasks: 2, completedTasks: 7},
-  {id: 't2', name: 'Team Bravo', area: 'Ward 8', volunteerIds: ['3', '4'], activeTasks: 1, completedTasks: 4},
-  {id: 't3', name: 'Team Charlie', area: 'Ward 3', volunteerIds: ['5'],    activeTasks: 1, completedTasks: 2},
+  {id: 't1', name: 'Water Supply', area: 'Citywide', volunteerIds: ['1', '2'], activeTasks: 1, completedTasks: 7},
+  {id: 't2', name: 'Electricity', area: 'Citywide', volunteerIds: ['3', '4'], activeTasks: 1, completedTasks: 4},
+  {id: 't3', name: 'Roads & Sanitation', area: 'Citywide', volunteerIds: ['5'], activeTasks: 2, completedTasks: 5},
 ];
 
 export const MOCK_SENTIMENT_DATA: SentimentData = {
@@ -265,6 +265,15 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
 export type FeedComment = {id: string; author: string; text: string};
 export type FeedAccent = 'tileGreen' | 'tileTeal' | 'tileAmber' | 'tileBlue' | 'tilePurple';
 
+// A piece of post media. `source` is either a bundled asset (require(...) -> number)
+// or a remote/local uri ({uri}). Works for both <Image> and expo-video's <VideoView>.
+// `thumbnail` is an optional poster frame shown for videos before playback.
+export type PostMedia = {
+  type: 'image' | 'video';
+  source: number | {uri: string};
+  thumbnail?: number | {uri: string};
+};
+
 export interface CommunityPost {
   id: string;
   author: string;
@@ -276,6 +285,7 @@ export interface CommunityPost {
   isLiked: boolean;
   accent: FeedAccent;
   imageUris?: string[];
+  media?: PostMedia[];
   comments: FeedComment[];
 }
 
@@ -287,11 +297,13 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     author: 'Meena K',
     role: 'Resident',
     area: 'Anna Nagar',
-    content: 'Street lights near 4th Avenue are working again tonight. Thanks to everyone who reported and followed up.',
+    content: 'Edappadi K. Palaniswami அவர்களை சென்னை பசுமைவழிச் சாலையில் உள்ள அவரது இல்லத்தில் கன்னியாகுமரி கிழக்கு மாவட்ட கழக செயலாளர் கன்னியாகுமரி சட்டமன்ற உறுப்பினர் திரு Thalavai Sundaram அவர்கள் தலைமையில் கழக அவைத்தலைவர் திரு Tamil Magan Hussain A அவர்கள் முன்னிலையில் இன்று 20.05.2026 மரியாதை நிமித்தமாக சந்தித்த போது.',
     createdAt: '18 min',
     likes: 42,
     isLiked: false,
     accent: 'tileGreen',
+    imageUris: [],
+    media: [{type: 'image', source: require('@assets/sample-posts/post-photo.png')}],
     comments: [
       {id: 'c1', author: 'Arun', text: 'Great update. This area feels safer now.'},
       {id: 'c2', author: 'Priya', text: 'We should check the next lane too.'},
@@ -301,13 +313,20 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     id: 'post-2',
     author: 'Ward Volunteer',
     role: 'Volunteer',
-    area: 'T. Nagar',
-    content: 'Water tanker schedule for tomorrow: 7:30 AM near the community hall and 8:15 AM near West Street.',
+    area: 'Aralvoimozhi',
+    content: '',
     createdAt: '1 hr',
     likes: 87,
     isLiked: true,
     accent: 'tileTeal',
-    imageUris: [SAMPLE_POST_IMAGE],
+    imageUris: [],
+    media: [
+      {
+        type: 'video',
+        source: require('@assets/sample-posts/post-meeting.mp4'),
+        thumbnail: require('@assets/sample-posts/post-meeting-thumb.jpg'),
+      },
+    ],
     comments: [
       {id: 'c3', author: 'Siva', text: 'Please add South Street if possible.'},
     ],
@@ -317,11 +336,19 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     author: 'JANANAYAGAN Desk',
     role: 'Official',
     area: 'City Updates',
-    content: 'Public poll is open for pedestrian crossing improvements. Share your vote before Friday evening.',
+    content: 'கன்னியாகுமரி மாவட்டம் தோவாளை ஒன்றியத்திற்கு உட்பட்ட ஆரல்வாய்மொழி சிறப்பு நிலை பேரூராட்சிக்கு வருவாய் ஈட்டி தரும் கனரக வாகன அரசு எடை மேடையை மீண்டும் செயல்பாட்டுக்கு கொண்டு வர மாவட்ட காவல் கண்காணிப்பாளர் டாக்டர் #திரு_ஸ்டாலின் அவர்களிடம் புகார் மனு அளித்தேன்.',
     createdAt: '3 hr',
     likes: 126,
     isLiked: false,
     accent: 'tileAmber',
+    imageUris: [],
+    media: [
+      {
+        type: 'video',
+        source: require('@assets/sample-posts/post-weighbridge.mp4'),
+        thumbnail: require('@assets/sample-posts/post-weighbridge-thumb.jpg'),
+      },
+    ],
     comments: [],
   },
 ];

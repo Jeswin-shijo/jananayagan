@@ -11,22 +11,23 @@ import {MOCK_PETITIONS} from '@utils/mockData';
 import {formatRelativeTime} from '@utils/formatters';
 import {Petition} from '@appTypes/api';
 import {AppColors} from '@constants/colors';
+import {TranslationKey} from '@constants/i18n';
 import {FontSize, FontWeight} from '@constants/typography';
 import {Spacing, BorderRadius} from '@constants/spacing';
 
 type Filter = 'all' | Petition['status'];
 
-const FILTERS: {key: Filter; label: string}[] = [
-  {key: 'all', label: 'All'},
-  {key: 'active', label: 'Active'},
-  {key: 'approved', label: 'Approved'},
-  {key: 'closed', label: 'Closed'},
+const FILTERS: {key: Filter; labelKey: TranslationKey}[] = [
+  {key: 'all', labelKey: 'all'},
+  {key: 'active', labelKey: 'active'},
+  {key: 'approved', labelKey: 'ppApproved'},
+  {key: 'closed', labelKey: 'closed'},
 ];
 
-const STATUS_CONFIG: Record<Petition['status'], {label: string; color: string; bg: string; icon: string}> = {
-  active: {label: 'Active', color: '#16A34A', bg: '#F0FDF4', icon: 'circle-slice-8'},
-  approved: {label: 'Approved', color: '#2563EB', bg: '#EFF6FF', icon: 'check-circle-outline'},
-  closed: {label: 'Closed', color: '#6B7280', bg: '#F3F4F6', icon: 'close-circle-outline'},
+const STATUS_CONFIG: Record<Petition['status'], {labelKey: TranslationKey; color: string; bg: string; icon: string}> = {
+  active: {labelKey: 'active', color: '#16A34A', bg: '#F0FDF4', icon: 'circle-slice-8'},
+  approved: {labelKey: 'ppApproved', color: '#2563EB', bg: '#EFF6FF', icon: 'check-circle-outline'},
+  closed: {labelKey: 'closed', color: '#6B7280', bg: '#F3F4F6', icon: 'close-circle-outline'},
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -40,6 +41,7 @@ const CATEGORY_COLOR: Record<string, string> = {
 };
 
 const PetitionCard: React.FC<{petition: Petition; Colors: AppColors; styles: ReturnType<typeof createStyles>}> = ({petition, Colors, styles}) => {
+  const {t} = useTranslation();
   const pct = Math.min(Math.round((petition.currentSignatures / petition.targetSignatures) * 100), 100);
   const status = STATUS_CONFIG[petition.status];
   const catColor = CATEGORY_COLOR[petition.category] ?? Colors.primary;
@@ -53,7 +55,7 @@ const PetitionCard: React.FC<{petition: Petition; Colors: AppColors; styles: Ret
         </View>
         <View style={[styles.statusBadge, {backgroundColor: status.bg}]}>
           <MaterialCommunityIcons name={status.icon as any} size={12} color={status.color} />
-          <Text style={[styles.statusText, {color: status.color}]}>{status.label}</Text>
+          <Text style={[styles.statusText, {color: status.color}]}>{t(status.labelKey)}</Text>
         </View>
       </View>
 
@@ -66,7 +68,7 @@ const PetitionCard: React.FC<{petition: Petition; Colors: AppColors; styles: Ret
         <View style={styles.progressLabelRow}>
           <Text style={styles.signaturesText}>
             <Text style={styles.signaturesCount}>{petition.currentSignatures.toLocaleString()}</Text>
-            {' / '}{petition.targetSignatures.toLocaleString()} signatures
+            {' / '}{petition.targetSignatures.toLocaleString()} {t('signatures')}
           </Text>
           <Text style={[styles.pctText, {color: pct >= 100 ? '#16A34A' : pct >= 70 ? '#F59E0B' : Colors.primary}]}>
             {pct}%
@@ -121,7 +123,7 @@ export const PoliticianPetitionsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <DrawerHeader title={t('petition')} subtitle={`${MOCK_PETITIONS.length} total`} />
+      <DrawerHeader title={t('petition')} subtitle={`${MOCK_PETITIONS.length} ${t('total')}`} />
       <OfflineBanner />
 
       {/* Filter tabs */}
@@ -136,7 +138,7 @@ export const PoliticianPetitionsScreen: React.FC = () => {
                 style={[styles.filterChip, isActive && styles.filterChipActive]}
                 activeOpacity={0.75}>
                 <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>
-                  {f.label}
+                  {t(f.labelKey)}
                 </Text>
                 <View style={[styles.filterCount, isActive && styles.filterCountActive]}>
                   <Text style={[styles.filterCountText, isActive && styles.filterCountTextActive]}>
@@ -151,7 +153,7 @@ export const PoliticianPetitionsScreen: React.FC = () => {
 
       {/* List */}
       {filtered.length === 0 ? (
-        <AppEmptyState icon="file-sign" title="No petitions" subtitle="No petitions found for this filter" />
+        <AppEmptyState icon="file-sign" title={t('ppNoPetitions')} subtitle={t('ppNoPetitionsForFilter')} />
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}

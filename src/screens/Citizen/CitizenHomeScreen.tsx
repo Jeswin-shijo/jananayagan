@@ -22,6 +22,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {CitizenStackParamList, CitizenTabParamList} from '@appTypes/navigation';
+import type {TranslationKey} from '@constants/i18n';
 import {AppHeader} from '@components/common/AppHeader';
 import {OfflineBanner} from '@components/common/OfflineBanner';
 import {useAuthStore} from '@store/authStore';
@@ -43,7 +44,7 @@ type QuickAction = {
   id: string;
   icon: MaterialCommunityIconName;
   labelKey: 'reportProblem' | 'myComplaints' | 'petition' | 'vote';
-  subtitle: string;
+  subtitleKey: TranslationKey;
   tile: TileToken;
   iconColor: IconToken;
   route:
@@ -56,7 +57,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'report',
     icon: 'alert-outline',
     labelKey: 'reportProblem',
-    subtitle: 'Raise an issue in your area',
+    subtitleKey: 'chRaiseIssueSubtitle',
     tile: 'accentOrangeSoft',
     iconColor: 'accentOrange',
     route: {type: 'stack', screen: 'ReportProblem'},
@@ -65,7 +66,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'complaints',
     icon: 'clipboard-text-outline',
     labelKey: 'myComplaints',
-    subtitle: 'Manage your complaints',
+    subtitleKey: 'chManageComplaintsSubtitle',
     tile: 'tileBlue',
     iconColor: 'primary',
     route: {type: 'tab', screen: 'MyComplaints'},
@@ -74,7 +75,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'petition',
     icon: 'file-sign',
     labelKey: 'petition',
-    subtitle: 'Create or sign petitions',
+    subtitleKey: 'chCreateSignPetitionsSubtitle',
     tile: 'tilePurple',
     iconColor: 'statusInProgress',
     route: {type: 'stack', screen: 'SubmitPetition'},
@@ -83,7 +84,7 @@ const QUICK_ACTIONS: QuickAction[] = [
     id: 'poll',
     icon: 'poll',
     labelKey: 'vote',
-    subtitle: 'Participate in polls and make your voice count',
+    subtitleKey: 'chParticipatePollsSubtitle',
     tile: 'tileGreen',
     iconColor: 'secondary',
     route: {type: 'stack', screen: 'PublicPoll'},
@@ -124,6 +125,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   variant,
   onPress,
 }) => {
+  const {t} = useTranslation();
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{scale: scale.value}],
@@ -170,7 +172,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
         <Text
           numberOfLines={variant === 'compact' ? 1 : undefined}
           style={[styles.actionSubtitle, variant === 'feature' && styles.actionSubtitleFeature]}>
-          {action.subtitle}
+          {t(action.subtitleKey)}
         </Text>
       </View>
       <View style={[styles.actionArrow, variant === 'feature' && styles.actionArrowFeature]}>

@@ -7,6 +7,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  StyleProp,
+  ImageStyle,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
@@ -27,7 +29,8 @@ import {useAppColors, useThemedStyles} from '@hooks/useThemedStyles';
 import {useTranslation} from '@hooks/useTranslation';
 import {useAuthStore} from '@store/authStore';
 import {useNotificationStore} from '@store/notificationStore';
-import {MOCK_COMMUNITY_POSTS, CommunityPost, FeedComment, SAMPLE_POST_IMAGE} from '@utils/mockData';
+import {MOCK_COMMUNITY_POSTS, CommunityPost, FeedComment, PostMedia} from '@utils/mockData';
+import {PostVideo} from '@components/common/PostVideo';
 import {CitizenTabParamList} from '@appTypes/navigation';
 import {AppColors, Navy} from '@constants/colors';
 import {BorderRadius, Spacing} from '@constants/spacing';
@@ -38,6 +41,55 @@ type CommunityRoute = RouteProp<CitizenTabParamList, 'CommunityFeed'>;
 
 const DOUBLE_TAP_DELAY = 280;
 const HEART_CLEAR_DELAY = 720;
+
+// Natural width/height of a post's media so the feed sizes to it (portrait stays
+// tall, landscape stays short) instead of a fixed crop. Videos don't expose a
+// size synchronously, so we read it from their poster thumbnail. Clamped to keep
+// extreme ratios usable in the feed.
+const DEFAULT_MEDIA_RATIO = 4 / 3;
+// Keep extreme aspect ratios usable in the feed (very tall / very wide).
+const clampRatio = (r: number) => Math.min(2.4, Math.max(0.5, r));
+
+const ratioFromSource = (src: number | {uri: string}): number | undefined => {
+  const resolved = Image.resolveAssetSource(src as number);
+  return resolved?.width && resolved?.height ? clampRatio(resolved.width / resolved.height) : undefined;
+};
+
+const mediaAspectRatio = (m: PostMedia): number => {
+  const ratioSource = m.type === 'video' ? m.thumbnail ?? m.source : m.source;
+  return ratioFromSource(ratioSource) ?? DEFAULT_MEDIA_RATIO;
+};
+
+// height/width ratio kept usable in the feed (very tall ↔ very wide).
+const clampHW = (r: number) => Math.min(2.0, Math.max(0.42, r));
+
+// Feed image that fits its natural shape with NO cropping. It measures the real
+// rendered width (onLayout) and reads the true pixel size from the image's own
+// onLoad event (authoritative — avoids any swapped/cached metadata), then sets an
+// explicit height = width × (h/w) and uses `contain` so the whole image is shown.
+const FeedImage: React.FC<{source: number | {uri: string}; style?: StyleProp<ImageStyle>}> = ({source, style}) => {
+  const seed = Image.resolveAssetSource(source as number);
+  const [nat, setNat] = useState<{w: number; h: number} | null>(
+    seed?.width && seed?.height ? {w: seed.width, h: seed.height} : null,
+  );
+  const [boxW, setBoxW] = useState(0);
+  const hw = nat ? clampHW(nat.h / nat.w) : 1 / DEFAULT_MEDIA_RATIO;
+  const height = boxW ? Math.round(boxW * hw) : undefined;
+
+  return (
+    <View style={{width: '100%'}} onLayout={e => setBoxW(e.nativeEvent.layout.width)}>
+      <Image
+        source={source as number}
+        resizeMode="contain"
+        onLoad={e => {
+          const s = e?.nativeEvent?.source;
+          if (s?.width && s?.height) setNat({w: s.width, h: s.height});
+        }}
+        style={[style, {width: '100%', height}]}
+      />
+    </View>
+  );
+};
 
 export const CommunityFeedScreen: React.FC = () => {
   const Colors = useAppColors();
@@ -103,14 +155,6 @@ export const CommunityFeedScreen: React.FC = () => {
       });
     }
   }, [Colors.secondaryLight, route.params?.newPost]);
-
-  useEffect(() => {
-    setPosts(prev => prev.map(post => (
-      post.id === 'post-2' && !post.imageUris?.length
-        ? {...post, imageUris: [SAMPLE_POST_IMAGE]}
-        : post
-    )));
-  }, []);
 
   useEffect(() => () => {
     if (heartTimer.current) {
@@ -187,7 +231,15 @@ export const CommunityFeedScreen: React.FC = () => {
     requestAnimationFrame(() => commentsSheetRef.current?.present());
   };
 
-  const renderPost = ({item, index}: {item: CommunityPost; index: number}) => (
+  const renderPost = ({item, index}: {item: CommunityPost; index: number}) => {
+    const media: PostMedia[] = item.media?.length
+      ? item.media
+      : item.imageUris?.length
+      ? item.imageUris.map(uri => ({type: 'image' as const, source: {uri}}))
+      : [];
+    const first = media[0];
+    const aspectRatio = first ? mediaAspectRatio(first) : undefined;
+    return (
     <Animated.View entering={FadeInDown.delay(index * 70).springify()}>
       <AppCard style={styles.postCard}>
         <View style={styles.postHeader}>
@@ -203,14 +255,18 @@ export const CommunityFeedScreen: React.FC = () => {
 
         <Pressable
           onPress={() => handlePostPress(item.id)}
-          style={item.imageUris?.length ? styles.postMediaBody : styles.postBody}>
-          {item.imageUris?.length ? (
+          style={media.length ? styles.postMediaBody : styles.postBody}>
+          {first ? (
             <>
-              <Image source={{uri: item.imageUris[0]}} style={styles.postMainImage} />
-              {item.imageUris.length > 1 && (
+              {first.type === 'video' ? (
+                <PostVideo source={first.source} thumbnail={first.thumbnail} style={[styles.postMainImage, {aspectRatio}]} />
+              ) : (
+                <FeedImage source={first.source} style={styles.postMainImage} />
+              )}
+              {media.length > 1 && (
                 <View style={styles.moreImagesBadge}>
                   <MaterialCommunityIcons name="image-multiple-outline" size={14} color={Colors.white} />
-                  <Text style={styles.moreImagesText}>+{item.imageUris.length - 1}</Text>
+                  <Text style={styles.moreImagesText}>+{media.length - 1}</Text>
                 </View>
               )}
             </>
@@ -232,7 +288,7 @@ export const CommunityFeedScreen: React.FC = () => {
           )}
         </Pressable>
 
-        {item.imageUris?.length ? (
+        {media.length ? (
           <Text style={styles.postCaption}>{item.content}</Text>
         ) : null}
 
@@ -259,7 +315,8 @@ export const CommunityFeedScreen: React.FC = () => {
         </View>
       </AppCard>
     </Animated.View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -281,7 +338,7 @@ export const CommunityFeedScreen: React.FC = () => {
           </TouchableOpacity>
         ) : (
           <View style={styles.greetingTextWrap}>
-            <Text style={styles.greetingHi}>Hello, {user?.name ?? t('user')} 👋</Text>
+            <Text style={styles.greetingHi}>{t('cfHelloName', {name: user?.name ?? t('user')})}</Text>
             <Text style={styles.greetingSub}>{t('voiceSubtitle')}</Text>
           </View>
         )}
@@ -505,17 +562,15 @@ const createStyles = (Colors: AppColors) => ({
     borderColor: Colors.border,
   },
   postMediaBody: {
-    minHeight: 240,
     borderRadius: BorderRadius['2xl'],
     overflow: 'hidden',
-    justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
     backgroundColor: Colors.borderLight,
   },
   postMainImage: {
     width: '100%',
-    height: 260,
+    // height is driven by the media's natural aspect ratio (set per-post in renderPost)
   },
   postContent: {
     fontSize: FontSize.lg,

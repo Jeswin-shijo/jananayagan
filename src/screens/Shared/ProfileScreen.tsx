@@ -90,7 +90,7 @@ export const ProfileScreen: React.FC = () => {
 
   const handleSaveProfile = async () => {
     if (!editName.trim() || editName.trim().length < 2) {
-      setEditNameError('Name must be at least 2 characters');
+      setEditNameError(t('profNameMinLength'));
       return;
     }
     setEditNameError('');

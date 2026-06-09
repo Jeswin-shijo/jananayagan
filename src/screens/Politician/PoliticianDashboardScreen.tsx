@@ -57,12 +57,12 @@ const COMPLAINT_CATEGORY = (desc: string): {icon: MaterialCommunityIconName; col
   return {icon: 'alert-circle-outline', color: '#6B7280', bg: '#F3F4F6'};
 };
 
-const BADGE_CONFIG: Record<ComplaintStatus, {label: string; color: string; dot: string}> = {
-  submitted: {label: 'Submitted', color: '#2563EB', dot: '#3B82F6'},
-  under_review: {label: 'Under Review', color: '#7C3AED', dot: '#8B5CF6'},
-  in_progress: {label: 'In Progress', color: '#7C3AED', dot: '#8B5CF6'},
-  resolved: {label: 'Resolved', color: '#16A34A', dot: '#22C55E'},
-  rejected: {label: 'Rejected', color: '#6B7280', dot: '#9CA3AF'},
+const BADGE_CONFIG: Record<ComplaintStatus, {labelKey: TranslationKey; color: string; dot: string}> = {
+  submitted: {labelKey: 'submitted', color: '#2563EB', dot: '#3B82F6'},
+  under_review: {labelKey: 'underReview', color: '#7C3AED', dot: '#8B5CF6'},
+  in_progress: {labelKey: 'inProgress', color: '#7C3AED', dot: '#8B5CF6'},
+  resolved: {labelKey: 'resolved', color: '#16A34A', dot: '#22C55E'},
+  rejected: {labelKey: 'pdashRejected', color: '#6B7280', dot: '#9CA3AF'},
 };
 
 const NAV_ACTIONS: {icon: MaterialCommunityIconName; labelKey: TranslationKey; screen: string; iconColor: string; iconBg: string; stack?: boolean}[] = [
@@ -73,11 +73,12 @@ const NAV_ACTIONS: {icon: MaterialCommunityIconName; labelKey: TranslationKey; s
 ];
 
 const StatusBadge: React.FC<{status: ComplaintStatus}> = ({status}) => {
+  const {t} = useTranslation();
   const cfg = BADGE_CONFIG[status] ?? BADGE_CONFIG.submitted;
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: cfg.color + '14', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, borderColor: cfg.color + '30'}}>
       <View style={{width: 6, height: 6, borderRadius: 3, backgroundColor: cfg.dot}} />
-      <Text style={{color: cfg.color, fontSize: 10, fontWeight: '600'}}>{cfg.label}</Text>
+      <Text style={{color: cfg.color, fontSize: 10, fontWeight: '600'}}>{t(cfg.labelKey)}</Text>
     </View>
   );
 };

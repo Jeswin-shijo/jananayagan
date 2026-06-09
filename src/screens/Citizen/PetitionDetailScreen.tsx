@@ -39,10 +39,10 @@ export const PetitionDetailScreen: React.FC = () => {
     }
 
     showAlert({
-      title: hasSigned ? 'Already signed' : 'Petition signed',
+      title: hasSigned ? t('pdAlreadySigned') : t('pdPetitionSigned'),
       message: hasSigned
-        ? 'You have already signed this petition.'
-        : 'Your signature has been added to this petition.',
+        ? t('pdAlreadySignedMessage')
+        : t('pdSignedMessage'),
       variant: hasSigned ? 'info' : 'success',
       icon: hasSigned ? 'check-circle-outline' : 'file-sign',
     });
@@ -94,7 +94,7 @@ export const PetitionDetailScreen: React.FC = () => {
           />
 
           <AppButton
-            title={hasSigned ? 'Signed' : t('signPetition')}
+            title={hasSigned ? t('pdSigned') : t('signPetition')}
             onPress={handleSign}
             variant={hasSigned ? 'outline' : 'primary'}
             disabled={hasSigned}
@@ -106,7 +106,7 @@ export const PetitionDetailScreen: React.FC = () => {
           <View style={styles.infoRow}>
             <MaterialCommunityIcons name="account-outline" size={20} color={Colors.primary} />
             <View style={styles.infoCopy}>
-              <Text style={styles.infoLabel}>Created by</Text>
+              <Text style={styles.infoLabel}>{t('pdCreatedBy')}</Text>
               <Text style={styles.infoValue}>{petition.createdBy}</Text>
             </View>
           </View>

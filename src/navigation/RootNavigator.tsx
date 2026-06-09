@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {RootStackParamList} from '@appTypes/navigation';
 import {useAuthStore} from '@store/authStore';
+import {useTranslation} from '@hooks/useTranslation';
 import {AuthNavigator} from './AuthNavigator';
 import {CitizenNavigator} from './CitizenNavigator';
 import {PoliticianNavigator} from './PoliticianNavigator';
@@ -29,13 +30,14 @@ const AppNavigator: React.FC = () => {
 
 export const RootNavigator: React.FC = () => {
   const {isAuthenticated, isLoading, restoreSession} = useAuthStore();
+  const {t} = useTranslation();
 
   useEffect(() => {
     restoreSession();
   }, [restoreSession]);
 
   if (isLoading) {
-    return <AppLoader fullScreen message="Loading JANANAYAGAN..." />;
+    return <AppLoader fullScreen message={t('rnLoadingApp')} />;
   }
 
   return (
